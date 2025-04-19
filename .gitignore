@@ -1,9 +1,7 @@
-# Ignore Python virtual environments
+# Don't track virtual environments or secret files
 venv/
-
-# Ignore environment variables
 .env
-
-# Ignore compiled files
 __pycache__/
 *.pyc
+node_modules/
+dist/
