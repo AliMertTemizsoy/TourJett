@@ -9,9 +9,8 @@ def create_app():
     app.config.from_object(Config)
 
     db.init_app(app)
-    @app.route('/ping')
-    def ping():
-        return {'message': 'pong'}, 200
 
-    # Blueprints will go here later
+    # Import models so they are registered with SQLAlchemy
+    from app.models import user  # <- import here
+
     return app
