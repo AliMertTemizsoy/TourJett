@@ -1,12 +1,9 @@
-# Python
+# Ignore Python virtual environments
+venv/
+
+# Ignore environment variables
+.env
+
+# Ignore compiled files
 __pycache__/
 *.pyc
-.env
-
-# Node
-node_modules/
-dist/
-.env
-
-# General
-.DS_Store
