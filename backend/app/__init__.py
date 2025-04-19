@@ -1,16 +1,27 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from .config import Config
+from flask_migrate import Migrate
+from flask_cors import CORS
+from app.config import Config
 
 db = SQLAlchemy()
+migrate = Migrate()
 
-def create_app():
+def create_app(config_class=Config):
     app = Flask(__name__)
-    app.config.from_object(Config)
-
+    app.config.from_object(config_class)
+    
     db.init_app(app)
-
-    # Import models so they are registered with SQLAlchemy
-    from app.models import user  # <- import here
-
+    migrate.init_app(app, db)
+    CORS(app)
+    
+    # Ana test route'u
+    @app.route('/test')
+    def test_page():
+        return {'message': 'Tatil Turu Yönetim Sistemi API çalışıyor!'}
+    
+    # Blueprint'leri kaydet
+    from app.routes.bolge_routes import bolge_bp
+    app.register_blueprint(bolge_bp)
+    
     return app
