@@ -1,0 +1,193 @@
+Detaylı Fizibilite Analizi - Tur Şirketi Websitesi Projesi
+
+1. Proje Genel Bakış
+Proje Adı: Tur Şirketi Websitesi Geliştirme
+Başlangıç Tarihi: 15 Nisan 2025
+Bitiş Tarihi: 4 Mayıs 2025
+Proje Ekibi:
+
+Proje Yöneticisi: Babak Ranjbaran
+Backend Geliştirici: Enes İpek,Ali Mert Temizsoy
+Frontend Geliştiriciler: Aziz Recep Özenç, Berjan Cem Darıç
+
+Amaç: Kullanıcı dostu bir tur rezervasyon websitesi geliştirerek müşterilerin tur arama, rezervasyon yapma, ödeme gerçekleştirme ve hesaplarını yönetme işlemlerini kolaylaştırmak.
+
+Kapsam:
+Kullanıcı yönetimi (kayıt, giriş, profil yönetimi).
+Tur yönetimi (arama, filtreleme, detay görüntüleme).
+Rezervasyon sistemi (rezervasyon yapma, iptal etme).
+Ödeme entegrasyonu (kredi kartı, havale).
+
+2. Teknik Fizibilite
+2.1. Teknoloji Seçimi
+
+Hızlı yazılım geliştirme gereksinimi doğrultusunda modern ve ölçeklenebilir teknolojiler seçilmiştir:
+Frontend: React
+
+Neden: Komponent tabanlı yapı, hızlı geliştirme, geniş topluluk desteği.
+Avantajlar: Kullanıcı dostu arayüzler, yeniden kullanılabilir komponentler, hızlı rendering.
+Gereksinimler: CDN üzerinden React ve Tailwind CSS entegrasyonu.
+
+Backend: Node.js + Express
+Neden: Hızlı API geliştirme, JavaScript ile full-stack uyumluluk.
+Avantajlar: Asenkron işlem kapasitesi, ölçeklenebilirlik, geniş paket ekosistemi (npm).
+Gereksinimler: RESTful API geliştirme, JWT ile kimlik doğrulama.
+
+Veritabanı: PostgreSQL
+Neden: Güçlü ilişkisel veritabanı, açık kaynak, yüksek performans.
+Avantajlar: SQL standartlarına uyumluluk, veri bütünlüğü, ölçeklenebilirlik.
+Gereksinimler: Docker ile yerel/test ortamı kurulumu.
+
+
+Ödeme Entegrasyonu: Stripe API
+Neden: Güvenli ödeme işlemleri, kolay entegrasyon, çoklu ödeme yöntemi desteği.
+Avantajlar: Kredi kartı ve havale işlemleri, test modu ile geliştirme kolaylığı.
+Gereksinimler: Stripe hesabı ve API anahtarları.
+
+2.2. Araçlar ve Ortam
+
+Geliştirme Araçları:
+Visual Studio Code (kod editörü).
+Git (versiyon kontrol, GitHub üzerinden işbirliği).
+Postman (API testi).
+
+Ortam Yönetimi:
+Docker (PostgreSQL ve Node.js için konteynerleştirme).
+AWS EC2 (dağıtım için önerilen sunucu).
+
+Test Araçları:
+Jest (React için birim testi).
+Supertest (API testleri).
+
+2.3. Teknik Riskler ve Çözümler
+
+Risk 1: Stripe entegrasyonunda gecikme.
+Çözüm: Test modunda erken entegrasyon, Stripe belgelerinin detaylı incelenmesi.
+
+Risk 2: Frontend-backend uyumluluk sorunları.
+Çözüm: API sözleşmeleri (Swagger/OpenAPI) ile erken tanımlama.
+
+Risk 3: Ekipte React deneyimi eksikliği.
+Çözüm: Aziz ve Berjan için 1 günlük hızlandırılmış React eğitimi (online kaynaklarla).
+
+2.4. Teknik Fizibilite Sonucu
+
+Seçilen teknolojiler, hızlı geliştirme ve müşteri gereksinimlerini karşılamak için uygundur. Ekip, React ve Node.js konusunda temel deneyime sahiptir; kısa bir eğitimle eksiklikler giderilebilir. 
+Teknik altyapı, AWS ve Docker ile ölçeklenebilir bir şekilde kurulabilir.
+
+3. Ekonomik Fizibilite
+3.1. Tahmini Maliyetler
+Geliştirme Maliyetleri:
+
+// (günlük harçlık ve claude parası diyelim)
+
+Araç lisansları (örneğin, Postman Pro): 1.000 TL (opsiyonel). Bedava Opsiyonlarıda bulunmaktadır
+
+Sunucu Maliyetleri:
+
+AWS EC2 (küçük ölçekli sunucu, yıllık): 5.000 TL/yıl.
+Domain ve SSL sertifikası: 1.000 TL/yıl.
+
+Eğitim Maliyetleri:
+React eğitimi (online kaynaklar): Ücretsiz.
+Stripe API eğitimi (dokümantasyon): Ücretsiz.
+
+
+
+Toplam Tahmini Maliyet: 10.000 TL+ (ilk yıl).
+
+3.2. Tahmini Getiriler
+
+Gelir Artışı:
+//Websitesi ile rezervasyonlarda %30 artış bekleniyor.
+/////(Örnek araştırma)
+Artış sonrası gelir: x TL x 1.3 = 650.000 TL.
+Net getiri (ilk yıl): 
+
+Maliyet Azaltımı:
+Manuel rezervasyon süreçlerinin otomasyonu ile personel maliyeti düşüşü: Yıllık 20.000 TL tasarruf.
+Toplam Getiri: x TL (gelir artışı) + 20.000 TL (tasarruf) = x+20.000 TL.
+
+3.3. Yatırım Getirisi (ROI)
+
+ROI = (Getiri - Maliyet) / Maliyet x 100
+ROI = (x - y) / y 100 = %60.38(örnek)
+Sonuç: Proje, ilk yıl içinde %60’ın üzerinde bir getiri sağlayarak ekonomik olarak uygulanabilir.
+
+4. Operasyonel Fizibilite
+
+4.1. Ekip Yetkinlikleri
+
+Babak Ranjbaran (Proje Yöneticisi): Proje yönetimi ve koordinasyon konusunda deneyimli.
+
+Ali Mert Temizsoy (Backend Geliştirici): Node.js ve PostgreSQL konusunda deneyimli..
+Enes İpek (Backend Geliştirici): Node.js ve PostgreSQL konusunda deneyimli.
+
+Aziz Recep Özenç ve Berjan Cem Darıç (Frontend Geliştiriciler): Temel HTML/CSS/JS bilgisi var; React için kısa bir eğitim gerekebilir.
+
+4.2. Kullanıcı Kabulü
+
+
+Müşteri Tarafı: Kullanıcı dostu arayüz ve çok dilli destek ile yüksek kabul oranı bekleniyor.
+Şirket Çalışanları: Rezervasyon otomasyonu, manuel iş yükünü azaltacak; çalışan memnuniyeti artacak.
+
+4.3. Operasyonel Riskler ve Çözümler
+
+Risk 1: Frontend ekibinin React öğrenme sürecinde gecikme.
+Çözüm: 16 Nisan’da 1 günlük hızlandırılmış eğitim.
+
+Risk 2: Müşteri gereksinimlerinde son dakika değişiklikleri.
+Çözüm: 2 Nisan’da ara toplantı ile gereksinim doğrulama.
+
+Risk 3: Test sürecinde hataların gözden kaçması.
+Çözüm: 3-4 Mayıs’ta detaylı test ve son kontrol.
+
+4.4. Operasyonel Fizibilite Sonucu
+
+Ekip, kısa bir eğitimle projeyi yürütmeye hazırdır. Müşteri ve çalışan kabul oranı yüksek olacaktır. Operasyonel riskler, planlı toplantılar ve test süreçleriyle yönetilebilir.
+
+5. Zaman Fizibilitesi
+5.1. Proje Takvimi
+
+Toplam Süre: 15 Nisan 2025 - 4 Mayıs 2025 (20 gün).
+
+Görev Dağılımı: Gantt diyagramına göre planlanmıştır:
+
+
+--------> gant diyagramı foto veya excel dosyada var
+
+Ön İnceleme ve Fizibilite: 15-18 Nisan (4 gün).
+
+Sistem Analizi: 19-25 Nisan (7 gün).
+Tasarım: 26 Nisan - 2 Mayıs (7 gün).
+Proje Raporu ve Teslim: 1-4 Mayıs (7 gün).
+
+5.2. Zaman Riskleri ve Çözümler
+
+Risk 1: Analiz aşamasında gecikme.
+Çözüm: Ali Mert Temizsoy’a ek destek (Babak ile koordinasyon).
+
+Risk 2: Frontend geliştirme süresinin uzaması.
+Çözüm: Aziz ve Berjan’ın görevlerini paralelleştirme (mockup’lar ve UI testleri).
+
+5.3. Zaman Fizibilite Sonucu
+
+Proje, 20 günlük sürede tamamlanabilir. Görevler, ekip üyeleri arasında dengeli dağıtılmıştır ve riskler yönetilebilir.
+
+6. Genel Sonuç ve Öneriler
+
+Teknik: React, Node.js ve PostgreSQL ile geliştirme yapılabilir; altyapı ölçeklenebilir.
+
+Ekonomik: İlk yıl %60 ROI ile maliyet etkin bir proje.
+
+Operasyonel: Ekip yetkin, müşteri kabul oranı yüksek.
+
+Zaman: 15 Nisan - 4 Mayıs takvimi uygun.
+
+
+Öneriler:
+
+16 Nisan’da React eğitimi düzenlensin.
+22 Nisan’da müşteri ile ara toplantı yapılsın.
+Stripe entegrasyonu erken test edilsin.
+Sonuç: Proje, teknik, ekonomik, operasyonel ve zaman açısından uygulanabilir. Önerilen teknolojiler ve planlama ile müşteri gereksinimlerine uygun bir sistem geliştirilebilir.
