@@ -22,6 +22,9 @@ def create_app(config_class=Config):
     
     # Blueprint'leri kaydet
     from app.routes.bolge_routes import bolge_bp
+    from app.routes.kaynak_routes import kaynak_bp
+    
     app.register_blueprint(bolge_bp)
+    app.register_blueprint(kaynak_bp)
     
     return app
