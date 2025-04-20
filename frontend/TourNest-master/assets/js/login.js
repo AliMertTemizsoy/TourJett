@@ -1,39 +1,62 @@
-const switchers = [...document.querySelectorAll('.switcher')]
+// Formlar arasında geçiş
+const switchers = [...document.querySelectorAll('.switcher')];
 
 switchers.forEach(item => {
-	item.addEventListener('click', function() {
-		switchers.forEach(item => item.parentElement.classList.remove('is-active'))
-		this.parentElement.classList.add('is-active')
-	})
-})
+    item.addEventListener('click', function() {
+        switchers.forEach(item => item.parentElement.classList.remove('is-active'));
+        this.parentElement.classList.add('is-active');
+    });
+});
 
-// API BASE URL (api.js'den alınır)
-const API_BASE_URL = 'http://localhost:5000';
+// Login ve Signup işlemleri
+document.addEventListener('DOMContentLoaded', function() {
+    // Login formu
+    const loginForm = document.querySelector('.form-login');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
 
-// Giriş Fonksiyonu
-async function loginUser(email, password) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            const response = await loginUser(email, password);
+
+            if (response.error) {
+                alert(response.error || 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.');
+            } else {
+                alert(response.message || 'Giriş başarılı!');
+                // Başarılı girişten sonra yönlendirme (örneğin, ana sayfaya)
+                window.location.href = 'index.html';
+            }
         });
-        const data = await response.json();
-        if (data.success) {
-            window.location.href = 'index.html'; // Giriş başarılı
-        } else {
-            alert('Hatalı giriş: ' + (data.message || 'Bilgilerinizi kontrol edin'));
-        }
-    } catch (error) {
-        console.error('Giriş hatası:', error);
-        alert('Sunucu hatası! Lütfen tekrar deneyin.');
     }
-}
 
-// Form Submit Eventi (HTML'deki form ID'si "login-form" olmalı)
-document.getElementById('login-form')?.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    loginUser(email, password);
+    // Signup formu
+    const signupForm = document.querySelector('.form-signup');
+    if (signupForm) {
+        signupForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const confirmPassword = document.getElementById('signup-password-confirm').value;
+
+            // Şifre doğrulama
+            if (password !== confirmPassword) {
+                alert('Şifreler eşleşmiyor!');
+                return;
+            }
+
+            const response = await signupUser(email, password);
+
+            if (response.error) {
+                alert(response.error || 'Kayıt başarısız. Lütfen tekrar deneyin.');
+            } else {
+                alert(response.message || 'Kayıt başarılı! Lütfen giriş yapın.');
+                // Kayıt başarılıysa login formuna geç
+                switchers.forEach(item => item.parentElement.classList.remove('is-active'));
+                document.querySelector('.switcher-login').parentElement.classList.add('is-active');
+            }
+        });
+    }
 });

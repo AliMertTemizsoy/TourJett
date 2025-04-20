@@ -27,6 +27,8 @@ def create_app(config_class=Config):
     from app.routes.destinasyon_routes import destinasyon_bp
     from app.routes.musteri_routes import musteri_bp
     from app.routes.degerlendirme_routes import degerlendirme_bp
+    from app.routes.auth_routes import auth_bp
+    from app.routes.rezervasyon_routes import rezervasyon_bp
     
     app.register_blueprint(bolge_bp)
     app.register_blueprint(kaynak_bp)
@@ -34,5 +36,7 @@ def create_app(config_class=Config):
     app.register_blueprint(destinasyon_bp)
     app.register_blueprint(musteri_bp)
     app.register_blueprint(degerlendirme_bp)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(rezervasyon_bp)
     
     return app
