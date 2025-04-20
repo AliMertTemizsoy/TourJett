@@ -1,4 +1,3 @@
-version: '3.8'
 
 services:
   backend:
@@ -12,7 +11,7 @@ services:
       - FLASK_ENV=development
       - DATABASE_URL=postgresql://postgres:password@db:5432/tourjett
     depends_on:
-      - dbd
+      - db
 
   db:
     image: postgres:13
