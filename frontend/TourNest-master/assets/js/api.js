@@ -2,7 +2,7 @@
 const API_BASE_URL = 'http://localhost:5000'; // Backend portu 5000 varsayılan
 
 // Mock veri modu (backend hazır olmadığında açık olmalı)
-const MOCK_MODE = true; 
+const MOCK_MODE = false; 
 
 // Araçlar için API çağrıları
 async function getAraclar() {

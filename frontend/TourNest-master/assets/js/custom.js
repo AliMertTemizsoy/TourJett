@@ -193,8 +193,30 @@ $(document).ready(function(){
             $(".about-us-txt button").addClass("animated fadeInDown").css({'opacity':'0'});
 
         });
-        
 
+        async function loadTours() {
+            try {
+                const turlar = await getTurlar(); // api.js'den turları çek
+                const container = $('#tour-container'); // HTML'de bu ID'li div olmalı
+                turlar.forEach(tour => {
+                    container.append(`
+                        <div class="col-md-4 mb-4">
+                            <div class="card">
+                                <img src="${tour.resim}" class="card-img-top">
+                                <div class="card-body">
+                                    <h5 class="card-title">${tour.adi}</h5>
+                                    <p class="card-text">${tour.aciklama}</p>
+                                    <p class="text-success">${tour.fiyat} TL</p>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                });
+            } catch (error) {
+                console.error('Tur verileri yüklenemedi:', error);
+            }
+        }
+        loadTours(); // Sayfa açıldığında turları yükle
 });	
 
 	
