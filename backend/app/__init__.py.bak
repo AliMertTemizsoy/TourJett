@@ -1,16 +1,14 @@
-from flask import Flask, jsonify  # jsonify'ı ekledik
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
 from flask_cors import CORS
 
 db = SQLAlchemy()
-migrate = Migrate()
 
 def create_app(config=None):
     app = Flask(__name__)
     
-    # CORS yapılandırması - daha kapsamlı
-    CORS(app, origins=["http://localhost:8080"], supports_credentials=True)
+    # CORS yapılandırması - tüm kaynaklardan gelen isteklere izin verir
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
     
     # Konfigürasyon ayarları
     if config:
@@ -23,7 +21,6 @@ def create_app(config=None):
     
     # Veritabanı başlatma
     db.init_app(app)
-    migrate.init_app(app, db)
     
     # Route'ları kaydet
     from app.routes.auth_routes import auth_bp
@@ -44,13 +41,4 @@ def create_app(config=None):
     app.register_blueprint(kaynak_bp)
     app.register_blueprint(degerlendirme_bp)
     
-    # Test rotasını ekle
-    @app.route('/test-db')
-    def test_db():
-        try:
-            db.session.execute('SELECT 1')
-            return jsonify({"message": "Veritabanı bağlantısı başarılı"})
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500
-    
-    return app  # Bu satır create_app fonksiyonunun en sonunda olmalı
+    return app
