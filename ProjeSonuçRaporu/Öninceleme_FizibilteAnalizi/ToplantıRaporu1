@@ -1,0 +1,33 @@
+Toplantı Raporu - İlk Proje Toplantısı
+
+Tarih: 15 Nisan 2025
+Yer: Fakülte Arka Bahçe
+Katılımcılar: Ali Mert Temizsoy , Babak Ranjbaran , Berjan Cem Darıç , Enes İpek , Aziz Recep Özenç
+
+
+
+Geliştirici Ekibi: Babak Ranjbaran (Proje Yöneticisi),   Ali Mert Temizsoy, Enes İpek (Backend Geliştirici), Aziz Recep Özenç, Berjan Cem Darıç (Frontend Geliştirici)
+
+Gündem:
+
+Projenin genel kapsamının belirlenmesi
+Müşteri gereksinimlerinin toplanması
+Proje takviminin tartışılması
+
+Tartışılan Konular:
+
+Müşteri Gereksinimleri:
+Kullanıcı dostu bir arayüz ile tur rezervasyon sistemi.
+Ödeme entegrasyonu (kredi kartı, havale).
+Kullanıcı hesapları ve geçmiş rezervasyon takibi.
+
+Teknik Gereksinimler:
+
+Hızlı geliştirme için modern framework’ler (React, Node.js önerildi).
+Veritabanı olarak PostgreSQL düşünülüyor.
+
+Takvim:
+
+Analiz ve tasarım: 15 Nisan -----
+Geliştirme: 15 Nisan -----
+Test ve teslim:  3 Mayıs
