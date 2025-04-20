@@ -25,10 +25,14 @@ def create_app(config_class=Config):
     from app.routes.kaynak_routes import kaynak_bp
     from app.routes.tur_routes import tur_bp
     from app.routes.destinasyon_routes import destinasyon_bp
+    from app.routes.musteri_routes import musteri_bp
+    from app.routes.degerlendirme_routes import degerlendirme_bp
     
     app.register_blueprint(bolge_bp)
     app.register_blueprint(kaynak_bp)
     app.register_blueprint(tur_bp)
     app.register_blueprint(destinasyon_bp)
+    app.register_blueprint(musteri_bp)
+    app.register_blueprint(degerlendirme_bp)
     
     return app
