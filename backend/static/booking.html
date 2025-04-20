@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tour Booking - Complete Your Reservation</title>
+    <style>
+        :root {
+            --primary: #3a7bd5;
+            --primary-light: #6faae1;
+            --secondary: #f8f9fa;
+            --text: #333;
+            --text-light: #666;
+            --success: #28a745;
+            --danger: #dc3545;
+            --border: #dee2e6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .booking-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+            margin-top: 30px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .header h1 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+        
+        .tour-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background-color: var(--secondary);
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .tour-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .tour-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .tour-details h2 {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+        
+        .tour-details p {
+            margin-bottom: 5px;
+            color: var(--text-light);
+        }
+        
+        .form-section {
+            margin-top: 20px;
+        }
+        
+        .form-section h3 {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            color: var(--primary);
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            flex: 1 1 300px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(58, 123, 213, 0.1);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .price-summary {
+            background-color: var(--secondary);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .price-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed var(--border);
+        }
+        
+        .price-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            background-color: #e8f5e9;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .success-message h2 {
+            color: var(--success);
+            margin-bottom: 15px;
+        }
+        
+        .success-message p {
+            margin-bottom: 10px;
+        }
+        
+        .booking-id {
+            font-weight: bold;
+            background-color: white;
+            padding: 10px 15px;
+            border-radius: 4px;
+            display: inline-block;
+            margin: 10px 0;
+        }
+        
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(58, 123, 213, 0.2);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            color: var(--danger);
+            margin-top: 5px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        
+        /* Mobile responsive tweaks */
+        @media (max-width: 768px) {
+            .tour-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .tour-image {
+                width: 100%;
+                max-width: 200px;
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="booking-container">
+            <div class="header">
+                <h1>Complete Your Booking</h1>
+                <p>Please provide your details to finalize your tour reservation</p>
+            </div>
+            
+            <div class="tour-info">
+                <div class="tour-image">
+                    <img src="/api/placeholder/400/320" alt="Tour destination">
+                </div>
+                <div class="tour-details">
+                    <h2>Magical Santorini Island Tour</h2>
+                    <p><strong>Date:</strong> May 15 - May 22, 2025</p>
+                    <p><strong>Duration:</strong> 7 Days, 6 Nights</p>
+                    <p><strong>Starting Point:</strong> Athens International Airport</p>
+                    <p><strong>Price:</strong> $1,950 per person</p>
+                </div>
+            </div>
+            
+            <form id="bookingForm">
+                <div class="form-section">
+                    <h3>Personal Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name *</label>
+                            <input type="text" id="firstName" name="firstName" required>
+                            <div class="error-message" id="firstNameError">First name is required</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name *</label>
+                            <input type="text" id="lastName" name="lastName" required>
+                            <div class="error-message" id="lastNameError">Last name is required</div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" name="email" required>
+                            <div class="error-message" id="emailError">Valid email is required</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number *</label>
+                            <input type="tel" id="phone" name="phone" required>
+                            <div class="error-message" id="phoneError">Valid phone number is required</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Booking Details</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="participants">Number of Participants *</label>
+                            <select id="participants" name="participants" required>
+                                <option value="">Select number</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6+</option>
+                            </select>
+                            <div class="error-message" id="participantsError">Please select number of participants</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="roomType">Room Type *</label>
+                            <select id="roomType" name="roomType" required>
+                                <option value="">Select room type</option>
+                                <option value="standard">Standard Room</option>
+                                <option value="deluxe">Deluxe Room</option>
+                                <option value="suite">Suite</option>
+                                <option value="family">Family Room</option>
+                            </select>
+                            <div class="error-message" id="roomTypeError">Please select room type</div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="additionalRequests">Special Requests or Requirements</label>
+                            <textarea id="additionalRequests" name="additionalRequests" placeholder="Let us know if you have any dietary restrictions, accessibility needs, or other special requests..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Payment Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cardName">Name on Card *</label>
+                            <input type="text" id="cardName" name="cardName" required>
+                            <div class="error-message" id="cardNameError">Name on card is required</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="cardNumber">Card Number *</label>
+                            <input type="text" id="cardNumber" name="cardNumber" placeholder="XXXX XXXX XXXX XXXX" required>
+                            <div class="error-message" id="cardNumberError">Valid card number is required</div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="expiry">Expiration Date *</label>
+                            <input type="text" id="expiry" name="expiry" placeholder="MM/YY" required>
+                            <div class="error-message" id="expiryError">Valid expiration date is required</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="cvv">CVV *</label>
+                            <input type="text" id="cvv" name="cvv" placeholder="XXX" required>
+                            <div class="error-message" id="cvvError">Valid CVV is required</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="price-summary">
+                    <h3>Price Summary</h3>
+                    <div class="price-item">
+                        <span>Tour Price (per person)</span>
+                        <span>$1,950</span>
+                    </div>
+                    <div class="price-item">
+                        <span>Number of Participants</span>
+                        <span id="participantsCount">1</span>
+                    </div>
+                    <div class="price-item">
+                        <span>Accommodation Upgrade</span>
+                        <span id="accommodationFee">$0</span>
+                    </div>
+                    <div class="price-item">
+                        <span>Booking Fee</span>
+                        <span>$75</span>
+                    </div>
+                    <div class="price-item">
+                        <span>Total</span>
+                        <span id="totalPrice">$2,025</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="termsCheck" name="termsCheck" required>
+                        I agree to the Terms and Conditions and Privacy Policy *
+                    </label>
+                    <div class="error-message" id="termsCheckError">You must agree to the terms and conditions</div>
+                </div>
+                
+                <button type="submit" class="btn btn-block" id="submitBtn">Complete Booking</button>
+            </form>
+            
+            <div class="success-message" id="successMessage">
+                <h2>Booking Successfully Confirmed!</h2>
+                <p>Thank you for booking with us. Your tour is now reserved.</p>
+                <p>Your booking ID is:</p>
+                <div class="booking-id" id="bookingId">BK-12345678</div>
+                <p>A confirmation email has been sent to your email address with all the details.</p>
+                <p>If you have any questions, please contact our customer support.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Form elements
+            const bookingForm = document.getElementById('bookingForm');
+            const participantsSelect = document.getElementById('participants');
+            const roomTypeSelect = document.getElementById('roomType');
+            const participantsCount = document.getElementById('participantsCount');
+            const accommodationFee = document.getElementById('accommodationFee');
+            const totalPrice = document.getElementById('totalPrice');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const successMessage = document.getElementById('successMessage');
+            
+            // Price calculation
+            function updatePrice() {
+                const basePrice = 1950;
+                const bookingFee = 75;
+                const participants = parseInt(participantsSelect.value) || 1;
+                let roomUpgrade = 0;
+                
+                // Room upgrades
+                switch(roomTypeSelect.value) {
+                    case 'deluxe':
+                        roomUpgrade = 150;
+                        break;
+                    case 'suite':
+                        roomUpgrade = 300;
+                        break;
+                    case 'family':
+                        roomUpgrade = 250;
+                        break;
+                    default:
+                        roomUpgrade = 0;
+                }
+                
+                participantsCount.textContent = participants;
+                accommodationFee.textContent = '$' + roomUpgrade;
+                
+                const total = (basePrice * participants) + roomUpgrade + bookingFee;
+                totalPrice.textContent = '$' + total.toLocaleString();
+            }
+            
+            // Event listeners for price updates
+            participantsSelect.addEventListener('change', updatePrice);
+            roomTypeSelect.addEventListener('change', updatePrice);
+            
+            // Format card number input
+            const cardNumberInput = document.getElementById('cardNumber');
+            cardNumberInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 0) {
+                    value = value.match(new RegExp('.{1,4}', 'g')).join(' ');
+                }
+                e.target.value = value;
+            });
+            
+            // Format expiry date
+            const expiryInput = document.getElementById('expiry');
+            expiryInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 2) {
+                    value = value.slice(0, 2) + '/' + value.slice(2, 4);
+                }
+                e.target.value = value;
+            });
+            
+            // Limit CVV to 3 digits
+            const cvvInput = document.getElementById('cvv');
+            cvvInput.addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/\D/g, '').slice(0, 3);
+            });
+            
+            // Form validation
+            function validateForm() {
+                let isValid = true;
+                
+                // Reset error messages
+                const errorMessages = document.querySelectorAll('.error-message');
+                errorMessages.forEach(msg => {
+                    msg.style.display = 'none';
+                });
+                
+                // Validate required fields
+                const requiredFields = bookingForm.querySelectorAll('[required]');
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        const errorId = field.id + 'Error';
+                        const errorElement = document.getElementById(errorId);
+                        if (errorElement) {
+                            errorElement.style.display = 'block';
+                        }
+                        isValid = false;
+                    }
+                });
+                
+                // Validate email format
+                const emailField = document.getElementById('email');
+                if (emailField.value && !emailField.value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                    document.getElementById('emailError').style.display = 'block';
+                    isValid = false;
+                }
+                
+                // Validate phone format (simple validation)
+                const phoneField = document.getElementById('phone');
+                if (phoneField.value && phoneField.value.replace(/\D/g, '').length < 10) {
+                    document.getElementById('phoneError').style.display = 'block';
+                    isValid = false;
+                }
+                
+                // Validate card number (simple validation)
+                const cardNumberField = document.getElementById('cardNumber');
+                if (cardNumberField.value && cardNumberField.value.replace(/\s/g, '').length < 16) {
+                    document.getElementById('cardNumberError').style.display = 'block';
+                    isValid = false;
+                }
+                
+                // Validate expiry date
+                const expiryField = document.getElementById('expiry');
+                if (expiryField.value) {
+                    const [month, year] = expiryField.value.split('/');
+                    const currentDate = new Date();
+                    const currentYear = currentDate.getFullYear() % 100;
+                    const currentMonth = currentDate.getMonth() + 1;
+                    
+                    if (!month || !year || month < 1 || month > 12 || 
+                        (year < currentYear || (year == currentYear && month < currentMonth))) {
+                        document.getElementById('expiryError').style.display = 'block';
+                        isValid = false;
+                    }
+                }
+                
+                // Validate CVV
+                const cvvField = document.getElementById('cvv');
+                if (cvvField.value && cvvField.value.length !== 3) {
+                    document.getElementById('cvvError').style.display = 'block';
+                    isValid = false;
+                }
+                
+                // Validate terms checkbox
+                const termsCheck = document.getElementById('termsCheck');
+                if (!termsCheck.checked) {
+                    document.getElementById('termsCheckError').style.display = 'block';
+                    isValid = false;
+                }
+                
+                return isValid;
+            }
+            
+            // Form submission
+            bookingForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (validateForm()) {
+                    // Show loading indicator
+                    loadingOverlay.style.display = 'flex';
+                    
+                    // Simulate API call
+                    setTimeout(function() {
+                        // Hide loading indicator
+                        loadingOverlay.style.display = 'none';
+                        
+                        // Hide form and show success message
+                        bookingForm.style.display = 'none';
+                        successMessage.style.display = 'block';
+                        
+                        // Generate random booking ID
+                        const bookingId = 'BK-' + Math.floor(10000000 + Math.random() * 90000000);
+                        document.getElementById('bookingId').textContent = bookingId;
+                        
+                        // Scroll to success message
+                        successMessage.scrollIntoView({ behavior: 'smooth' });
+                    }, 2000);
+                }
+            });
+            
+            // Initialize prices
+            updatePrice();
+        });
+    </script>
+</body>
+</html>
