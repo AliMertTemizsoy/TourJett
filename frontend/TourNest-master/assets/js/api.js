@@ -1,5 +1,5 @@
 // Mock modunu kapatın, gerçek API çağrıları yapın
-const MOCK_MODE = false;
+const MOCK_MODE = true;
 const API_BASE_URL = 'http://localhost:5000/api';
 
 // API fonksiyonları
