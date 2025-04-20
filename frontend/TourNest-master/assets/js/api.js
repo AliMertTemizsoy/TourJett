@@ -1,14 +1,12 @@
 // API temel URL'i
 const API_BASE_URL = 'http://localhost:5000'; // Backend portu 5000 varsayılan
 
-// Mock veri modu (backend hazır olmadığında açık olmalı)
-const MOCK_MODE = false; 
+// Mock veri modu (backend hazır olduğuna göre false yapıyoruz)
+const MOCK_MODE = false;
 
 // Araçlar için API çağrıları
 async function getAraclar() {
-    if (MOCK_MODE) {
-        return getMockAraclar();
-    }
+    if (MOCK_MODE) return getMockAraclar();
     
     try {
         const response = await fetch(`${API_BASE_URL}/api/araclar`);
@@ -36,9 +34,7 @@ async function getAracById(id) {
 
 // Personel için API çağrıları
 async function getPersonel() {
-    if (MOCK_MODE) {
-        return getMockPersonel();
-    }
+    if (MOCK_MODE) return getMockPersonel();
     
     try {
         const response = await fetch(`${API_BASE_URL}/api/personel`);
@@ -64,19 +60,99 @@ async function getPersonelById(id) {
     }
 }
 
-// Rezervasyon oluşturma örneği
+// Turlar için API çağrıları
+async function getTurlar() {
+    if (MOCK_MODE) return getMockTurlar();
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/turlar`);
+        return await response.json();
+    } catch (error) {
+        console.error('Turlar getirilirken hata oluştu:', error);
+        return [];
+    }
+}
+
+async function getTurById(id) {
+    if (MOCK_MODE) {
+        const turlar = getMockTurlar();
+        return turlar.find(t => t.id === parseInt(id)) || null;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/tours/${id}`);
+        return await response.json();
+    } catch (error) {
+        console.error(`Tur ID=${id} getirilirken hata oluştu:`, error);
+        return null;
+    }
+}
+
+// Login için API çağrısı
+async function loginUser(email, password) {
+    if (MOCK_MODE) {
+        console.log("Login verileri (mock):", { email, password });
+        return {
+            success: true,
+            message: "Giriş başarılı (test modu)",
+            token: "mock-jwt-token"
+        };
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
+        });
+        return await response.json();
+    } catch (error) {
+        console.error('Giriş sırasında hata oluştu:', error);
+        return { error: 'Giriş yapılamadı' };
+    }
+}
+
+// Signup için API çağrısı
+async function signupUser(email, password) {
+    if (MOCK_MODE) {
+        console.log("Signup verileri (mock):", { email, password });
+        return {
+            success: true,
+            message: "Kayıt başarılı (test modu)",
+            userId: Math.floor(Math.random() * 1000) + 1
+        };
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/signup`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
+        });
+        return await response.json();
+    } catch (error) {
+        console.error('Kayıt sırasında hata oluştu:', error);
+        return { error: 'Kayıt yapılamadı' };
+    }
+}
+
+// Rezervasyon oluşturma API çağrısı
 async function createRezervasyon(rezervasyonData) {
     if (MOCK_MODE) {
         console.log("Rezervasyon verileri (mock):", rezervasyonData);
         return {
             success: true,
             message: "Rezervasyon başarıyla kaydedildi (test modu)",
-            id: Math.floor(Math.random() * 1000) + 1
+            booking_id: "BK-" + (Math.floor(Math.random() * 100000000)).toString().padStart(8, '0')
         };
     }
     
     try {
-        const response = await fetch(`${API_BASE_URL}/api/rezervasyon`, {
+        const response = await fetch(`${API_BASE_URL}/api/book`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -90,24 +166,8 @@ async function createRezervasyon(rezervasyonData) {
     }
 }
 
-// Turlar için API çağrıları
-async function getTurlar() {
-    if (MOCK_MODE) {
-        return getMockTurlar();
-    }
-    
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/turlar`);
-        return await response.json();
-    } catch (error) {
-        console.error('Turlar getirilirken hata oluştu:', error);
-        return [];
-    }
-}
-
 // MOCK VERİLER (Test amaçlı)
 // --------------------------
-
 function getMockAraclar() {
     return [
         {
