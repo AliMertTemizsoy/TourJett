@@ -34,3 +34,4 @@ def add_bolge():
         'message': 'Bölge başarıyla eklendi',
         'id': yeni_bolge.id
     }), 201
+
