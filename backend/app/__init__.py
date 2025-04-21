@@ -34,6 +34,7 @@ def create_app(config=None):
     from app.routes.destinasyon_routes import destinasyon_bp
     from app.routes.kaynak_routes import kaynak_bp
     from app.routes.degerlendirme_routes import degerlendirme_bp
+    from app.routes.tur_paketi_routes import tur_paketi_bp
     
     app.register_blueprint(auth_bp)
     app.register_blueprint(tur_bp)
@@ -43,6 +44,7 @@ def create_app(config=None):
     app.register_blueprint(destinasyon_bp)
     app.register_blueprint(kaynak_bp)
     app.register_blueprint(degerlendirme_bp)
+    app.register_blueprint(tur_paketi_bp)
     
     # Test rotasını ekle
     @app.route('/test-db')

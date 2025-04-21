@@ -1,3 +1,4 @@
+# backend/app/models/degerlendirme.py
 from app import db
 from datetime import datetime
 
@@ -11,8 +12,9 @@ class Degerlendirme(db.Model):
     yorum = db.Column(db.Text)
     olusturma_tarihi = db.Column(db.DateTime, default=datetime.utcnow)
     
-    musteri = db.relationship('Musteri')
-    tur_paketi = db.relationship('TurPaketi')
+    # İlişkileri tam modül yoluyla tanımlayın
+    musteri = db.relationship('app.models.musteri.Musteri')
+    tur_paketi = db.relationship('app.models.tur_paketi.TurPaketi')
     
     def __repr__(self):
         return f'<Degerlendirme {self.id}>'

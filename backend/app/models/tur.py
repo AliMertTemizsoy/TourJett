@@ -1,3 +1,4 @@
+# backend/app/models/tur.py
 from app import db
 from datetime import datetime
 
@@ -59,22 +60,4 @@ class TurSeferi(db.Model):
             'durum': self.durum
         }
 
-class TurPaketi(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    adi = db.Column(db.String(200), nullable=False)
-    aciklama = db.Column(db.Text)
-    indirim_yuzdesi = db.Column(db.Float, default=0)  # Örn. %10 indirim için 10
-    aktif = db.Column(db.Boolean, default=True)
-    baslangic_tarihi = db.Column(db.Date)
-    bitis_tarihi = db.Column(db.Date)
-    
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'adi': self.adi,
-            'aciklama': self.aciklama,
-            'indirim_yuzdesi': self.indirim_yuzdesi,
-            'aktif': self.aktif,
-            'baslangic_tarihi': self.baslangic_tarihi.strftime('%Y-%m-%d') if self.baslangic_tarihi else None,
-            'bitis_tarihi': self.bitis_tarihi.strftime('%Y-%m-%d') if self.bitis_tarihi else None
-        }
+# TurPaketi sınıfını kaldırın veya buradan silin

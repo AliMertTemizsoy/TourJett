@@ -1,5 +1,6 @@
 from app import db
-from app.models.musteri import Musteri, Rezervasyon
+from app.models.musteri import Musteri
+from app.models.rezervasyon import Rezervasyon  # Rezervasyon'u doğru modülden import edin
 from app.models.tur import TurSeferi
 from datetime import datetime
 

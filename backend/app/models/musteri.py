@@ -1,3 +1,4 @@
+# backend/app/models/musteri.py
 from app import db
 from datetime import datetime
 
@@ -14,24 +15,11 @@ class Musteri(db.Model):
     dogum_tarihi = db.Column(db.Date)
     olusturma_tarihi = db.Column(db.DateTime, default=datetime.utcnow)
     
-    rezervasyonlar = db.relationship('Rezervasyon', backref='musteri', lazy=True)
+    # Rezervasyon ilişkisini artık burada tanımlamayacağız
+    # Rezervasyonlar Rezervasyon modelinde tanımlanacak
     
     def __repr__(self):
         return f'<Musteri {self.ad} {self.soyad}>'
 
-class Rezervasyon(db.Model):
-    __tablename__ = 'rezervasyonlar'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    musteri_id = db.Column(db.Integer, db.ForeignKey('musteriler.id'), nullable=False)
-    tur_seferi_id = db.Column(db.Integer, db.ForeignKey('tur_seferleri.id'), nullable=False)
-    kisi_sayisi = db.Column(db.Integer, default=1)
-    toplam_fiyat = db.Column(db.Float)
-    rezervasyon_tarihi = db.Column(db.DateTime, default=datetime.utcnow)
-    durum = db.Column(db.String(50))  # Onaylandı, beklemede, iptal edildi vb.
-    odeme_durumu = db.Column(db.String(50))  # Ödendi, beklemede, kısmi ödeme vb.
-    
-    tur_seferi = db.relationship('TurSeferi')
-    
-    def __repr__(self):
-        return f'<Rezervasyon {self.id}>'
+# Not: Eski Rezervasyon sınıfını kaldırıyoruz
+# class Rezervasyon(db.Model): ...

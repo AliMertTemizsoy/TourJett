@@ -1,7 +1,10 @@
+# backend/app/models/rezervasyon.py
 from app import db
 from datetime import datetime
 
 class Rezervasyon(db.Model):
+    __tablename__ = 'rezervasyonlar'
+    
     id = db.Column(db.Integer, primary_key=True)
     tur_id = db.Column(db.Integer, db.ForeignKey('tur.id'), nullable=False)
     ad = db.Column(db.String(100), nullable=False)
@@ -16,7 +19,7 @@ class Rezervasyon(db.Model):
     olusturma_tarihi = db.Column(db.DateTime, default=datetime.utcnow)
     
     # İlişkiler
-    tur = db.relationship('Tur', backref='rezervasyonlar')
+    tur = db.relationship('app.models.tur.Tur', backref='rezervasyonlar')
     
     def to_dict(self):
         return {
