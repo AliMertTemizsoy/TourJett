@@ -1,4 +1,4 @@
-from flask import Flask, jsonify  # jsonify'ı ekledik
+from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
@@ -9,8 +9,8 @@ migrate = Migrate()
 def create_app(config=None):
     app = Flask(__name__)
     
-    # CORS yapılandırması - daha kapsamlı
-    CORS(app, origins=["http://localhost:8080"], supports_credentials=True)
+    # CORS yapılandırması - geliştirme için basitleştirilmiş
+    CORS(app, resources={r"/*": {"origins": "*"}})
     
     # Konfigürasyon ayarları
     if config:
@@ -36,7 +36,7 @@ def create_app(config=None):
     from app.routes.degerlendirme_routes import degerlendirme_bp
     from app.routes.tur_paketi_routes import tur_paketi_bp
     
-    
+    # Blueprint'leri kaydet
     app.register_blueprint(auth_bp)
     app.register_blueprint(tur_bp)
     app.register_blueprint(bolge_bp)
@@ -51,9 +51,15 @@ def create_app(config=None):
     @app.route('/test-db')
     def test_db():
         try:
-            db.session.execute('SELECT 1')
+            from sqlalchemy import text
+            db.session.execute(text('SELECT 1'))
             return jsonify({"message": "Veritabanı bağlantısı başarılı"})
         except Exception as e:
             return jsonify({"error": str(e)}), 500
     
-    return app  # Bu satır create_app fonksiyonunun en sonunda olmalı
+    # Hello World rotası ekleyelim - CORS testi için
+    @app.route('/hello')
+    def hello():
+        return jsonify({"message": "Hello from Flask!"})
+    
+    return app

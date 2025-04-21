@@ -1,5 +1,5 @@
-// Mock modunu kapatın, gerçek API çağrıları yapın
-const MOCK_MODE = true;
+// Mock modunu kapat, gerçek API çağrıları yap
+const MOCK_MODE = false;
 const API_BASE_URL = 'http://localhost:5000/api';
 
 // API fonksiyonları
@@ -64,9 +64,10 @@ async function getTurlar() {
         ];
     } else {
         try {
-            const response = await fetch(`${API_BASE_URL}/turlar`);
+            // Endpoint'i backend yapınıza uygun olarak güncellendi
+            const response = await fetch(`${API_BASE_URL}/turpaketleri/`);
             if (!response.ok) {
-                throw new Error('API yanıt vermedi');
+                throw new Error(`API yanıt vermedi: ${response.status}`);
             }
             return await response.json();
         } catch (error) {
@@ -94,9 +95,10 @@ async function getTurById(id) {
         };
     } else {
         try {
-            const response = await fetch(`${API_BASE_URL}/turlar/${id}`);
+            // Endpoint'i backend yapınıza uygun olarak güncellendi
+            const response = await fetch(`${API_BASE_URL}/turpaketleri/${id}`);
             if (!response.ok) {
-                throw new Error('API yanıt vermedi');
+                throw new Error(`API yanıt vermedi: ${response.status}`);
             }
             return await response.json();
         } catch (error) {
@@ -117,7 +119,8 @@ async function createRezervasyon(formData) {
         };
     } else {
         try {
-            const response = await fetch(`${API_BASE_URL}/rezervasyon`, {
+            // Endpoint'i backend yapınıza uygun olarak güncellendi
+            const response = await fetch(`${API_BASE_URL}/rezervasyonlar`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -144,7 +147,7 @@ async function loginUser(email, password) {
         return { success: true, message: 'Giriş başarılı' };
     } else {
         try {
-            const response = await fetch(`${API_BASE_URL}/login`, {
+            const response = await fetch(`${API_BASE_URL}/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -165,7 +168,7 @@ async function signupUser(email, password) {
         return { success: true, message: 'Kayıt başarılı! Lütfen giriş yapın.' };
     } else {
         try {
-            const response = await fetch(`${API_BASE_URL}/signup`, {
+            const response = await fetch(`${API_BASE_URL}/auth/signup`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

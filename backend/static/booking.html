@@ -583,32 +583,70 @@
                 return isValid;
             }
             
-            // Form submission
-            bookingForm.addEventListener('submit', function(e) {
-                e.preventDefault();
+                    // Form submission bölümünü şu şekilde değiştirin
+        bookingForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (validateForm()) {
+                // Show loading indicator
+                loadingOverlay.style.display = 'flex';
                 
-                if (validateForm()) {
-                    // Show loading indicator
-                    loadingOverlay.style.display = 'flex';
-                    
-                    // Simulate API call
-                    setTimeout(function() {
-                        // Hide loading indicator
-                        loadingOverlay.style.display = 'none';
-                        
-                        // Hide form and show success message
-                        bookingForm.style.display = 'none';
-                        successMessage.style.display = 'block';
-                        
-                        // Generate random booking ID
-                        const bookingId = 'BK-' + Math.floor(10000000 + Math.random() * 90000000);
-                        document.getElementById('bookingId').textContent = bookingId;
-                        
-                        // Scroll to success message
-                        successMessage.scrollIntoView({ behavior: 'smooth' });
-                    }, 2000);
+                // URL'den tur ID'sini al
+                const urlParams = new URLSearchParams(window.location.search);
+                const turId = urlParams.get('tur_id');
+                
+                if (!turId) {
+                    alert("Tur bilgisi eksik! Ana sayfaya yönlendiriliyorsunuz.");
+                    window.location.href = 'index.html';
+                    return;
                 }
-            });
+                
+                // Rezervasyon verisini oluştur
+                const formData = {
+                    tur_paketi_id: parseInt(turId),
+                    isim: document.getElementById('firstName').value + ' ' + document.getElementById('lastName').value,
+                    email: document.getElementById('email').value,
+                    telefon: document.getElementById('phone').value,
+                    kisi_sayisi: parseInt(document.getElementById('participants').value) || 1,
+                    notlar: document.getElementById('additionalRequests').value,
+                    oda_tipi: document.getElementById('roomType').value
+                };
+                
+                try {
+                    // API isteği gönder
+                    const response = await fetch('http://localhost:5000/api/rezervasyonlar', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Rezervasyon yapılırken bir hata oluştu');
+                    }
+                    
+                    const result = await response.json();
+                    
+                    // Hide loading indicator
+                    loadingOverlay.style.display = 'none';
+                    
+                    // Hide form and show success message
+                    bookingForm.style.display = 'none';
+                    successMessage.style.display = 'block';
+                    
+                    // Set booking ID from API response
+                    document.getElementById('bookingId').textContent = result.rezervasyon_id || 'BK-' + Math.floor(10000000 + Math.random() * 90000000);
+                    
+                    // Scroll to success message
+                    successMessage.scrollIntoView({ behavior: 'smooth' });
+                } catch (error) {
+                    console.error("API hatası:", error);
+                    alert("Rezervasyon yapılırken bir hata oluştu: " + error.message);
+                    loadingOverlay.style.display = 'none';
+                }
+            }
+        });
             
             // Initialize prices
             updatePrice();

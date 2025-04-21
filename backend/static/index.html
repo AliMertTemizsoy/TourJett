@@ -57,7 +57,7 @@
 		<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 		<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 		<![endif]-->
-
+		<script src="assets/js/api.js"></script>	
 	</head>
 
 	<body>
@@ -794,86 +794,104 @@
 		</section><!-- /.discount-offer-->
 		<!--discount-offer end-->
 
-		<!--packages start-->
-		
-		<section id="pack" class="packages">
-			<div class="container">
-				<div class="gallary-header text-center">
-					<h2>
-						special packages
-					</h2>
-					<p>
-						Özel tur paketlerimizle harika bir tatil deneyimi yaşayın
-					</p>
-				</div><!--/.gallery-header-->
-				<div class="packages-content">
-					<div class="row" id="turlar-container">
-						<!-- Turlar burada dinamik olarak yüklenecek -->
-					</div><!--/.row-->
-				</div><!--/.packages-content-->
-			</div><!--/.container-->
-		
-			<!-- Turları dinamik olarak yüklemek için script bloğu -->
+<!--packages start-->
+<section id="pack" class="packages">
+    <div class="container">
+        <div class="gallary-header text-center">
+            <h2>
+                special packages
+            </h2>
+            <p>
+                Özel tur paketlerimizle harika bir tatil deneyimi yaşayın
+            </p>
+        </div><!--/.gallery-header-->
+        <div class="packages-content">
+            <div class="row" id="turlar-container">
+                <!-- Turlar burada dinamik olarak yüklenecek -->
+                <div class="col-md-12 text-center">
+                    <p>Turlar yükleniyor...</p>
+                </div>
+            </div><!--/.row-->
+        </div><!--/.packages-content-->
+    </div><!--/.container-->
+
+    <!-- Turları dinamik olarak yüklemek için script bloğu -->
 			<script>
-				document.addEventListener('DOMContentLoaded', async function() {
-					try {
-						// API'den turları al
-						const turlar = await getTurlar();
-						const container = document.getElementById('turlar-container');
-						
-						if (turlar && turlar.length > 0) {
-							container.innerHTML = ''; // Önceki içeriği temizle
+				document.addEventListener('DOMContentLoaded', function() {
+					const fetchTurlar = async () => {
+						try {
+							// Doğrudan API'ye fetch isteği yap
+							const response = await fetch('http://localhost:5000/api/turpaketleri/');
 							
-							// Turları listele
-							turlar.forEach(tur => {
-								container.innerHTML += `
-									<div class="col-md-4 col-sm-6">
-										<div class="single-package-item">
-											<img src="${tur.resim}" alt="${tur.adi}">
-											<div class="single-package-item-txt">
-												<h3>${tur.adi} <span class="pull-right">${tur.fiyat}₺</span></h3>
-												<div class="packages-para">
-													<p>
-														<span>
-															<i class="fa fa-angle-right"></i> ${tur.sure}
-														</span>
-														<i class="fa fa-angle-right"></i> 5 star accomodation
-													</p>
-													<p>
-														<span>
-															<i class="fa fa-angle-right"></i> transportation
-														</span>
-														<i class="fa fa-angle-right"></i> food facilities
-													</p>
-												</div><!--/.packages-para-->
-												<div class="packages-review">
-													<p>
-														<i class="fa fa-star"></i>
-														<i class="fa fa-star"></i>
-														<i class="fa fa-star"></i>
-														<i class="fa fa-star"></i>
-														<i class="fa fa-star"></i>
-														<span>${Math.floor(Math.random() * 1000) + 100} review</span>
-													</p>
-												</div><!--/.packages-review-->
-												<div class="about-btn">
-													<button class="about-view packages-btn" onclick="window.location.href='book.html?tur_id=${tur.id}'">
-														book now
-													</button>
-												</div><!--/.about-btn-->
-											</div><!--/.single-package-item-txt-->
-										</div><!--/.single-package-item-->
-									</div><!--/.col-->
-								`;
-							});
-						} else {
-							container.innerHTML = '<div class="col-md-12 text-center"><p>Şu an için görüntülenecek tur bulunamadı.</p></div>';
+							if (!response.ok) {
+								throw new Error(`API yanıt vermedi: ${response.status}`);
+							}
+							
+							const data = await response.json();
+							console.log("API'den gelen tur paketleri:", data);
+							
+							const container = document.getElementById('turlar-container');
+							
+							if (data && data.length > 0) {
+								container.innerHTML = ''; // Önceki içeriği temizle
+								
+								// Turları listele
+								data.forEach(tur => {
+									// Tur için rastgele bir resim seç (1-6 arası)
+									const imageNumber = (tur.id % 6) + 1;
+									
+									container.innerHTML += `
+										<div class="col-md-4 col-sm-6">
+											<div class="single-package-item">
+												<img src="assets/images/packages/p${imageNumber}.jpg" alt="${tur.ad}">
+												<div class="single-package-item-txt">
+													<h3>${tur.ad} <span class="pull-right">${tur.fiyat}₺</span></h3>
+													<div class="packages-para">
+														<p>
+															<span>
+																<i class="fa fa-angle-right"></i> ${tur.sure}
+															</span>
+															<i class="fa fa-angle-right"></i> 5 star accomodation
+														</p>
+														<p>
+															<span>
+																<i class="fa fa-angle-right"></i> transportation
+															</span>
+															<i class="fa fa-angle-right"></i> food facilities
+														</p>
+													</div><!--/.packages-para-->
+													<div class="packages-review">
+														<p>
+															<i class="fa fa-star"></i>
+															<i class="fa fa-star"></i>
+															<i class="fa fa-star"></i>
+															<i class="fa fa-star"></i>
+															<i class="fa fa-star"></i>
+															<span>${Math.floor(Math.random() * 1000) + 100} review</span>
+														</p>
+													</div><!--/.packages-review-->
+													<div class="about-btn">
+														<button class="about-view packages-btn" onclick="window.location.href='package-details.html?id=${tur.id}'">
+															book now
+														</button>
+													</div><!--/.about-btn-->
+												</div><!--/.single-package-item-txt-->
+											</div><!--/.single-package-item-->
+										</div><!--/.col-->
+									`;
+								});
+							} else {
+								container.innerHTML = '<div class="col-md-12 text-center"><p>Şu an için görüntülenecek tur bulunamadı.</p></div>';
+							}
+						} catch (error) {
+							console.error("Turlar yüklenirken hata oluştu:", error);
+							document.getElementById('turlar-container').innerHTML = 
+								'<div class="col-md-12 text-center"><p>Turlar yüklenirken bir hata oluştu: ' + error.message + '</p></div>';
 						}
-					} catch (error) {
-						console.error("Turlar yüklenirken hata oluştu:", error);
-						document.getElementById('turlar-container').innerHTML = 
-							'<div class="col-md-12 text-center"><p>Turlar yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.</p></div>';
-					}
+					};
+					
+					// Tur verilerini getir
+					fetchTurlar();
 				});
 			</script>
 		</section><!--/.packages-->
