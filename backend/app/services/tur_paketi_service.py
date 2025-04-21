@@ -1,109 +1,93 @@
-# backend/app/services/tur_paketi_service.py
 from app import db
 from app.models.tur_paketi import TurPaketi, TurDestinasyon
-from app.models.bolge import Destinasyon
+# Diğer importlar...
 
-def get_all_tur_paketleri(aktif_filtresi=True):
-    """Tüm tur paketlerini getirir"""
-    if aktif_filtresi:
-        return TurPaketi.query.filter_by(durum="Aktif").all()
+# Tüm turları getir
+def get_all_tur_paketleri(*args):  # *args ekleyerek esnek parametre yapısı
     return TurPaketi.query.all()
 
-def get_tur_paketi_by_id(id):
-    """ID'ye göre tur paketi getirir"""
-    return TurPaketi.query.get(id)
+# ID'ye göre tur paketi getir
+def get_tur_paketi_by_id(tur_paketi_id):
+    return TurPaketi.query.get(tur_paketi_id)
 
+# Yeni tur paketi oluştur
 def create_tur_paketi(data):
-    """Yeni tur paketi oluşturur"""
-    # Baslangic bölgesinin varlığını kontrol et
-    baslangic_bolge_id = data.get('baslangic_bolge_id')
+    try:
+        # Veri dönüşümlerini güvenli bir şekilde yap
+        sure_value = str(data.get('sure')) if data.get('sure') is not None else None
+        
+        yeni_paket = TurPaketi(
+            ad=data.get('ad'),
+            aciklama=data.get('aciklama'),
+            sure=sure_value,  # String olarak dönüştürülmüş değer
+            fiyat=float(data.get('fiyat', 0)),
+            kapasite=int(data.get('kapasite', 20)),
+            baslangic_bolge_id=int(data.get('baslangic_bolge_id')),
+            durum=data.get('durum', 'Aktif')
+        )
+        db.session.add(yeni_paket)
+        db.session.commit()
+        return yeni_paket
+    except Exception as e:
+        db.session.rollback()
+        print(f"Hata: {str(e)}")
+        raise
+
+# Tur paketini güncelle
+def update_tur_paketi(tur_paketi_id, data):
+    tur_paketi = get_tur_paketi_by_id(tur_paketi_id)
+    if not tur_paketi:
+        return None
     
-    yeni_tur = TurPaketi(
-        ad=data.get('ad'),
-        aciklama=data.get('aciklama'),
-        sure=data.get('sure'),
-        fiyat=data.get('fiyat', 0),
-        kapasite=data.get('kapasite', 20),
-        baslangic_bolge_id=baslangic_bolge_id,
-        durum=data.get('durum', 'Aktif')
+    if 'ad' in data:
+        tur_paketi.ad = data['ad']
+    if 'aciklama' in data:
+        tur_paketi.aciklama = data['aciklama']
+    if 'sure' in data:
+        tur_paketi.sure = str(data['sure'])
+    if 'fiyat' in data:
+        tur_paketi.fiyat = float(data['fiyat'])
+    if 'kapasite' in data:
+        tur_paketi.kapasite = int(data['kapasite'])
+    if 'baslangic_bolge_id' in data:
+        tur_paketi.baslangic_bolge_id = int(data['baslangic_bolge_id'])
+    if 'durum' in data:
+        tur_paketi.durum = data['durum']
+    
+    db.session.commit()
+    return tur_paketi
+
+# Tur paketini sil
+def delete_tur_paketi(tur_paketi_id):
+    tur_paketi = get_tur_paketi_by_id(tur_paketi_id)
+    if not tur_paketi:
+        return False
+    
+    db.session.delete(tur_paketi)
+    db.session.commit()
+    return True
+
+# Eksik olan fonksiyon: Tur destinasyonlarını getir
+def get_tur_destinasyonlari(tur_paketi_id):
+    tur_paketi = get_tur_paketi_by_id(tur_paketi_id)
+    if not tur_paketi:
+        return []
+    return tur_paketi.tur_destinasyonlar
+
+# Diğer fonksiyonlar
+def add_tur_destinasyon(tur_paketi_id, data):
+    tur_paketi = get_tur_paketi_by_id(tur_paketi_id)
+    if not tur_paketi:
+        return None
+    
+    yeni_destinasyon = TurDestinasyon(
+        tur_paketi_id=tur_paketi_id,
+        destinasyon_id=int(data.get('destinasyon_id')),
+        siralama=int(data.get('siralama', 0)),
+        kalma_suresi=int(data.get('kalma_suresi', 1)),
+        not_bilgisi=data.get('not_bilgisi', '')
     )
     
-    db.session.add(yeni_tur)
+    db.session.add(yeni_destinasyon)
     db.session.commit()
-    
-    # Eğer destinasyonlar verilmişse, ekle
-    destinasyonlar = data.get('destinasyonlar', [])
-    for i, dest_data in enumerate(destinasyonlar):
-        dest_id = dest_data.get('destinasyon_id')
-        # Destinasyonun varlığını kontrol et
-        destinasyon = Destinasyon.query.get(dest_id)
-        if not destinasyon:
-            continue
-            
-        tur_dest = TurDestinasyon(
-            tur_paketi_id=yeni_tur.id,
-            destinasyon_id=dest_id,
-            siralama=i + 1,
-            kalma_suresi=dest_data.get('kalma_suresi', 24),
-            not_bilgisi=dest_data.get('not_bilgisi', '')
-        )
-        db.session.add(tur_dest)
-    
-    db.session.commit()
-    return yeni_tur
-
-def update_tur_paketi(id, data):
-    """Tur paketini günceller"""
-    tur = TurPaketi.query.get(id)
-    if not tur:
-        return {'error': 'Tur paketi bulunamadı'}
-    
-    tur.ad = data.get('ad', tur.ad)
-    tur.aciklama = data.get('aciklama', tur.aciklama)
-    tur.sure = data.get('sure', tur.sure)
-    tur.fiyat = data.get('fiyat', tur.fiyat)
-    tur.kapasite = data.get('kapasite', tur.kapasite)
-    tur.durum = data.get('durum', tur.durum)
-    
-    if 'baslangic_bolge_id' in data:
-        tur.baslangic_bolge_id = data['baslangic_bolge_id']
-    
-    # Destinasyonları güncelle
-    if 'destinasyonlar' in data:
-        # Mevcut destinasyonları temizle
-        TurDestinasyon.query.filter_by(tur_paketi_id=id).delete()
-        
-        # Yeni destinasyonları ekle
-        destinasyonlar = data['destinasyonlar']
-        for i, dest_data in enumerate(destinasyonlar):
-            dest_id = dest_data.get('destinasyon_id')
-            # Destinasyonun varlığını kontrol et
-            destinasyon = Destinasyon.query.get(dest_id)
-            if not destinasyon:
-                continue
-                
-            tur_dest = TurDestinasyon(
-                tur_paketi_id=tur.id,
-                destinasyon_id=dest_id,
-                siralama=i + 1,
-                kalma_suresi=dest_data.get('kalma_suresi', 24),
-                not_bilgisi=dest_data.get('not_bilgisi', '')
-            )
-            db.session.add(tur_dest)
-    
-    db.session.commit()
-    return tur
-
-def delete_tur_paketi(id):
-    """Tur paketini siler"""
-    tur = TurPaketi.query.get(id)
-    if not tur:
-        return {'error': 'Tur paketi bulunamadı'}
-    
-    db.session.delete(tur)
-    db.session.commit()
-    return {'message': 'Tur paketi başarıyla silindi'}
-
-def get_tur_destinasyonlari(tur_id):
-    """Tur paketinin destinasyonlarını getirir"""
-    return TurDestinasyon.query.filter_by(tur_paketi_id=tur_id).order_by(TurDestinasyon.siralama).all()
+    return yeni_destinasyon

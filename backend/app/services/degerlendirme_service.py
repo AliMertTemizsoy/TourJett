@@ -1,7 +1,7 @@
 from app import db
 from app.models.degerlendirme import Degerlendirme
 from app.models.musteri import Musteri
-from app.models.tur import TurPaketi
+from app.models.tur_paketi import TurPaketi
 
 def get_all_degerlendirmeler():
     return Degerlendirme.query.all()

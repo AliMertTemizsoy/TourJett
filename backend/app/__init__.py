@@ -36,6 +36,7 @@ def create_app(config=None):
     from app.routes.degerlendirme_routes import degerlendirme_bp
     from app.routes.tur_paketi_routes import tur_paketi_bp
     
+    
     app.register_blueprint(auth_bp)
     app.register_blueprint(tur_bp)
     app.register_blueprint(bolge_bp)

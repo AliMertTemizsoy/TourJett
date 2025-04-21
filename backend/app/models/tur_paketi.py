@@ -8,7 +8,7 @@ class TurPaketi(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ad = db.Column(db.String(100), nullable=False)
     aciklama = db.Column(db.Text)
-    sure = db.Column(db.String(50))
+    sure = db.Column(db.String(50))  # Integer yerine String olarak değiştirildi
     fiyat = db.Column(db.Float, default=0)
     kapasite = db.Column(db.Integer, default=20)
     baslangic_bolge_id = db.Column(db.Integer, db.ForeignKey('bolgeler.id'))
@@ -16,7 +16,7 @@ class TurPaketi(db.Model):
     olusturma_tarihi = db.Column(db.DateTime, default=datetime.utcnow)
     
     # İlişkiler
-    baslangic_bolge = db.relationship('app.models.bolge.Bolge', foreign_keys=[baslangic_bolge_id])
+    baslangic_bolge = db.relationship('Bolge', foreign_keys=[baslangic_bolge_id])
     tur_destinasyonlar = db.relationship('TurDestinasyon', 
                                         backref='tur_paketi', 
                                         lazy=True, 
@@ -36,8 +36,7 @@ class TurDestinasyon(db.Model):
     kalma_suresi = db.Column(db.Integer)
     not_bilgisi = db.Column(db.Text)
     
-    # İlişkiler
-    destinasyon = db.relationship('app.models.bolge.Destinasyon', foreign_keys=[destinasyon_id])
-    
+   # İlişkiler
+    destinasyon = db.relationship('Destinasyon', foreign_keys=[destinasyon_id])
     def __repr__(self):
         return f'<TurDestinasyon {self.id}>'

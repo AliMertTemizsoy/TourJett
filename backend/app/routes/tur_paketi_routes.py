@@ -1,11 +1,9 @@
-# backend/app/routes/tur_paketi_routes.py
 from flask import Blueprint, request, jsonify
 from app.services.tur_paketi_service import (
     get_all_tur_paketleri, get_tur_paketi_by_id,
     create_tur_paketi, update_tur_paketi, delete_tur_paketi,
-    get_tur_destinasyonlari
+    get_tur_destinasyonlari, add_tur_destinasyon
 )
-
 tur_paketi_bp = Blueprint('tur_paketi', __name__, url_prefix='/api/turpaketleri')
 
 @tur_paketi_bp.route('/', methods=['GET'])
@@ -74,26 +72,74 @@ def add_tur_paketi():
         'id': yeni_paket.id
     }), 201
 
+@tur_paketi_bp.route('/<int:id>/destinasyonlar', methods=['POST'])
+def add_destinasyon_to_tur(id):
+    """Tur paketine destinasyon ekler"""
+    # Tur paketinin var olduğunu kontrol et
+    paket = get_tur_paketi_by_id(id)
+    if not paket:
+        return jsonify({'error': 'Tur paketi bulunamadı'}), 404
+    
+    data = request.get_json()
+    # Gerekli alanların varlığını kontrol et
+    if not data.get('destinasyon_id'):
+        return jsonify({'error': 'Destinasyon ID gereklidir'}), 400
+    
+    try:
+        yeni_destinasyon = add_tur_destinasyon(id, data)
+        return jsonify({
+            'message': 'Destinasyon başarıyla eklendi',
+            'destinasyon': {
+                'id': yeni_destinasyon.id,
+                'destinasyon_id': yeni_destinasyon.destinasyon_id,
+                'siralama': yeni_destinasyon.siralama,
+                'kalma_suresi': yeni_destinasyon.kalma_suresi,
+                'not_bilgisi': yeni_destinasyon.not_bilgisi
+            }
+        }), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
 @tur_paketi_bp.route('/<int:id>', methods=['PUT'])
 def update_tur_paketi_route(id):
     """Tur paketini günceller"""
     data = request.get_json()
     result = update_tur_paketi(id, data)
     
-    if isinstance(result, dict) and 'error' in result:
-        return jsonify(result), 404
+    if not result:
+        return jsonify({'error': 'Tur paketi bulunamadı'}), 404
     
-    return jsonify({'message': 'Tur paketi başarıyla güncellendi'})
+    return jsonify({
+        'message': 'Tur paketi başarıyla güncellendi',
+        'tur_paketi': {
+            'id': result.id,
+            'ad': result.ad,
+            'aciklama': result.aciklama,
+            'sure': result.sure,
+            'fiyat': result.fiyat,
+            'kapasite': result.kapasite
+        }
+    })
 
 @tur_paketi_bp.route('/<int:id>', methods=['DELETE'])
 def delete_tur_paketi_route(id):
     """Tur paketini siler"""
-    result = delete_tur_paketi(id)
-    
-    if 'error' in result:
-        return jsonify(result), 404
-    
-    return jsonify(result)
+    # Service fonksiyonunu boolean değer döndürecek şekilde kullanıyoruz
+    tur_paketi = get_tur_paketi_by_id(id)
+    if not tur_paketi:
+        return jsonify({'error': 'Tur paketi bulunamadı'}), 404
+        
+    try:
+        delete_success = delete_tur_paketi(id)
+        if delete_success:
+            return jsonify({
+                'message': 'Tur paketi başarıyla silindi',
+                'id': id
+            })
+        else:
+            return jsonify({'error': 'Tur paketi silinemedi'}), 500
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @tur_paketi_bp.route('/<int:id>/destinasyonlar', methods=['GET'])
 def get_tur_destinasyonlar(id):
