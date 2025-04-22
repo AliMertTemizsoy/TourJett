@@ -7,6 +7,7 @@ class Rezervasyon(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     tur_id = db.Column(db.Integer, db.ForeignKey('tur.id'), nullable=False)
+    musteri_id = db.Column(db.Integer, db.ForeignKey('musteriler.id'), nullable=True)
     ad = db.Column(db.String(100), nullable=False)
     soyad = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), nullable=False)
@@ -19,7 +20,8 @@ class Rezervasyon(db.Model):
     olusturma_tarihi = db.Column(db.DateTime, default=datetime.utcnow)
     
     # İlişkiler
-    tur = db.relationship('app.models.tur.Tur', backref='rezervasyonlar')
+    tur = db.relationship('Tur', backref='rezervasyonlar')
+    musteri = db.relationship('Musteri', backref='rezervasyonlar')
     
     def to_dict(self):
         return {

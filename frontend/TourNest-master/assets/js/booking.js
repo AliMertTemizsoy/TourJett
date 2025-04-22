@@ -16,20 +16,25 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // Tur bilgilerini dinamik olarak yükle
     if (turId) {
-        const tur = await getTurById(turId);
-        if (tur) {
-            tourDetails.innerHTML = `
-                <h2>${tur.adi}</h2>
-                <p><strong>Date:</strong> ${tur.baslangic_tarihi} - ${tur.bitis_tarihi}</p>
-                <p><strong>Duration:</strong> ${tur.sure}</p>
-                <p><strong>Starting Point:</strong> ${tur.baslangic_noktasi}</p>
-                <p><strong>Price:</strong> $${tur.fiyat} per person</p>
-            `;
-            // Fiyatı güncellemek için basePrice'ı backend'den gelen fiyatla değiştir
-            window.basePrice = tur.fiyat;
-            updatePrice();
-        } else {
-            tourDetails.innerHTML = '<p>Tur bilgileri yüklenirken bir hata oluştu.</p>';
+        try {
+            const tur = await getTurById(turId);
+            if (tur) {
+                console.log("Yüklenen tur bilgisi:", tur);
+                tourDetails.innerHTML = `
+                    <h2>${tur.ad || tur.adi}</h2>
+                    <p><strong>Duration:</strong> ${tur.sure}</p>
+                    <p><strong>Starting Point:</strong> ${tur.baslangic_bolge || 'Belirlenmedi'}</p>
+                    <p><strong>Price:</strong> ${tur.fiyat}₺ per person</p>
+                `;
+                // Fiyatı güncellemek için basePrice'ı backend'den gelen fiyatla değiştir
+                window.basePrice = tur.fiyat;
+                updatePrice();
+            } else {
+                tourDetails.innerHTML = '<p>Tur bilgileri yüklenirken bir hata oluştu.</p>';
+            }
+        } catch (error) {
+            console.error("Tur bilgilerini getirirken hata:", error);
+            tourDetails.innerHTML = `<p>Tur bilgileri yüklenirken bir hata oluştu: ${error.message}</p>`;
         }
     }
 
@@ -56,41 +61,47 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
 
         participantsCount.textContent = participants;
-        accommodationFee.textContent = '$' + roomUpgrade;
+        accommodationFee.textContent = '₺' + roomUpgrade;
 
         const total = (basePrice * participants) + roomUpgrade + bookingFee;
-        totalPrice.textContent = '$' + total.toLocaleString();
+        totalPrice.textContent = '₺' + total.toLocaleString();
     }
 
     // Event listeners for price updates
-    participantsSelect.addEventListener('change', updatePrice);
-    roomTypeSelect.addEventListener('change', updatePrice);
+    if (participantsSelect) participantsSelect.addEventListener('change', updatePrice);
+    if (roomTypeSelect) roomTypeSelect.addEventListener('change', updatePrice);
 
     // Format card number input
     const cardNumberInput = document.getElementById('cardNumber');
-    cardNumberInput.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\D/g, '');
-        if (value.length > 0) {
-            value = value.match(new RegExp('.{1,4}', 'g')).join(' ');
-        }
-        e.target.value = value;
-    });
+    if (cardNumberInput) {
+        cardNumberInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 0) {
+                value = value.match(new RegExp('.{1,4}', 'g')).join(' ');
+            }
+            e.target.value = value;
+        });
+    }
 
     // Format expiry date
     const expiryInput = document.getElementById('expiry');
-    expiryInput.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\D/g, '');
-        if (value.length > 2) {
-            value = value.slice(0, 2) + '/' + value.slice(2, 4);
-        }
-        e.target.value = value;
-    });
+    if (expiryInput) {
+        expiryInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 2) {
+                value = value.slice(0, 2) + '/' + value.slice(2, 4);
+            }
+            e.target.value = value;
+        });
+    }
 
     // Limit CVV to 3 digits
     const cvvInput = document.getElementById('cvv');
-    cvvInput.addEventListener('input', function(e) {
-        e.target.value = e.target.value.replace(/\D/g, '').slice(0, 3);
-    });
+    if (cvvInput) {
+        cvvInput.addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '').slice(0, 3);
+        });
+    }
 
     // Form validation
     function validateForm() {
@@ -117,28 +128,28 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         // Validate email format
         const emailField = document.getElementById('email');
-        if (emailField.value && !emailField.value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+        if (emailField && emailField.value && !emailField.value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
             document.getElementById('emailError').style.display = 'block';
             isValid = false;
         }
 
         // Validate phone format (simple validation)
         const phoneField = document.getElementById('phone');
-        if (phoneField.value && phoneField.value.replace(/\D/g, '').length < 10) {
+        if (phoneField && phoneField.value && phoneField.value.replace(/\D/g, '').length < 10) {
             document.getElementById('phoneError').style.display = 'block';
             isValid = false;
         }
 
         // Validate card number (simple validation)
         const cardNumberField = document.getElementById('cardNumber');
-        if (cardNumberField.value && cardNumberField.value.replace(/\s/g, '').length < 16) {
+        if (cardNumberField && cardNumberField.value && cardNumberField.value.replace(/\s/g, '').length < 16) {
             document.getElementById('cardNumberError').style.display = 'block';
             isValid = false;
         }
 
         // Validate expiry date
         const expiryField = document.getElementById('expiry');
-        if (expiryField.value) {
+        if (expiryField && expiryField.value) {
             const [month, year] = expiryField.value.split('/');
             const currentDate = new Date();
             const currentYear = currentDate.getFullYear() % 100;
@@ -153,14 +164,14 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         // Validate CVV
         const cvvField = document.getElementById('cvv');
-        if (cvvField.value && cvvField.value.length !== 3) {
+        if (cvvField && cvvField.value && cvvField.value.length !== 3) {
             document.getElementById('cvvError').style.display = 'block';
             isValid = false;
         }
 
         // Validate terms checkbox
         const termsCheck = document.getElementById('termsCheck');
-        if (!termsCheck.checked) {
+        if (termsCheck && !termsCheck.checked) {
             document.getElementById('termsCheckError').style.display = 'block';
             isValid = false;
         }
@@ -169,50 +180,65 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     // Form submission with API call
-    bookingForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
+    if (bookingForm) {
+        bookingForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            console.log("Form gönderiliyor...");
 
-        if (validateForm()) {
-            // Show loading indicator
-            loadingOverlay.style.display = 'flex';
+            if (validateForm()) {
+                try {
+                    // Show loading indicator
+                    if (loadingOverlay) loadingOverlay.style.display = 'flex';
 
-            // Form verilerini topla
-            const formData = {
-                turId: turId,
-                firstName: document.getElementById('firstName').value,
-                lastName: document.getElementById('lastName').value,
-                email: document.getElementById('email').value,
-                phone: document.getElementById('phone').value,
-                participants: participantsSelect.value,
-                roomType: roomTypeSelect.value,
-                additionalRequests: document.getElementById('additionalRequests').value,
-                cardName: document.getElementById('cardName').value,
-                cardNumber: document.getElementById('cardNumber').value,
-                expiry: document.getElementById('expiry').value,
-                cvv: document.getElementById('cvv').value
-            };
+                    // Form verilerini backend'in beklediği formatta hazırla
+                    const formData = {
+                        tur_paketi_id: parseInt(turId),
+                        ad: document.getElementById('firstName').value,
+                        soyad: document.getElementById('lastName').value,
+                        email: document.getElementById('email').value,
+                        telefon: document.getElementById('phone').value,
+                        tc_kimlik: document.getElementById('nationalId') ? document.getElementById('nationalId').value : "",
+                        adres: document.getElementById('address') ? document.getElementById('address').value : "",
+                        kisi_sayisi: parseInt(participantsSelect.value) || 1,
+                        notlar: document.getElementById('additionalRequests') ? document.getElementById('additionalRequests').value : ""
+                    };
 
-            // Backend'e POST isteği gönder
-            const response = await createRezervasyon(formData);
+                    console.log("Backend'e gönderilecek veri:", formData);
 
-            // Hide loading indicator
-            loadingOverlay.style.display = 'none';
+                    // Backend'e POST isteği gönder
+                    const response = await createRezervasyon(formData);
+                    console.log("API Yanıtı:", response);
 
-            if (response.error) {
-                alert(response.error || 'Rezervasyon sırasında bir hata oluştu.');
-            } else {
-                // Hide form and show success message
-                bookingForm.style.display = 'none';
-                successMessage.style.display = 'block';
+                    // Hide loading indicator
+                    if (loadingOverlay) loadingOverlay.style.display = 'none';
 
-                // Booking ID'yi göster
-                document.getElementById('bookingId').textContent = response.booking_id;
-
-                // Scroll to success message
-                successMessage.scrollIntoView({ behavior: 'smooth' });
+                    if (response.error) {
+                        alert(response.error || 'Rezervasyon sırasında bir hata oluştu.');
+                    } else {
+                        // Hide form and show success message
+                        bookingForm.style.display = 'none';
+                        if (successMessage) {
+                            successMessage.style.display = 'block';
+                            // Booking ID'yi göster
+                            const bookingIdElement = document.getElementById('bookingId');
+                            if (bookingIdElement) {
+                                bookingIdElement.textContent = response.rezervasyon_id || response.id || 'BK-' + Math.floor(Math.random() * 10000000);
+                            }
+                            // Scroll to success message
+                            successMessage.scrollIntoView({ behavior: 'smooth' });
+                        } else {
+                            alert("Rezervasyonunuz başarıyla oluşturuldu! Rezervasyon ID: " + 
+                                 (response.rezervasyon_id || response.id || 'BK-' + Math.floor(Math.random() * 10000000)));
+                        }
+                    }
+                } catch (error) {
+                    console.error("Rezervasyon hatası:", error);
+                    if (loadingOverlay) loadingOverlay.style.display = 'none';
+                    alert("Rezervasyon sırasında bir hata oluştu: " + error.message);
+                }
             }
-        }
-    });
+        });
+    }
 
     // Initialize prices
     updatePrice();

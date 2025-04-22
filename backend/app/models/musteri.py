@@ -8,8 +8,8 @@ class Musteri(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ad = db.Column(db.String(50), nullable=False)
     soyad = db.Column(db.String(50), nullable=False)
-    email = db.Column(db.String(100), unique=True)
-    telefon = db.Column(db.String(20))
+    email = db.Column(db.String(100), unique=False, nullable=True)  # unique ve nullable değiştirildi
+    telefon = db.Column(db.String(20), nullable=True)  # nullable=True eklendi
     adres = db.Column(db.String(200))
     tc_kimlik = db.Column(db.String(11))
     dogum_tarihi = db.Column(db.Date)

@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+
+<head>
+    <!-- META DATA -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--font-family-->
+    <link href="https://fonts.googleapis.com/css?family=Rufina:400,700" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900" rel="stylesheet" />
+
+    <!-- TITLE OF SITE -->
+    <title>Tur Detayları - TourNest</title>
+
+    <!-- favicon img -->
+    <link rel="shortcut icon" type="image/icon" href="assets/logo/favicon.png" />
+
+    <!--font-awesome.min.css-->
+    <link rel="stylesheet" href="assets/css/font-awesome.min.css" />
+
+    <!--animate.css-->
+    <link rel="stylesheet" href="assets/css/animate.css" />
+
+    <!--hover.css-->
+    <link rel="stylesheet" href="assets/css/hover-min.css">
+
+    <!--datepicker.css-->
+    <link rel="stylesheet" href="assets/css/datepicker.css">
+
+    <!--owl.carousel.css-->
+    <link rel="stylesheet" href="assets/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="assets/css/owl.theme.default.min.css" />
+
+    <!-- range css-->
+    <link rel="stylesheet" href="assets/css/jquery-ui.min.css" />
+
+    <!--bootstrap.min.css-->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
+
+    <!-- bootsnav -->
+    <link rel="stylesheet" href="assets/css/bootsnav.css" />
+
+    <!--style.css-->
+    <link rel="stylesheet" href="assets/css/style.css" />
+
+    <!--responsive.css-->
+    <link rel="stylesheet" href="assets/css/responsive.css" />
+
+    <script src="assets/js/api.js"></script>
+
+    <style>
+        .package-details {
+            padding-top: 100px;
+            padding-bottom: 60px;
+        }
+        .package-image {
+            width: 100%;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .package-title {
+            margin-bottom: 20px;
+            color: #00d8ff;
+        }
+        .package-description {
+            margin-bottom: 30px;
+        }
+        .package-info {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        .package-info p {
+            margin-bottom: 10px;
+        }
+        .package-info i {
+            margin-right: 10px;
+            color: #00d8ff;
+        }
+        .package-tabs {
+            margin-top: 40px;
+        }
+        .package-tabs .nav-tabs {
+            border-bottom: 2px solid #00d8ff;
+        }
+        .package-tabs .nav-tabs > li > a {
+            border-radius: 0;
+            color: #555;
+        }
+        .package-tabs .nav-tabs > li.active > a {
+            color: #00d8ff;
+            background-color: transparent;
+            border: none;
+            border-bottom: 2px solid #00d8ff;
+        }
+        .package-booking {
+            background-color: #f9f9f9;
+            padding: 25px;
+            border-radius: 5px;
+        }
+        .package-price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00d8ff;
+            margin-bottom: 20px;
+        }
+        .loading-spinner {
+            text-align: center;
+            padding: 50px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header bölümü -->
+    <header class="top-area">
+        <div class="header-area">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-2">
+                        <div class="logo">
+                            <a href="index.html">
+                                tour<span>Nest</span>
+                            </a>
+                        </div><!-- /.logo-->
+                    </div><!-- /.col-->
+                    <div class="col-sm-10">
+                        <div class="main-menu">
+
+                            <!-- Brand and toggle get grouped for better mobile display -->
+                            <div class="navbar-header">
+                                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                                    <i class="fa fa-bars"></i>
+                                </button><!-- / button-->
+                            </div><!-- /.navbar-header-->
+                            <div class="collapse navbar-collapse">
+                                <ul class="nav navbar-nav navbar-right">
+                                    <li class="smooth-menu"><a href="index.html#home">home</a></li>
+                                    <li class="smooth-menu"><a href="index.html#gallery">Destination</a></li>
+                                    <li class="smooth-menu"><a href="index.html#pack">Packages </a></li>
+                                    <li class="smooth-menu"><a href="index.html#spo">Special Offers</a></li>
+                                    <li class="smooth-menu"><a href="index.html#blog">blog</a></li>
+                                    <li class="smooth-menu"><a href="index.html#subs">subscription</a></li>
+                                    <li>
+                                        <button class="book-btn" onclick="location.href='booking.html'">book now
+                                        </button>
+                                    </li><!--/.project-btn-->
+                                </ul>
+                            </div><!-- /.navbar-collapse -->
+                        </div><!-- /.main-menu-->
+                    </div><!-- /.col-->
+                </div><!-- /.row -->
+                <div class="home-border"></div><!-- /.home-border-->
+            </div><!-- /.container-->
+        </div><!-- /.header-area -->
+    </header><!-- /.top-area-->
+
+    <!-- Tur Detay Bölümü -->
+    <section class="package-details">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12" id="loading-spinner">
+                    <div class="loading-spinner">
+                        <i class="fa fa-spinner fa-spin fa-3x"></i>
+                        <h3>Tur detayları yükleniyor...</h3>
+                    </div>
+                </div>
+
+                <div id="package-details-content" style="display: none;">
+                    <div class="col-md-8">
+                        <div id="package-image-container">
+                            <!-- Resim buraya yüklenecek -->
+                        </div>
+
+                        <h2 class="package-title" id="package-title"></h2>
+
+                        <div class="package-info">
+                            <p><i class="fa fa-clock-o"></i> <span id="package-duration"></span></p>
+                            <p><i class="fa fa-map-marker"></i> <span id="package-location"></span></p>
+                            <p><i class="fa fa-users"></i> <span id="package-capacity"></span> kişilik kontenjan</p>
+                        </div>
+
+                        <div class="package-description" id="package-description">
+                            <!-- Açıklama buraya yüklenecek -->
+                        </div>
+
+                        <!-- Sekmeler -->
+                        <div class="package-tabs">
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active">
+                                    <a href="#details" aria-controls="details" role="tab" data-toggle="tab">Detaylar</a>
+                                </li>
+                                <li role="presentation">
+                                    <a href="#program" aria-controls="program" role="tab" data-toggle="tab">Program</a>
+                                </li>
+                                <li role="presentation">
+                                    <a href="#accommodation" aria-controls="accommodation" role="tab" data-toggle="tab">Konaklama</a>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content">
+                                <div role="tabpanel" class="tab-pane active" id="details">
+                                    <div class="tab-inner-content">
+                                        <p>Bu özel tur paketi ile unutulmaz bir tatil deneyimi yaşayacaksınız. Konforlu ulaşım araçları, profesyonel rehberlerimiz eşliğinde geziler ve muhteşem manzaralar sizi bekliyor.</p>
+                                        <ul>
+                                            <li>Profesyonel rehberlik hizmeti</li>
+                                            <li>Konforlu konaklama</li>
+                                            <li>Belirtilen öğünlerde yemekler</li>
+                                            <li>Tur programındaki tüm geziler</li>
+                                            <li>Müze ve ören yeri giriş ücretleri</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane" id="program">
+                                    <div class="tab-inner-content" id="program-content">
+                                        <!-- Program içeriği buraya yüklenecek -->
+                                        <p>Detaylı tur programı yakında eklenecektir.</p>
+                                    </div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane" id="accommodation">
+                                    <div class="tab-inner-content">
+                                        <p>Tüm konaklamamız 4 veya 5 yıldızlı otellerde gerçekleşecektir. Odalar 2 kişiliktir ve özel banyoludur. Tek kişilik oda için fark ödenmesi gerekir.</p>
+                                        <p>Konaklama yapılacak örnek oteller:</p>
+                                        <ul>
+                                            <li>Grand Hotel</li>
+                                            <li>Marmara Resort</li>
+                                            <li>Blue Palace Hotel</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="package-booking">
+                            <h3>Rezervasyon</h3>
+                            <div class="package-price" id="package-price"></div>
+                            <p><i class="fa fa-calendar"></i> <span id="tour-duration"></span></p>
+                            <button class="about-view packages-btn" id="booking-button" style="width: 100%;">
+                                Rezervasyon Yap
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer bölümü -->
+    <footer class="footer-copyright">
+        <div class="container">
+            <div class="footer-content">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="single-footer-item">
+                            <div class="footer-logo">
+                                <a href="index.html">
+                                    tour<span>Nest</span>
+                                </a>
+                                <p>
+                                    best travel agency
+                                </p>
+                            </div>
+                        </div><!--/.single-footer-item-->
+                    </div><!--/.col-->
+
+                    <div class="col-sm-3">
+                        <div class="single-footer-item">
+                            <h2>link</h2>
+                            <div class="single-footer-txt">
+                                <p><a href="#">home</a></p>
+                                <p><a href="#">destination</a></p>
+                                <p><a href="#">spacial packages</a></p>
+                                <p><a href="#">special offers</a></p>
+                                <p><a href="#">blog</a></p>
+                                <p><a href="#">contacts</a></p>
+                            </div><!--/.single-footer-txt-->
+                        </div><!--/.single-footer-item-->
+                    </div><!--/.col-->
+
+                    <div class="col-sm-3">
+                        <div class="single-footer-item">
+                            <h2>popular destination</h2>
+                            <div class="single-footer-txt">
+                                <p><a href="#">china</a></p>
+                                <p><a href="#">venezuela</a></p>
+                                <p><a href="#">brazil</a></p>
+                                <p><a href="#">australia</a></p>
+                                <p><a href="#">london</a></p>
+                            </div><!--/.single-footer-txt-->
+                        </div><!--/.single-footer-item-->
+                    </div><!--/.col-->
+
+                    <div class="col-sm-3">
+                        <div class="single-footer-item text-center">
+                            <h2 class="text-left">contacts</h2>
+                            <div class="single-footer-txt text-left">
+                                <p>+1 (300) 1234 6543</p>
+                                <p class="foot-email"><a href="#">info@tnest.com</a></p>
+                                <p>North Warnner Park 336/A</p>
+                                <p>Newyork, USA</p>
+                            </div><!--/.single-footer-txt-->
+                        </div><!--/.single-footer-item-->
+                    </div><!--/.col-->
+                </div><!--/.row-->
+            </div><!--/.footer-content-->
+            <hr>
+            <div class="foot-icons ">
+                <ul class="footer-social-links list-inline list-unstyled">
+                    <li><a href="#" target="_blank" class="foot-icon-bg-1"><i class="fa fa-facebook"></i></a></li>
+                    <li><a href="#" target="_blank" class="foot-icon-bg-2"><i class="fa fa-twitter"></i></a></li>
+                    <li><a href="#" target="_blank" class="foot-icon-bg-3"><i class="fa fa-instagram"></i></a></li>
+                </ul>
+                <p>&copy; 2017 <a href="https://www.themesine.com">ThemeSINE</a>. All Right Reserved</p>
+            </div><!--/.foot-icons-->
+            <div id="scroll-Top">
+                <i class="fa fa-angle-double-up return-to-top" id="scroll-top" data-toggle="tooltip" data-placement="top" title="" data-original-title="Back to Top" aria-hidden="true"></i>
+            </div><!--/.scroll-Top-->
+        </div><!-- /.container-->
+    </footer><!-- /.footer-copyright-->
+
+    <!-- JavaScript dosyaları -->
+    <script src="assets/js/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/bootsnav.js"></script>
+    <script src="assets/js/jquery.filterizr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+    <script src="assets/js/jquery-ui.min.js"></script>
+    <script src="assets/js/jquery.counterup.min.js"></script>
+    <script src="assets/js/waypoints.min.js"></script>
+    <script src="assets/js/owl.carousel.min.js"></script>
+    <script src="assets/js/jquery.sticky.js"></script>
+    <script src="assets/js/datepicker.js"></script>
+    <script src="assets/js/custom.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // URL'den tur ID'sini al
+                const urlParams = new URLSearchParams(window.location.search);
+                const turId = urlParams.get('id');
+                
+                if (!turId) {
+                    throw new Error('Tur ID bulunamadı!');
+                }
+                
+                // Mock Mode kapalıysa API'den, açıksa mock veri al
+                let tur;
+                try {
+                    if (window.getTurById) {
+                        tur = await window.getTurById(turId);
+                    } else {
+                        // Doğrudan API'ye istek yap
+                        const response = await fetch(`http://localhost:5000/api/turpaketleri/${turId}`);
+                        if (!response.ok) throw new Error(`Tur bulunamadı: ${response.status}`);
+                        tur = await response.json();
+                    }
+                    
+                    console.log("Tur detayları:", tur);
+                    
+                    // Loading spinner'ı gizle, içeriği göster
+                    document.getElementById('loading-spinner').style.display = 'none';
+                    document.getElementById('package-details-content').style.display = 'block';
+                    
+                    // Tur bilgilerini sayfaya yerleştir
+                    document.getElementById('package-title').textContent = tur.ad;
+                    document.getElementById('package-duration').textContent = tur.sure;
+                    document.getElementById('package-location').textContent = tur.baslangic_bolge || 'Belirlenmedi';
+                    document.getElementById('package-capacity').textContent = tur.kapasite || 'Sınırsız';
+                    document.getElementById('package-price').textContent = `${tur.fiyat}₺`;
+                    document.getElementById('tour-duration').textContent = tur.sure;
+                    
+                    if (tur.aciklama) {
+                        document.getElementById('package-description').innerHTML = `<p>${tur.aciklama}</p>`;
+                    }
+                    
+                    // Rastgele bir resim seç (1-6 arası)
+                    const imageNumber = (tur.id % 6) + 1;
+                    document.getElementById('package-image-container').innerHTML = `
+                        <img src="assets/images/packages/p${imageNumber}.jpg" alt="${tur.ad}" class="package-image">
+                    `;
+                    
+                    // Rezervasyon butonuna tıklama olayı ekle
+                    document.getElementById('booking-button').addEventListener('click', function() {
+                        window.location.href = `booking.html?tur_id=${tur.id}`;
+                    });
+                    
+                    // Programı oluştur (eğer destinasyonlar varsa)
+                    if (tur.destinasyonlar && tur.destinasyonlar.length > 0) {
+                        let programHTML = '<h4>Gün Gün Programımız</h4><div class="program-days">';
+                        
+                        tur.destinasyonlar.forEach((dest, index) => {
+                            programHTML += `
+                                <div class="program-day">
+                                    <h5>Gün ${index + 1}: ${dest.destinasyon_adi}</h5>
+                                    <p>${dest.not_bilgisi || 'Bu gün için detaylı program bilgisi hazırlanıyor.'}</p>
+                                </div>
+                            `;
+                        });
+                        
+                        programHTML += '</div>';
+                        document.getElementById('program-content').innerHTML = programHTML;
+                    }
+                    
+                } catch (error) {
+                    console.error("Tur detayları alınırken hata:", error);
+                    document.getElementById('loading-spinner').innerHTML = `
+                        <div class="alert alert-danger">
+                            <h3>Hata!</h3>
+                            <p>Tur detayları yüklenirken bir sorun oluştu: ${error.message}</p>
+                            <a href="index.html" class="btn btn-primary">Ana Sayfaya Dön</a>
+                        </div>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error("Genel hata:", error);
+                document.getElementById('loading-spinner').innerHTML = `
+                    <div class="alert alert-danger">
+                        <h3>Hata!</h3>
+                        <p>Beklenmeyen bir hata oluştu: ${error.message}</p>
+                        <a href="index.html" class="btn btn-primary">Ana Sayfaya Dön</a>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+
+</html>

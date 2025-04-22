@@ -379,27 +379,52 @@ async function getDegerlendirmeler(turId) {
 }
 
 // Değerlendirme ekleyen fonksiyon
-async function createDegerlendirme(data) {
+// veya c:\Users\alime\TourJett\backend\static\js\api.js
+// veya c:\Users\alime\TourJett\backend\static\js\api.js
+async function createRezervasyon(formData) {
     if (MOCK_MODE) {
-        return { success: true, message: 'Değerlendirmeniz için teşekkürler!' };
+        // Mock veriler...
+        return {
+            success: true,
+            message: 'Rezervasyon başarıyla oluşturuldu',
+            booking_id: 'BK-' + Math.floor(Math.random() * 10000000)
+        };
     } else {
         try {
-            const response = await fetch(`${API_BASE_URL}/degerlendirmeler`, {
+            // Doğru alan adlarıyla veriyi hazırla
+            const apiData = {
+                // Backend modeline göre doğru alan adı: tur_id
+                tur_id: parseInt(formData.tur_paketi_id),
+                ad: formData.ad,
+                soyad: formData.soyad,
+                email: formData.email,
+                telefon: formData.telefon,
+                kisi_sayisi: parseInt(formData.kisi_sayisi || 1),
+                tarih: new Date().toISOString().split('T')[0],
+                oda_tipi: formData.roomType || 'standard', 
+                ozel_istekler: formData.notlar || '',
+                // Bildiğiniz bir müşteri ID'sini direkt ekleyin
+                musteri_id: 3
+            };
+
+            console.log("Backend'e gönderilen veri:", apiData);
+            
+            const response = await fetch(`${API_BASE_URL}/rezervasyonlar`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify(apiData)
             });
             
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.error || 'Değerlendirme eklenemedi');
+                throw new Error(errorData.error || 'Rezervasyon oluşturulamadı');
             }
             
             return await response.json();
         } catch (error) {
-            console.error('Değerlendirme ekleme hatası:', error);
+            console.error('Rezervasyon oluşturma hatası:', error);
             throw error;
         }
     }

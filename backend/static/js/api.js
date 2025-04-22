@@ -115,17 +115,33 @@ async function createRezervasyon(formData) {
         return {
             success: true,
             message: 'Rezervasyon başarıyla oluşturuldu',
-            booking_id: 'BK-' + Math.floor(Math.random() * 10000000)
+            rezervasyon_id: 'REZ-' + Math.floor(Math.random() * 10000000)
         };
     } else {
         try {
-            // Endpoint'i backend yapınıza uygun olarak güncellendi
+            // Frontend formundan gelen veriler 
+            const apiData = {
+                // Hem tur_id hem de tur_paketi_id gönder (esneklik için)
+                tur_paketi_id: parseInt(formData.tur_paketi_id),
+                tur_id: parseInt(formData.tur_paketi_id), 
+                ad: formData.ad,
+                soyad: formData.soyad,
+                email: formData.email,
+                telefon: formData.telefon,
+                kisi_sayisi: parseInt(formData.kisi_sayisi || 1),
+                // Bugünün tarihi otomatik eklensin
+                tarih: new Date().toISOString().split('T')[0], 
+                notlar: formData.notlar || ''
+            };
+
+            console.log("Backend'e gönderilen veri:", apiData);
+            
             const response = await fetch(`${API_BASE_URL}/rezervasyonlar`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(apiData)
             });
             
             if (!response.ok) {
