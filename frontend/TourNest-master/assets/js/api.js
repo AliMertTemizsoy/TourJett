@@ -430,6 +430,9 @@ async function createRezervasyon(formData) {
     }
 }
 
+
+
+
 // Export fonksiyonları
 window.getTurlar = getTurlar;
 window.getTurById = getTurById;

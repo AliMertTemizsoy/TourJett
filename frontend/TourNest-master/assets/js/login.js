@@ -1,61 +1,119 @@
-// Formlar arasında geçiş
-const switchers = [...document.querySelectorAll('.switcher')];
+// Reusable function to switch forms
+function switchToForm(switcherClass) {
+    document.querySelectorAll('.switcher').forEach(item => 
+        item.parentElement.classList.remove('is-active')
+    );
+    document.querySelector(switcherClass).parentElement.classList.add('is-active');
+}
 
-switchers.forEach(item => {
+// Form switching
+document.querySelectorAll('.switcher').forEach(item => {
     item.addEventListener('click', function() {
-        switchers.forEach(item => item.parentElement.classList.remove('is-active'));
-        this.parentElement.classList.add('is-active');
+        switchToForm(`.${this.className.split(' ')[1]}`);
     });
 });
 
-// Login ve Signup işlemleri
+// Login and Signup handlers
 document.addEventListener('DOMContentLoaded', function() {
-    // Login formu
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // Login form
     const loginForm = document.querySelector('.form-login');
     if (loginForm) {
         loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
+            const loginButton = loginForm.querySelector('.btn-login');
+            const errorDiv = loginForm.querySelector('.error-message') || document.createElement('div');
 
-            const response = await loginUser(email, password);
+            // Validation
+            if (!emailRegex.test(email)) {
+                errorDiv.textContent = 'Geçerli bir e-posta adresi girin!';
+                errorDiv.style.color = 'red';
+                loginForm.appendChild(errorDiv);
+                return;
+            }
 
-            if (response.error) {
-                alert(response.error || 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.');
-            } else {
-                alert(response.message || 'Giriş başarılı!');
-                // Başarılı girişten sonra yönlendirme (örneğin, ana sayfaya)
-                window.location.href = 'index.html';
+            // Loading state
+            loginButton.disabled = true;
+            loginButton.textContent = 'Yükleniyor...';
+
+            try {
+                const response = await loginUser(email, password);
+                if (response.error) {
+                    errorDiv.textContent = response.error || 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.';
+                    errorDiv.style.color = 'red';
+                    loginForm.appendChild(errorDiv);
+                } else {
+                    alert(response.message || 'Giriş başarılı!');
+                    window.location.href = 'index.html';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Bir hata oluştu. Lütfen tekrar deneyin.';
+                errorDiv.style.color = 'red';
+                loginForm.appendChild(errorDiv);
+                console.error('Login error:', error);
+            } finally {
+                loginButton.disabled = false;
+                loginButton.textContent = 'Login';
             }
         });
     }
 
-    // Signup formu
+    // Signup form
     const signupForm = document.querySelector('.form-signup');
     if (signupForm) {
         signupForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-
             const email = document.getElementById('signup-email').value;
             const password = document.getElementById('signup-password').value;
             const confirmPassword = document.getElementById('signup-password-confirm').value;
+            const signupButton = signupForm.querySelector('.btn-signup');
+            const errorDiv = signupForm.querySelector('.error-message') || document.createElement('div');
 
-            // Şifre doğrulama
+            // Validation
+            if (!emailRegex.test(email)) {
+                errorDiv.textContent = 'Geçerli bir e-posta adresi girin!';
+                errorDiv.style.color = 'red';
+                signupForm.appendChild(errorDiv);
+                return;
+            }
+            if (password.length < 6) {
+                errorDiv.textContent = 'Şifre en az 6 karakter olmalı!';
+                errorDiv.style.color = 'red';
+                signupForm.appendChild(errorDiv);
+                return;
+            }
             if (password !== confirmPassword) {
-                alert('Şifreler eşleşmiyor!');
+                errorDiv.textContent = 'Şifreler eşleşmiyor!';
+                errorDiv.style.color = 'red';
+                signupForm.appendChild(errorDiv);
                 return;
             }
 
-            const response = await signupUser(email, password);
+            // Loading state
+            signupButton.disabled = true;
+            signupButton.textContent = 'Yükleniyor...';
 
-            if (response.error) {
-                alert(response.error || 'Kayıt başarısız. Lütfen tekrar deneyin.');
-            } else {
-                alert(response.message || 'Kayıt başarılı! Lütfen giriş yapın.');
-                // Kayıt başarılıysa login formuna geç
-                switchers.forEach(item => item.parentElement.classList.remove('is-active'));
-                document.querySelector('.switcher-login').parentElement.classList.add('is-active');
+            try {
+                const response = await signupUser(email, password);
+                if (response.error) {
+                    errorDiv.textContent = response.error || 'Kayıt başarısız. Lütfen tekrar deneyin.';
+                    errorDiv.style.color = 'red';
+                    signupForm.appendChild(errorDiv);
+                } else {
+                    alert(response.message || 'Kayıt başarılı! Lütfen giriş yapın.');
+                    switchToForm('.switcher-login');
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Bir hata oluştu. Lütfen tekrar deneyin.';
+                errorDiv.style.color = 'red';
+                signupForm.appendChild(errorDiv);
+                console.error('Signup error:', error);
+            } finally {
+                signupButton.disabled = false;
+                signupButton.textContent = 'Continue';
             }
         });
     }
