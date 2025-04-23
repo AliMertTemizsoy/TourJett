@@ -1,6 +1,6 @@
 // Mock modunu kapatın, gerçek API çağrıları yapın
 const MOCK_MODE = false;
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'http://localhost:5000/js/api';
 
 // API fonksiyonları
 async function getTurlar() {
@@ -429,9 +429,6 @@ async function createRezervasyon(formData) {
         }
     }
 }
-
-
-
 
 // Export fonksiyonları
 window.getTurlar = getTurlar;
