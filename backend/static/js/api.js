@@ -1,6 +1,6 @@
 // Mock modunu kapat, gerçek API çağrıları yap
 const MOCK_MODE = false;
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'http://localhost:5000';
 
 // API fonksiyonları
 async function getTurlar() {

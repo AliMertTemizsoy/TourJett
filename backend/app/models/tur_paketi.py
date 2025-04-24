@@ -8,13 +8,19 @@ class TurPaketi(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ad = db.Column(db.String(100), nullable=False)
     aciklama = db.Column(db.Text)
-    sure = db.Column(db.String(50))  # Integer yerine String olarak değiştirildi
-    fiyat = db.Column(db.Float, default=0)
+    sure = db.Column(db.String(50))
+    fiyat = db.Column(db.Float, nullable=False, default=0)
     kapasite = db.Column(db.Integer, default=20)
-    baslangic_bolge_id = db.Column(db.Integer, db.ForeignKey('bolgeler.id'))
+    baslangic_bolge_id = db.Column(db.Integer, db.ForeignKey('bolgeler.id'), nullable=True)  # nullable=True ekleyin
     durum = db.Column(db.String(50), default="Aktif")
     olusturma_tarihi = db.Column(db.DateTime, default=datetime.utcnow)
     
+    # JSON format için ekleyin
+    tur_tarihi = db.Column(db.Date, nullable=True)  # Nullable olarak ekleyin
+    resim_url = db.Column(db.String(255), nullable=True)  # Resim URL'si için
+    konum = db.Column(db.String(100), nullable=True)  # Frontend'in kullandığı konum alanı
+    max_katilimci = db.Column(db.Integer, default=20)  # max_katilimci alanını ekleyin
+
     # İlişkiler
     baslangic_bolge = db.relationship('Bolge', foreign_keys=[baslangic_bolge_id])
     tur_destinasyonlar = db.relationship('TurDestinasyon', 
