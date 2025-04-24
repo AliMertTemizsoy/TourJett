@@ -173,6 +173,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Oturum kontrolü - zaten giriş yapılmışsa ana sayfaya yönlendir
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     if (currentUser.id) {
-        window.location.href = 'index.html';
+        window.location.href = 'index_loggedinuser.html';
     }
 });
