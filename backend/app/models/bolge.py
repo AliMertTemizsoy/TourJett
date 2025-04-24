@@ -13,6 +13,14 @@ class Bolge(db.Model):
     
     def __repr__(self):
         return f'<Bolge {self.ad}>'
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'ad': self.ad,
+            'aciklama': self.aciklama,
+            'ulke': self.ulke,
+            'sehir': self.sehir
+        }
 
 class Destinasyon(db.Model):
     __tablename__ = 'destinasyonlar'

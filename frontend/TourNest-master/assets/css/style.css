@@ -287,6 +287,25 @@ html,body{
     -o-transition: 0.5s ease-in-out;
     transition: 0.5s ease-in-out;
 }
+
+.greetings-btn {
+	background: #00d8ff;
+    border: 1px solid #00d8ff;
+    width: 120px;
+    height: 40px;
+    white-space: nowrap;
+    text-align: center;
+    color: #fff;
+    font-size:18px;
+    font-family: 'Poppins', sans-serif;
+    text-transform: capitalize;
+    border-radius: 5px;
+    -webkit-transition: 0.5s ease-in-out;
+    -moz-transition: 0.5s ease-in-out;
+    -ms-transition: 0.5s ease-in-out;
+    -o-transition: 0.5s ease-in-out;
+    transition: 0.5s ease-in-out;
+}
 .book-btn:hover{
     color: #fff;
     background: #00d8d5;

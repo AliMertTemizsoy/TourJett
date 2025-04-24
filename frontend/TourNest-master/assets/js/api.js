@@ -1,6 +1,6 @@
 // Mock modunu kapat, gerçek API çağrıları yap
 const MOCK_MODE = false;
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = 'http://localhost:5000/api'; // Doğru API yolu
 
 // API fonksiyonları
 async function getTurlar() {
@@ -9,62 +9,18 @@ async function getTurlar() {
         return [
             {
                 id: 1,
-                adi: "Kapadokya Turu",
+                ad: "Kapadokya Turu", // adi -> ad (model uyumluluğu)
                 sure: "3 Gün",
                 fiyat: 3500,
                 aciklama: "Muhteşem peri bacaları ve sıcak hava balonlarıyla unutulmaz bir deneyim",
-                resim: "assets/images/packages/p1.jpg",
-                kategori: "Kültür"
+                resim_url: "assets/images/packages/p1.jpg", // resim -> resim_url
+                konum: "Nevşehir" // Konum değeri ekledim
             },
-            {
-                id: 2,
-                adi: "Antalya Sahil Turu",
-                sure: "5 Gün",
-                fiyat: 4200,
-                aciklama: "Turkuaz deniz ve altın sahilleriyle mükemmel bir tatil",
-                resim: "assets/images/packages/p2.jpg",
-                kategori: "Deniz"
-            },
-            {
-                id: 3,
-                adi: "İstanbul Kültür Turu",
-                sure: "4 Gün",
-                fiyat: 3800,
-                aciklama: "İki kıtayı birleştiren şehirde tarih ve kültür yolculuğu",
-                resim: "assets/images/packages/p3.jpg",
-                kategori: "Kültür"
-            },
-            {
-                id: 4,
-                adi: "Ege Adaları Turu",
-                sure: "7 Gün",
-                fiyat: 6500,
-                aciklama: "Ege'nin incilerinde unutulmaz bir deniz tatili",
-                resim: "assets/images/packages/p4.jpg",
-                kategori: "Deniz"
-            },
-            {
-                id: 5,
-                adi: "Doğu Ekspresi Macerası",
-                sure: "6 Gün",
-                fiyat: 5200,
-                aciklama: "Kars'tan Ankara'ya uzanan masalsı bir tren yolculuğu",
-                resim: "assets/images/packages/p5.jpg",
-                kategori: "Macera"
-            },
-            {
-                id: 6,
-                adi: "Karadeniz Yaylaları",
-                sure: "5 Gün",
-                fiyat: 4800,
-                aciklama: "Yeşilin her tonunu görebileceğiniz yaylalar ve şelaleler",
-                resim: "assets/images/packages/p6.jpg",
-                kategori: "Doğa"
-            }
+            // Diğer mock veriler...
         ];
     } else {
         try {
-            // Endpoint'i backend yapınıza uygun olarak güncellendi
+            // Endpointte /api/ prefixi eklendi
             const response = await fetch(`${API_BASE_URL}/turpaketleri/`);
             if (!response.ok) {
                 throw new Error(`API yanıt vermedi: ${response.status}`);
@@ -83,19 +39,18 @@ async function getTurById(id) {
         // Mock veri
         return {
             id: id,
-            adi: "Kapadokya Turu",
+            ad: "Kapadokya Turu", // adi -> ad
             sure: "3 Gün",
             fiyat: 3500,
             aciklama: "Muhteşem peri bacaları ve sıcak hava balonlarıyla unutulmaz bir deneyim",
-            baslangic_tarihi: "2025-05-15",
-            bitis_tarihi: "2025-05-18",
-            baslangic_noktasi: "İstanbul",
-            resim: "assets/images/packages/p1.jpg",
-            kategori: "Kültür"
+            tur_tarihi: "2025-05-15", // tarih alanını modeldeki ile eşleştirdim
+            konum: "Nevşehir", // konum ekledim
+            resim_url: "assets/images/packages/p1.jpg", // resim -> resim_url
+            max_katilimci: 20 // max_katilimci ekledim
         };
     } else {
         try {
-            // Endpoint'i backend yapınıza uygun olarak güncellendi
+            // Endpointte /api/ prefixi eklendi
             const response = await fetch(`${API_BASE_URL}/turpaketleri/${id}`);
             if (!response.ok) {
                 throw new Error(`API yanıt vermedi: ${response.status}`);
@@ -112,10 +67,11 @@ async function getTurById(id) {
 async function createRezervasyon(formData) {
     if (MOCK_MODE) {
         // Mock veriler...
+        return { success: true, id: 1, message: "Rezervasyon başarıyla oluşturuldu" };
     } else {
         try {
             // Eğer kullanıcı girişi yapılmışsa, kullanıcı ID'sini ekle
-            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
             
             // Doğru alan adlarıyla veriyi hazırla
             const apiData = {
@@ -129,7 +85,7 @@ async function createRezervasyon(formData) {
                 oda_tipi: formData.roomType || 'standard',
                 ozel_istekler: formData.notlar || '',
                 // Kullanıcı giriş yapmışsa ID'sini ekle
-                musteri_id: currentUser.id || 1 // Default olarak 1 (varsayılan müşteri)
+                musteri_id: currentUser.id || null // null kullanarak opsiyonel olduğunu belirt
             };
 
             console.log("Backend'e gönderilen veri:", apiData);
@@ -158,7 +114,7 @@ async function createRezervasyon(formData) {
 // Login işlemi için fonksiyon
 async function loginUser(credentials) {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+        const response = await fetch(`${API_BASE_URL}/auth/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -182,7 +138,7 @@ async function loginUser(credentials) {
 // Kayıt işlemi için fonksiyon
 async function signupUser(userData) {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
+        const response = await fetch(`${API_BASE_URL}/auth/signup`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

@@ -1,23 +1,25 @@
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Login.js loaded!');
+    console.log('Login.js yüklendi!');
     
     const loginForm = document.querySelector('.form-login');
     const signupForm = document.querySelector('.form-signup');
     const loginSwitcher = document.querySelector('.switcher-login');
     const signupSwitcher = document.querySelector('.switcher-signup');
     
-    // Form geçiş işlevselliği
+    // Form geçiş fonksiyonları
     if (signupSwitcher) {
         signupSwitcher.addEventListener('click', function() {
+            console.log('Signup geçiş tıklandı');
             document.querySelector('.form-wrapper.is-active').classList.remove('is-active');
-            signupSwitcher.parentElement.classList.add('is-active');
+            document.querySelectorAll('.form-wrapper')[1].classList.add('is-active');
         });
     }
     
     if (loginSwitcher) {
         loginSwitcher.addEventListener('click', function() {
+            console.log('Login geçiş tıklandı');
             document.querySelector('.form-wrapper.is-active').classList.remove('is-active');
-            loginSwitcher.parentElement.classList.add('is-active');
+            document.querySelectorAll('.form-wrapper')[0].classList.add('is-active');
         });
     }
     
@@ -25,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (loginForm) {
         loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            console.log('Login form submitted');
+            console.log('Login form gönderildi');
             
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
@@ -37,18 +39,26 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             try {
-                // API isteği yap
-                const userData = await loginUser({
-                    email: email,
-                    password: password
-                });
+                // Mock login - gerçek API ile değiştirin
+                console.log(`Login denemesi: ${email}`);
                 
-                // Başarılı login
-                console.log('Login successful:', userData);
-                loginSuccess(userData);
-                
+                // API.js'den loginUser fonksiyonunu çağırın
+                if (typeof window.loginUser === 'function') {
+                    const userData = await window.loginUser({
+                        email: email,
+                        password: password
+                    });
+                    
+                    // Başarılı login
+                    console.log('Login başarılı:', userData);
+                    loginSuccess(userData);
+                } else {
+                    console.error('loginUser fonksiyonu API.js dosyasında bulunamadı!');
+                    showLoginError('API bağlantısı kurulamadı');
+                }
             } catch (error) {
-                showLoginError(error.message);
+                console.error('Login hatası:', error);
+                showLoginError(error.message || 'Giriş yapılırken bir hata oluştu');
             }
         });
     }
@@ -57,14 +67,16 @@ document.addEventListener('DOMContentLoaded', function() {
     if (signupForm) {
         signupForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            console.log('Signup form submitted');
+            console.log('Signup form gönderildi');
             
             const email = document.getElementById('signup-email').value;
             const password = document.getElementById('signup-password').value;
             const passwordConfirm = document.getElementById('signup-password-confirm').value;
+            const name = document.getElementById('name').value;
+            const surname = document.getElementById('surname').value;
             
             // Form validasyonu
-            if (!email || !password) {
+            if (!email || !password || !passwordConfirm || !name || !surname) {
                 showSignupError('Lütfen tüm zorunlu alanları doldurun');
                 return;
             }
@@ -75,38 +87,45 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             try {
-                // API isteği yap - email ve password dışında 
-                // name ve surname gibi alanlar login.html sayfanıza eklenmediği için
-                // burada varsayılan değerler kullanıyoruz
-                const userData = await signupUser({
-                    email: email,
-                    password: password,
-                    ad: "Test",     // Bu alanları login.html'e eklerseniz buraya doğru değerlerle güncelleyin
-                    soyad: "User"   // Bu alanları login.html'e eklerseniz buraya doğru değerlerle güncelleyin
-                });
-                
-                // Başarılı kayıt
-                console.log('Signup successful:', userData);
-                alert('Kayıt işlemi başarılı!');
-                
-                // Doğrudan ana sayfaya yönlendir - kullanıcı bilgilerini kullan ama hatırlamayalım
-                loginOneTime(userData); // sessionStorage'a kaydediyoruz, tarayıcı kapandığında silinecek
-                
+                // API.js'den signupUser fonksiyonunu çağırın
+                if (typeof window.signupUser === 'function') {
+                    const userData = await window.signupUser({
+                        email: email,
+                        password: password,
+                        ad: name,
+                        soyad: surname,
+                        tc_kimlik: document.getElementById('national-id').value,
+                        dogum_tarihi: document.getElementById('birth-date').value
+                    });
+                    
+                    // Başarılı kayıt
+                    console.log('Kayıt başarılı:', userData);
+                    
+                    // Kullanıcıyı bilgilendir
+                    alert('Kayıt işlemi başarıyla tamamlandı!');
+                    
+                    // Oturum bilgilerini kaydet ve ana sayfaya yönlendir
+                    loginOneTime(userData);
+                } else {
+                    console.error('signupUser fonksiyonu API.js dosyasında bulunamadı!');
+                    showSignupError('API bağlantısı kurulamadı');
+                }
             } catch (error) {
-                showSignupError(error.message);
+                console.error('Kayıt hatası:', error);
+                showSignupError(error.message || 'Kayıt yapılırken bir hata oluştu');
             }
         });
     }
     
-    // Hata mesajı gösterme fonksiyonları
+    // Hata mesajlarını gösterme fonksiyonları
     function showLoginError(message) {
         const errorElement = document.getElementById('login-error');
         if (errorElement) {
             errorElement.textContent = message;
             errorElement.style.display = 'block';
         } else {
-            console.error('Login error:', message);
-            alert('Login error: ' + message);
+            console.error('Login error element bulunamadı');
+            alert('Giriş hatası: ' + message);
         }
     }
     
@@ -116,14 +135,13 @@ document.addEventListener('DOMContentLoaded', function() {
             errorElement.textContent = message;
             errorElement.style.display = 'block';
         } else {
-            console.error('Signup error:', message);
-            alert('Signup error: ' + message);
+            console.error('Signup error element bulunamadı');
+            alert('Kayıt hatası: ' + message);
         }
     }
     
     function loginSuccess(userData) {
-        // Kullanıcı bilgilerini sessionStorage'a kaydet (localStorage yerine)
-        // sessionStorage tarayıcı kapandığında silinir
+        // Kullanıcı bilgilerini sessionStorage'a kaydet
         sessionStorage.setItem('currentUser', JSON.stringify({
             id: userData.id,
             name: userData.ad,
@@ -137,7 +155,6 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = 'index.html';
     }
     
-    // Tek seferlik giriş - localStorage kullanmadan sadece o oturum için giriş yap
     function loginOneTime(userData) {
         // Kullanıcı bilgilerini sessionStorage'a kaydet
         sessionStorage.setItem('currentUser', JSON.stringify({
@@ -153,14 +170,11 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = 'index.html';
     }
     
-    // Auto-login özelliğini kaldırıyoruz
-    // Bu sayede sayfa açıldığında otomatik giriş yapılmayacak
-    // localStorage.getItem('currentUser') yerine sessionStorage kullanabiliriz
-    
-    /* Otomatik giriş kodunu kaldırıyoruz
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    // Oturum kontrolü - zaten giriş yapılmışsa ana sayfaya yönlendir
+    const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}'); 
     if (currentUser.id) {
+        // Kullanıcı zaten giriş yapmış, ana sayfaya yönlendir
+        console.log('Kullanıcı zaten giriş yapmış, ana sayfaya yönlendiriliyor...');
         window.location.href = 'index.html';
     }
-    */
 });
