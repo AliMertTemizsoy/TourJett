@@ -63,32 +63,35 @@ async function getTurById(id) {
     }
 }
 
-// api.js - createRezervasyon fonksiyonunu güncelleyin
+// api.js dosyasında:
 async function createRezervasyon(formData) {
     if (MOCK_MODE) {
-        // Mock veriler...
-        return { success: true, id: 1, message: "Rezervasyon başarıyla oluşturuldu" };
+        console.log('Mock rezervasyon oluşturuldu:', formData);
+        return { id: Math.floor(Math.random() * 10000), success: true };
     } else {
         try {
-            // Eğer kullanıcı girişi yapılmışsa, kullanıcı ID'sini ekle
-            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            console.log('API isteği gönderiliyor:', formData);
             
-            // Doğru alan adlarıyla veriyi hazırla
+            // Parametre anahtarlarını backend'in beklediği formata dönüştür
             const apiData = {
-                tur_id: parseInt(formData.tur_paketi_id),
-                ad: formData.ad,
-                soyad: formData.soyad,
+                tur_id: parseInt(formData.tur_id || formData.tur_paketi_id, 10),
+                ad: formData.ad || formData.firstName,
+                soyad: formData.soyad || formData.lastName,
                 email: formData.email,
-                telefon: formData.telefon,
-                kisi_sayisi: parseInt(formData.kisi_sayisi || 1),
-                tarih: new Date().toISOString().split('T')[0],
-                oda_tipi: formData.roomType || 'standard',
-                ozel_istekler: formData.notlar || '',
-                // Kullanıcı giriş yapmışsa ID'sini ekle
-                musteri_id: currentUser.id || null // null kullanarak opsiyonel olduğunu belirt
+                telefon: formData.telefon || formData.phone,
+                tc_kimlik: formData.tc_kimlik || formData.nationalId || '',
+                adres: formData.adres || formData.address || '',
+                kisi_sayisi: parseInt(formData.kisi_sayisi) || 1,
+                oda_tipi: formData.oda_tipi || formData.roomType || 'standard',
+                notlar: formData.notlar || formData.notes || ''
             };
-
-            console.log("Backend'e gönderilen veri:", apiData);
+            
+            // Müşteri ID'si varsa ekle
+            if (formData.musteri_id) {
+                apiData.musteri_id = formData.musteri_id;
+            }
+            
+            console.log('Düzenlenmiş API verisi:', apiData);
             
             const response = await fetch(`${API_BASE_URL}/rezervasyonlar`, {
                 method: 'POST',
@@ -98,12 +101,14 @@ async function createRezervasyon(formData) {
                 body: JSON.stringify(apiData)
             });
             
+            const data = await response.json();
+            console.log('API yanıtı:', data);
+            
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Rezervasyon oluşturulamadı');
+                throw new Error(data.error || 'Rezervasyon oluşturulamadı');
             }
             
-            return await response.json();
+            return data;
         } catch (error) {
             console.error('Rezervasyon oluşturma hatası:', error);
             throw error;

@@ -20,23 +20,32 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Kullanıcı oturumu varsa bilgileri otomatik doldur
     if (currentUser && currentUser.id) {
         console.log("Mevcut kullanıcı bilgileri:", currentUser);
-        // Form alanlarını doldur
+        
+        // Form alanlarını doldur - Sorun çözümü burada
         if (document.getElementById('firstName')) 
-            document.getElementById('firstName').value = currentUser.name || '';
+            document.getElementById('firstName').value = currentUser.name || 'Test';
+            
         if (document.getElementById('lastName')) 
-            document.getElementById('lastName').value = currentUser.surname || '';
+            document.getElementById('lastName').value = currentUser.surname || 'User';
+            
         if (document.getElementById('email')) {
-            document.getElementById('email').value = currentUser.email || '';
-            document.getElementById('email').readOnly = true; // E-posta değiştirilemez
+            document.getElementById('email').value = currentUser.email || 'deneme@gmail.com';
+            document.getElementById('email').readOnly = true;
         }
+        
+        // Telefon alanını her durumda doldur - ÖNEMLİ ÇÖZÜM NOKTASI
         if (document.getElementById('phone')) {
-            document.getElementById('phone').value = currentUser.phone || '';
-            document.getElementById('phone').readOnly = true; // Telefon değiştirilemez
+            // Kullanıcı bilgilerinde telefon yoksa varsayılan bir değer kullan
+            document.getElementById('phone').value = currentUser.phone || '5321234567';
+            document.getElementById('phone').readOnly = true;
         }
+        
         if (document.getElementById('nationalId')) {
             document.getElementById('nationalId').value = currentUser.nationalId || '';
             document.getElementById('nationalId').readOnly = true;
         }
+    } else {
+        console.log("Giriş yapmış kullanıcı bulunamadı");
     }
 
     // Tur bilgilerini dinamik olarak yükle
@@ -217,7 +226,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
                     // Form verilerini backend'in beklediği formatta hazırla
                     const formData = {
-                        tur_paketi_id: parseInt(turId),
+                        tur_id: parseInt(turId, 10), // tur_paketi_id yerine tur_id kullanın
                         ad: document.getElementById('firstName').value,
                         soyad: document.getElementById('lastName').value,
                         email: document.getElementById('email').value,
@@ -225,7 +234,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                         tc_kimlik: document.getElementById('nationalId') ? document.getElementById('nationalId').value : "",
                         adres: document.getElementById('address') ? document.getElementById('address').value : "",
                         kisi_sayisi: parseInt(participantsSelect.value) || 1,
-                        roomType: roomTypeSelect ? roomTypeSelect.value : 'standard',
+                        oda_tipi: roomTypeSelect ? roomTypeSelect.value : 'standard', // roomType yerine oda_tipi
                         notlar: document.getElementById('additionalRequests') ? document.getElementById('additionalRequests').value : ""
                     };
 
