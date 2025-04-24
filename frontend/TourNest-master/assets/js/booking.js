@@ -14,6 +14,31 @@ document.addEventListener('DOMContentLoaded', async function() {
     const urlParams = new URLSearchParams(window.location.search);
     const turId = urlParams.get('tur_id');
 
+    // Giriş yapmış kullanıcı bilgilerini kontrol et
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    
+    // Kullanıcı oturumu varsa bilgileri otomatik doldur
+    if (currentUser && currentUser.id) {
+        console.log("Mevcut kullanıcı bilgileri:", currentUser);
+        // Form alanlarını doldur
+        if (document.getElementById('firstName')) 
+            document.getElementById('firstName').value = currentUser.name || '';
+        if (document.getElementById('lastName')) 
+            document.getElementById('lastName').value = currentUser.surname || '';
+        if (document.getElementById('email')) {
+            document.getElementById('email').value = currentUser.email || '';
+            document.getElementById('email').readOnly = true; // E-posta değiştirilemez
+        }
+        if (document.getElementById('phone')) {
+            document.getElementById('phone').value = currentUser.phone || '';
+            document.getElementById('phone').readOnly = true; // Telefon değiştirilemez
+        }
+        if (document.getElementById('nationalId')) {
+            document.getElementById('nationalId').value = currentUser.nationalId || '';
+            document.getElementById('nationalId').readOnly = true;
+        }
+    }
+
     // Tur bilgilerini dinamik olarak yükle
     if (turId) {
         try {
@@ -200,10 +225,17 @@ document.addEventListener('DOMContentLoaded', async function() {
                         tc_kimlik: document.getElementById('nationalId') ? document.getElementById('nationalId').value : "",
                         adres: document.getElementById('address') ? document.getElementById('address').value : "",
                         kisi_sayisi: parseInt(participantsSelect.value) || 1,
+                        roomType: roomTypeSelect ? roomTypeSelect.value : 'standard',
                         notlar: document.getElementById('additionalRequests') ? document.getElementById('additionalRequests').value : ""
                     };
 
                     console.log("Backend'e gönderilecek veri:", formData);
+
+                    // Kullanıcı oturumu varsa musteri_id ekle
+                    if (currentUser && currentUser.id) {
+                        formData.musteri_id = currentUser.id;
+                        console.log("Kullanıcı oturumu tespit edildi. Müşteri ID:", currentUser.id);
+                    }
 
                     // Backend'e POST isteği gönder
                     const response = await createRezervasyon(formData);

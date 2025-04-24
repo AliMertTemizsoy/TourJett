@@ -4,10 +4,16 @@
   <meta charset="UTF-8">
   <title>Login Page</title>
   <link rel="stylesheet" href="assets/css/login_style.css">
+  <style>
+    .error-message {
+      color: #ff3860;
+      margin-top: 5px;
+      font-size: 14px;
+      display: none;
+    }
+  </style>
 </head>
 <body>
-
-
 
 <section class="forms-section">
   <h1 class="section-title">Join Now!</h1>
@@ -28,7 +34,7 @@
             <label for="login-password">Password</label>
             <input id="login-password" type="password" required>
           </div>
-          
+          <div id="login-error" class="error-message"></div>
         </fieldset>
         <button type="submit" class="btn-login">Login</button>
       </form>
@@ -55,21 +61,21 @@
           </div>
           <div class="input-block">
             <label for="name">Name</label>
-            <input id="name" type="name" required>
+            <input id="name" type="text" required>
           </div>
           <div class="input-block">
             <label for="surname">Surname</label>
-            <input id="surname" type="surname" required>
+            <input id="surname" type="text" required>
           </div>
-
           <div class="input-block">
             <label for="national-id">National ID</label>
-            <input id="national-id" type="id" required>
+            <input id="national-id" type="text">
           </div>
-          <div class=".datepicker-dropdown input-block">
+          <div class="input-block">
             <label for="birth-date">Birth Date</label>
-            <input id="birth-date" type="date" required>
+            <input id="birth-date" type="date">
           </div>
+          <div id="signup-error" class="error-message"></div>
         </fieldset>
         <button type="submit" class="btn-signup">Sign Up</button>
       </form>

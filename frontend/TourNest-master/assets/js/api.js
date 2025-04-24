@@ -95,22 +95,38 @@ async function getTurById(id) {
 }
 
 // Rezervasyon oluşturan fonksiyon
+// api.js - createRezervasyon fonksiyonunu güncelleyin
 async function createRezervasyon(formData) {
     if (MOCK_MODE) {
-        // Mock response
-        return {
-            success: true,
-            message: 'Rezervasyon başarıyla oluşturuldu',
-            booking_id: 'BK-' + Math.floor(Math.random() * 10000000)
-        };
+        // Mock veriler...
     } else {
         try {
+            // Eğer kullanıcı girişi yapılmışsa, kullanıcı ID'sini ekle
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            
+            // Doğru alan adlarıyla veriyi hazırla
+            const apiData = {
+                tur_id: parseInt(formData.tur_paketi_id),
+                ad: formData.ad,
+                soyad: formData.soyad,
+                email: formData.email,
+                telefon: formData.telefon,
+                kisi_sayisi: parseInt(formData.kisi_sayisi || 1),
+                tarih: new Date().toISOString().split('T')[0],
+                oda_tipi: formData.roomType || 'standard',
+                ozel_istekler: formData.notlar || '',
+                // Kullanıcı giriş yapmışsa ID'sini ekle
+                musteri_id: currentUser.id || 1 // Default olarak 1 (varsayılan müşteri)
+            };
+
+            console.log("Backend'e gönderilen veri:", apiData);
+            
             const response = await fetch(`${API_BASE_URL}/rezervasyonlar`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(apiData)
             });
             
             if (!response.ok) {

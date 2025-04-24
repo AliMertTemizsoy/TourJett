@@ -108,30 +108,28 @@ async function getTurById(id) {
     }
 }
 
-// Rezervasyon oluşturan fonksiyon
+// api.js - createRezervasyon fonksiyonunu güncelleyin
 async function createRezervasyon(formData) {
     if (MOCK_MODE) {
-        // Mock response
-        return {
-            success: true,
-            message: 'Rezervasyon başarıyla oluşturuldu',
-            rezervasyon_id: 'REZ-' + Math.floor(Math.random() * 10000000)
-        };
+        // Mock veriler...
     } else {
         try {
-            // Frontend formundan gelen veriler 
+            // Eğer kullanıcı girişi yapılmışsa, kullanıcı ID'sini ekle
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            
+            // Doğru alan adlarıyla veriyi hazırla
             const apiData = {
-                // Hem tur_id hem de tur_paketi_id gönder (esneklik için)
-                tur_paketi_id: parseInt(formData.tur_paketi_id),
-                tur_id: parseInt(formData.tur_paketi_id), 
+                tur_id: parseInt(formData.tur_paketi_id),
                 ad: formData.ad,
                 soyad: formData.soyad,
                 email: formData.email,
                 telefon: formData.telefon,
                 kisi_sayisi: parseInt(formData.kisi_sayisi || 1),
-                // Bugünün tarihi otomatik eklensin
-                tarih: new Date().toISOString().split('T')[0], 
-                notlar: formData.notlar || ''
+                tarih: new Date().toISOString().split('T')[0],
+                oda_tipi: formData.roomType || 'standard',
+                ozel_istekler: formData.notlar || '',
+                // Kullanıcı giriş yapmışsa ID'sini ekle
+                musteri_id: currentUser.id || 1 // Default olarak 1 (varsayılan müşteri)
             };
 
             console.log("Backend'e gönderilen veri:", apiData);
@@ -157,46 +155,51 @@ async function createRezervasyon(formData) {
     }
 }
 
-// Login ve signup fonksiyonları
-async function loginUser(email, password) {
-    if (MOCK_MODE) {
-        return { success: true, message: 'Giriş başarılı' };
-    } else {
-        try {
-            const response = await fetch(`${API_BASE_URL}/auth/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email, password })
-            });
-            
-            return await response.json();
-        } catch (error) {
-            console.error('Login hatası:', error);
-            return { error: 'Giriş sırasında bir hata oluştu' };
+// Login işlemi için fonksiyon
+async function loginUser(credentials) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(credentials)
+        });
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || 'Giriş başarısız');
         }
+        
+        return data;
+    } catch (error) {
+        console.error('Login error:', error);
+        throw error;
     }
 }
 
-async function signupUser(email, password) {
-    if (MOCK_MODE) {
-        return { success: true, message: 'Kayıt başarılı! Lütfen giriş yapın.' };
-    } else {
-        try {
-            const response = await fetch(`${API_BASE_URL}/auth/signup`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email, password })
-            });
-            
-            return await response.json();
-        } catch (error) {
-            console.error('Signup hatası:', error);
-            return { error: 'Kayıt sırasında bir hata oluştu' };
+// Kayıt işlemi için fonksiyon
+async function signupUser(userData) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userData)
+        });
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || 'Kayıt başarısız');
         }
+        
+        return data;
+    } catch (error) {
+        console.error('Signup error:', error);
+        throw error;
     }
 }
 
