@@ -72,6 +72,11 @@
             <input id="national-id" type="text">
           </div>
           <div class="input-block">
+            <label for="signup-phone">Telefon Numarası</label>
+            <input id="signup-phone" type="tel" placeholder="05XXXXXXXXX">
+            <small class="form-text text-muted">Başında 0 ile girin, örn: 05321234567</small>
+          </div>
+          <div class="input-block">
             <label for="birth-date">Birth Date</label>
             <input id="birth-date" type="date">
           </div>
@@ -82,6 +87,24 @@
     </div>
   </div>
 </section>
+<!-- Sayfanın sonuna, diğer scriptlerden sonra -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      // Kullanıcı bilgilerini getir
+      const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || localStorage.getItem('currentUser') || '{}');
+      
+      if (currentUser && currentUser.id) {
+          // Form alanlarını doldur
+          document.getElementById('firstName').value = currentUser.name || '';
+          document.getElementById('lastName').value = currentUser.surname || '';
+          document.getElementById('email').value = currentUser.email || '';
+          document.getElementById('phone').value = currentUser.phone || '';
+          document.getElementById('nationalId').value = currentUser.nationalId || '';
+          
+          console.log('Kullanıcı bilgileri formda dolduruldu');
+      }
+  });
+</script>
 <script src="assets/js/api.js" defer></script>
 <script src="assets/js/login.js" defer></script>
 </body>

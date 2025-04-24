@@ -1,6 +1,18 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Login.js yüklendi!');
     
+    // URL parametrelerini kontrol et
+    const urlParams = new URLSearchParams(window.location.search);
+    const logout = urlParams.get('logout');
+    
+    // Eğer logout=true parametresi varsa, oturumu sonlandır
+    if (logout === 'true') {
+        console.log('Oturum sonlandırılıyor...');
+        sessionStorage.removeItem('currentUser');
+        // URL'den logout parametresini kaldır
+        window.history.replaceState({}, document.title, 'login.html');
+    }
+    
     const loginForm = document.querySelector('.form-login');
     const signupForm = document.querySelector('.form-signup');
     const loginSwitcher = document.querySelector('.switcher-login');
@@ -39,9 +51,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             try {
-                // Mock login - gerçek API ile değiştirin
-                console.log(`Login denemesi: ${email}`);
-                
                 // API.js'den loginUser fonksiyonunu çağırın
                 if (typeof window.loginUser === 'function') {
                     const userData = await window.loginUser({
@@ -140,20 +149,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    function loginSuccess(userData) {
-        // Kullanıcı bilgilerini sessionStorage'a kaydet
-        sessionStorage.setItem('currentUser', JSON.stringify({
-            id: userData.id,
-            name: userData.ad,
-            surname: userData.soyad,
-            email: userData.email,
-            phone: userData.telefon,
-            nationalId: userData.tc_kimlik
-        }));
-        
-        // Ana sayfaya yönlendir
-        window.location.href = 'index.html';
-    }
+    // Login başarılı olduğunda bu fonksiyon çağrılır
+	function loginSuccess(userData) {
+		console.log('Login başarılı. Kaydedilecek kullanıcı bilgileri:', userData);
+		
+		// Kullanıcı bilgilerini sessionStorage'a kaydet
+		sessionStorage.setItem('currentUser', JSON.stringify({
+			id: userData.id,
+			name: userData.ad, // API'den gelen alan adı "ad" olmalı
+			surname: userData.soyad, // API'den gelen alan adı "soyad" olmalı
+			email: userData.email,
+			phone: userData.telefon, // API'den gelen alan adı "telefon" olmalı
+			nationalId: userData.tc_kimlik  // API'den gelen alan adı "tc_kimlik" olmalı
+		}));
+		
+		// Ana sayfaya yönlendir
+		window.location.href = 'index.html';
+	}
     
     function loginOneTime(userData) {
         // Kullanıcı bilgilerini sessionStorage'a kaydet
@@ -168,6 +180,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Ana sayfaya yönlendir
         window.location.href = 'index.html';
+    }
+    
+    // Logout parametresi true ise kontrolü atla
+    if (logout === 'true') {
+        return; // Oturum zaten sonlandırıldı
     }
     
     // Oturum kontrolü - zaten giriş yapılmışsa ana sayfaya yönlendir

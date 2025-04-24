@@ -137,25 +137,39 @@ async function loginUser(credentials) {
 
 // Kayıt işlemi için fonksiyon
 async function signupUser(userData) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/auth/signup`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(userData)
-        });
-
-        const data = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(data.error || 'Kayıt başarısız');
+    if (MOCK_MODE) {
+        console.log('Mock signup:', userData);
+        return { 
+            id: 1, 
+            email: userData.email,
+            ad: userData.ad,
+            soyad: userData.soyad,
+            telefon: userData.telefon, // telefon bilgisini döndür
+            tc_kimlik: userData.tc_kimlik
+        };
+    } else {
+        try {
+            console.log('API signup request:', userData); // Debug için
+            const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(userData) // Tüm verileri içerir (telefon dahil)
+            });
+            
+            const data = await response.json();
+            console.log('API signup response:', data); // Debug için
+            
+            if (!response.ok) {
+                throw new Error(data.error || 'Signup failed');
+            }
+            
+            return data;
+        } catch (error) {
+            console.error('Signup error:', error);
+            throw error;
         }
-        
-        return data;
-    } catch (error) {
-        console.error('Signup error:', error);
-        throw error;
     }
 }
 
