@@ -1408,10 +1408,47 @@
 
 		</footer><!-- /.footer-copyright-->
 		<!-- footer-copyright end -->
-
-
-
-
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+			  // Kullanıcı giriş yapmışsa navbar'ı güncelle
+			  const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+			  if (currentUser.id) {
+				// Kullanıcı adını ekle
+				const userNameElement = document.createElement('li');
+				userNameElement.className = 'nav-item';
+				userNameElement.innerHTML = `<span class="nav-link">Merhaba, ${currentUser.name || 'Kullanıcı'}</span>`;
+				
+				// Logout butonu ekle
+				const logoutElement = document.createElement('li');
+				logoutElement.className = 'nav-item';
+				logoutElement.innerHTML = `<a href="#" class="nav-link" id="logout-button">Çıkış Yap</a>`;
+				
+				// Navbar'a elemanları ekle
+				const navbar = document.querySelector('.navbar-nav');
+				if (navbar) {
+				  navbar.appendChild(userNameElement);
+				  navbar.appendChild(logoutElement);
+				  
+				  // Logout butonuna tıklama olayı ekle
+				  document.getElementById('logout-button').addEventListener('click', function(e) {
+					e.preventDefault();
+					sessionStorage.removeItem('currentUser');
+					window.location.href = 'login.html';
+				  });
+				}
+			  } else {
+				// Giriş yapmadıysa login butonunu göster
+				const loginElement = document.createElement('li');
+				loginElement.className = 'nav-item';
+				loginElement.innerHTML = `<a href="login.html" class="nav-link">Giriş Yap</a>`;
+				
+				const navbar = document.querySelector('.navbar-nav');
+				if (navbar) {
+				  navbar.appendChild(loginElement);
+				}
+			  }
+			});
+		  </script>
 		<script src="assets/js/jquery.js"></script>
 		<!-- Include all compiled plugins (below), or include individual files as needed -->
 

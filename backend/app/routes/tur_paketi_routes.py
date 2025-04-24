@@ -60,17 +60,38 @@ def get_tur_paketi(id):
 @tur_paketi_bp.route('/', methods=['POST'])
 def add_tur_paketi():
     """Yeni tur paketi ekler"""
-    data = request.get_json()
-    
-    # Gerekli alanların varlığını kontrol et
-    if not data.get('ad'):
-        return jsonify({'error': 'Tur paketi adı gereklidir'}), 400
-    
-    yeni_paket = create_tur_paketi(data)
-    return jsonify({
-        'message': 'Tur paketi başarıyla oluşturuldu',
-        'id': yeni_paket.id
-    }), 201
+    try:
+        data = request.get_json()
+        
+        # Gerekli alanların varlığını kontrol et
+        if not data.get('ad'):
+            return jsonify({'error': 'Tur paketi adı gereklidir'}), 400
+        
+        # Direkt olarak TurPaketi modeli oluştur, service layer bypass
+        yeni_paket = TurPaketi(
+            ad=data.get('ad'),
+            aciklama=data.get('aciklama'),
+            sure=data.get('sure'),
+            fiyat=float(data.get('fiyat', 0)) if data.get('fiyat') else 0.0,
+            kapasite=int(data.get('max_katilimci', 20)) if data.get('max_katilimci') else 20,
+            konum=data.get('konum'),
+            tur_tarihi=datetime.strptime(data.get('tur_tarihi'), '%Y-%m-%d').date() if data.get('tur_tarihi') else None,
+            resim_url=data.get('resim_url'),
+            max_katilimci=int(data.get('max_katilimci', 20)) if data.get('max_katilimci') else 20
+        )
+        
+        db.session.add(yeni_paket)
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Tur paketi başarıyla oluşturuldu',
+            'id': yeni_paket.id,
+            'ad': yeni_paket.ad
+        }), 201
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
 
 @tur_paketi_bp.route('/<int:id>/destinasyonlar', methods=['POST'])
 def add_destinasyon_to_tur(id):

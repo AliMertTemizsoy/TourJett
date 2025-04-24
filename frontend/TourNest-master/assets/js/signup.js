@@ -33,3 +33,29 @@ if (signupForm) {
         }
     });
 }
+
+function loginSuccess(userData) {
+    // Kullanıcı bilgilerini localStorage'a kaydet
+    localStorage.setItem('currentUser', JSON.stringify({
+        id: userData.id,
+        name: userData.ad,
+        surname: userData.soyad,
+        email: userData.email,
+        phone: userData.telefon,
+        nationalId: userData.tc_kimlik
+    }));
+    
+    // Ana sayfaya yönlendir
+    window.location.href = 'index.html';
+}
+
+function showSignupError(message) {
+    const errorElement = document.getElementById('signup-error');
+    if (errorElement) {
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+    } else {
+        console.error('Signup error:', message);
+        alert('Signup error: ' + message);
+    }
+}

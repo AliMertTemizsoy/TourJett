@@ -1,6 +1,6 @@
-// Mock modunu kapatın, gerçek API çağrıları yapın
+// Mock modunu kapat, gerçek API çağrıları yap
 const MOCK_MODE = false;
-const API_BASE_URL = 'http://localhost:5000/js/api';
+const API_BASE_URL = 'http://localhost:5000';
 
 // API fonksiyonları
 async function getTurlar() {
@@ -16,34 +16,62 @@ async function getTurlar() {
                 resim: "assets/images/packages/p1.jpg",
                 kategori: "Kültür"
             },
-            // Diğer mock veriler
+            {
+                id: 2,
+                adi: "Antalya Sahil Turu",
+                sure: "5 Gün",
+                fiyat: 4200,
+                aciklama: "Turkuaz deniz ve altın sahilleriyle mükemmel bir tatil",
+                resim: "assets/images/packages/p2.jpg",
+                kategori: "Deniz"
+            },
+            {
+                id: 3,
+                adi: "İstanbul Kültür Turu",
+                sure: "4 Gün",
+                fiyat: 3800,
+                aciklama: "İki kıtayı birleştiren şehirde tarih ve kültür yolculuğu",
+                resim: "assets/images/packages/p3.jpg",
+                kategori: "Kültür"
+            },
+            {
+                id: 4,
+                adi: "Ege Adaları Turu",
+                sure: "7 Gün",
+                fiyat: 6500,
+                aciklama: "Ege'nin incilerinde unutulmaz bir deniz tatili",
+                resim: "assets/images/packages/p4.jpg",
+                kategori: "Deniz"
+            },
+            {
+                id: 5,
+                adi: "Doğu Ekspresi Macerası",
+                sure: "6 Gün",
+                fiyat: 5200,
+                aciklama: "Kars'tan Ankara'ya uzanan masalsı bir tren yolculuğu",
+                resim: "assets/images/packages/p5.jpg",
+                kategori: "Macera"
+            },
+            {
+                id: 6,
+                adi: "Karadeniz Yaylaları",
+                sure: "5 Gün",
+                fiyat: 4800,
+                aciklama: "Yeşilin her tonunu görebileceğiniz yaylalar ve şelaleler",
+                resim: "assets/images/packages/p6.jpg",
+                kategori: "Doğa"
+            }
         ];
     } else {
         try {
+            // Endpoint'i backend yapınıza uygun olarak güncellendi
             const response = await fetch(`${API_BASE_URL}/turpaketleri/`);
             if (!response.ok) {
-                throw new Error('API yanıt vermedi');
+                throw new Error(`API yanıt vermedi: ${response.status}`);
             }
-            
-            const data = await response.json();
-            
-            // Backend veri yapısını frontend formatına dönüştürme
-            return data.map(paket => ({
-                id: paket.id,
-                adi: paket.ad,
-                sure: paket.sure,
-                fiyat: paket.fiyat,
-                aciklama: paket.aciklama,
-                resim: `assets/images/packages/p${(paket.id % 6) + 1}.jpg`, // Rastgele resim
-                kategori: paket.baslangic_bolge || "Genel",
-                baslangic_bolge: paket.baslangic_bolge
-            }));
+            return await response.json();
         } catch (error) {
             console.error('Turlar alınamadı:', error);
-            // Hata durumunda mock verileri döndürebiliriz
-            if (MOCK_MODE) {
-                return getTurlar();
-            }
             throw error;
         }
     }
@@ -67,26 +95,12 @@ async function getTurById(id) {
         };
     } else {
         try {
+            // Endpoint'i backend yapınıza uygun olarak güncellendi
             const response = await fetch(`${API_BASE_URL}/turpaketleri/${id}`);
             if (!response.ok) {
-                throw new Error('API yanıt vermedi');
+                throw new Error(`API yanıt vermedi: ${response.status}`);
             }
-            
-            const data = await response.json();
-            
-            // Backend veri yapısını frontend formatına dönüştürme
-            return {
-                id: data.id,
-                adi: data.ad,
-                sure: data.sure,
-                fiyat: data.fiyat,
-                aciklama: data.aciklama,
-                kapasite: data.kapasite,
-                baslangic_bolge: data.baslangic_bolge,
-                durum: data.durum,
-                resim: `assets/images/packages/p${(data.id % 6) + 1}.jpg`,
-                destinasyonlar: data.destinasyonlar || []
-            };
+            return await response.json();
         } catch (error) {
             console.error(`Tur ${id} alınamadı:`, error);
             throw error;
@@ -94,7 +108,6 @@ async function getTurById(id) {
     }
 }
 
-// Rezervasyon oluşturan fonksiyon
 // api.js - createRezervasyon fonksiyonunu güncelleyin
 async function createRezervasyon(formData) {
     if (MOCK_MODE) {
@@ -142,164 +155,51 @@ async function createRezervasyon(formData) {
     }
 }
 
-// Yeni tur paketi oluşturan fonksiyon
-async function createTurPaketi(formData) {
-    if (MOCK_MODE) {
-        return {
-            success: true,
-            message: 'Tur paketi başarıyla oluşturuldu',
-            id: Math.floor(Math.random() * 1000) + 10
-        };
-    } else {
-        try {
-            const response = await fetch(`${API_BASE_URL}/turpaketleri/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            });
-            
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Tur paketi oluşturulamadı');
-            }
-            
-            return await response.json();
-        } catch (error) {
-            console.error('Tur paketi oluşturma hatası:', error);
-            throw error;
+// Login işlemi için fonksiyon
+async function loginUser(credentials) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(credentials)
+        });
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || 'Giriş başarısız');
         }
+        
+        return data;
+    } catch (error) {
+        console.error('Login error:', error);
+        throw error;
     }
 }
 
-// Tur paketini güncelleyen fonksiyon
-async function updateTurPaketi(id, formData) {
-    if (MOCK_MODE) {
-        return {
-            success: true,
-            message: 'Tur paketi başarıyla güncellendi'
-        };
-    } else {
-        try {
-            const response = await fetch(`${API_BASE_URL}/turpaketleri/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            });
-            
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Tur paketi güncellenemedi');
-            }
-            
-            return await response.json();
-        } catch (error) {
-            console.error('Tur paketi güncelleme hatası:', error);
-            throw error;
-        }
-    }
-}
+// Kayıt işlemi için fonksiyon
+async function signupUser(userData) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userData)
+        });
 
-// Tur paketini silen fonksiyon
-async function deleteTurPaketi(id) {
-    if (MOCK_MODE) {
-        return {
-            success: true,
-            message: 'Tur paketi başarıyla silindi'
-        };
-    } else {
-        try {
-            const response = await fetch(`${API_BASE_URL}/turpaketleri/${id}`, {
-                method: 'DELETE'
-            });
-            
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Tur paketi silinemedi');
-            }
-            
-            return await response.json();
-        } catch (error) {
-            console.error('Tur paketi silme hatası:', error);
-            throw error;
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || 'Kayıt başarısız');
         }
-    }
-}
-
-// Tur paketine destinasyon ekleyen fonksiyon
-async function addDestinasyonToTurPaketi(turId, destinasyonData) {
-    if (MOCK_MODE) {
-        return {
-            success: true,
-            message: 'Destinasyon başarıyla eklendi',
-            id: Math.floor(Math.random() * 1000) + 1
-        };
-    } else {
-        try {
-            const response = await fetch(`${API_BASE_URL}/turpaketleri/${turId}/destinasyonlar`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(destinasyonData)
-            });
-            
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Destinasyon eklenemedi');
-            }
-            
-            return await response.json();
-        } catch (error) {
-            console.error('Destinasyon ekleme hatası:', error);
-            throw error;
-        }
-    }
-}
-
-// Login ve signup fonksiyonları
-async function loginUser(email, password) {
-    if (MOCK_MODE) {
-        return { success: true, message: 'Giriş başarılı' };
-    } else {
-        try {
-            const response = await fetch(`${API_BASE_URL}/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email, password })
-            });
-            
-            return await response.json();
-        } catch (error) {
-            console.error('Login hatası:', error);
-            return { error: 'Giriş sırasında bir hata oluştu' };
-        }
-    }
-}
-
-async function signupUser(email, password) {
-    if (MOCK_MODE) {
-        return { success: true, message: 'Kayıt başarılı! Lütfen giriş yapın.' };
-    } else {
-        try {
-            const response = await fetch(`${API_BASE_URL}/signup`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email, password })
-            });
-            
-            return await response.json();
-        } catch (error) {
-            console.error('Signup hatası:', error);
-            return { error: 'Kayıt sırasında bir hata oluştu' };
-        }
+        
+        return data;
+    } catch (error) {
+        console.error('Signup error:', error);
+        throw error;
     }
 }
 
@@ -321,14 +221,7 @@ async function getBolgeler() {
             return await response.json();
         } catch (error) {
             console.error('Bölgeler alınamadı:', error);
-            
-            // Hata durumunda mock verileri döndürebiliriz
-            return [
-                { id: 1, ad: "Ege", ulke: "Türkiye" },
-                { id: 2, ad: "Akdeniz", ulke: "Türkiye" },
-                { id: 3, ad: "Karadeniz", ulke: "Türkiye" },
-                { id: 4, ad: "İç Anadolu", ulke: "Türkiye" }
-            ];
+            throw error;
         }
     }
 }
@@ -356,14 +249,7 @@ async function getDestinasyonlar(bolgeId = null) {
             return await response.json();
         } catch (error) {
             console.error('Destinasyonlar alınamadı:', error);
-            
-            // Hata durumunda mock verileri döndürebiliriz
-            return [
-                { id: 1, ad: "Bodrum", tur: "Plaj", bolge_id: 1 },
-                { id: 2, ad: "Antalya", tur: "Plaj", bolge_id: 2 },
-                { id: 3, ad: "Trabzon", tur: "Yayla", bolge_id: 3 },
-                { id: 4, ad: "Nevşehir", tur: "Kültür", bolge_id: 4 }
-            ];
+            throw error;
         }
     }
 }
@@ -384,63 +270,33 @@ async function getDegerlendirmeler(turId) {
             return await response.json();
         } catch (error) {
             console.error(`Tur ${turId} için değerlendirmeler alınamadı:`, error);
-            
-            // Hata durumunda mock verileri döndürelim
-            return [
-                { id: 1, musteri_adi: "Ahmet Yılmaz", puan: 5, yorum: "Harika bir turdu!" },
-                { id: 2, musteri_adi: "Ayşe Kaya", puan: 4, yorum: "Çok güzeldi ama biraz yorucuydu." }
-            ];
+            throw error;
         }
     }
 }
 
 // Değerlendirme ekleyen fonksiyon
-// veya c:\Users\alime\TourJett\backend\static\js\api.js
-// veya c:\Users\alime\TourJett\backend\static\js\api.js
-async function createRezervasyon(formData) {
+async function createDegerlendirme(data) {
     if (MOCK_MODE) {
-        // Mock veriler...
-        return {
-            success: true,
-            message: 'Rezervasyon başarıyla oluşturuldu',
-            booking_id: 'BK-' + Math.floor(Math.random() * 10000000)
-        };
+        return { success: true, message: 'Değerlendirmeniz için teşekkürler!' };
     } else {
         try {
-            // Doğru alan adlarıyla veriyi hazırla
-            const apiData = {
-                // Backend modeline göre doğru alan adı: tur_id
-                tur_id: parseInt(formData.tur_paketi_id),
-                ad: formData.ad,
-                soyad: formData.soyad,
-                email: formData.email,
-                telefon: formData.telefon,
-                kisi_sayisi: parseInt(formData.kisi_sayisi || 1),
-                tarih: new Date().toISOString().split('T')[0],
-                oda_tipi: formData.roomType || 'standard', 
-                ozel_istekler: formData.notlar || '',
-                // Bildiğiniz bir müşteri ID'sini direkt ekleyin
-                musteri_id: 3
-            };
-
-            console.log("Backend'e gönderilen veri:", apiData);
-            
-            const response = await fetch(`${API_BASE_URL}/rezervasyonlar`, {
+            const response = await fetch(`${API_BASE_URL}/degerlendirmeler`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(apiData)
+                body: JSON.stringify(data)
             });
             
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.error || 'Rezervasyon oluşturulamadı');
+                throw new Error(errorData.error || 'Değerlendirme eklenemedi');
             }
             
             return await response.json();
         } catch (error) {
-            console.error('Rezervasyon oluşturma hatası:', error);
+            console.error('Değerlendirme ekleme hatası:', error);
             throw error;
         }
     }
@@ -450,10 +306,6 @@ async function createRezervasyon(formData) {
 window.getTurlar = getTurlar;
 window.getTurById = getTurById;
 window.createRezervasyon = createRezervasyon;
-window.createTurPaketi = createTurPaketi;
-window.updateTurPaketi = updateTurPaketi;
-window.deleteTurPaketi = deleteTurPaketi;
-window.addDestinasyonToTurPaketi = addDestinasyonToTurPaketi;
 window.loginUser = loginUser;
 window.signupUser = signupUser;
 window.getBolgeler = getBolgeler;
