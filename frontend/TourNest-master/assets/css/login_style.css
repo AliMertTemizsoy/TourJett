@@ -278,8 +278,8 @@ body {
 }
 
 .btn-signup {
-	color: #a7e245;
+	color: #ffffff;
 	background: #a7dd8d;
-	box-shadow: inset 0 0 0 2px #a7e245;
+	box-shadow: inset 0 0 0 2px #fefffb;
 	transform: translateX(30%);
 }

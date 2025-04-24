@@ -160,7 +160,6 @@ document.addEventListener('DOMContentLoaded', function() {
     /* Otomatik giriş kodunu kaldırıyoruz
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     if (currentUser.id) {
-        // Zaten giriş yapılmışsa ana sayfaya yönlendir
         window.location.href = 'index.html';
     }
     */
