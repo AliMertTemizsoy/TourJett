@@ -74,6 +74,7 @@ async function createRezervasyon(formData) {
             
             // Parametre anahtarlarını backend'in beklediği formata dönüştür
             const apiData = {
+                // tur_paketi_id yerine tur_id kullanıyoruz - backend tur tablosunu arıyor
                 tur_id: parseInt(formData.tur_id || formData.tur_paketi_id, 10),
                 ad: formData.ad || formData.firstName,
                 soyad: formData.soyad || formData.lastName,

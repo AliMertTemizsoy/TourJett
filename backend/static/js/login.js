@@ -149,23 +149,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Login başarılı olduğunda bu fonksiyon çağrılır
-	function loginSuccess(userData) {
-		console.log('Login başarılı. Kaydedilecek kullanıcı bilgileri:', userData);
-		
-		// Kullanıcı bilgilerini sessionStorage'a kaydet
-		sessionStorage.setItem('currentUser', JSON.stringify({
-			id: userData.id,
-			name: userData.ad, // API'den gelen alan adı "ad" olmalı
-			surname: userData.soyad, // API'den gelen alan adı "soyad" olmalı
-			email: userData.email,
-			phone: userData.telefon, // API'den gelen alan adı "telefon" olmalı
-			nationalId: userData.tc_kimlik  // API'den gelen alan adı "tc_kimlik" olmalı
-		}));
-		
-		// Ana sayfaya yönlendir
-		window.location.href = 'index.html';
-	}
+    function loginSuccess(userData) {
+        // Kullanıcı bilgilerini sessionStorage'a kaydet
+        sessionStorage.setItem('currentUser', JSON.stringify({
+            id: userData.id,
+            name: userData.ad,
+            surname: userData.soyad,
+            email: userData.email,
+            phone: userData.telefon,
+            nationalId: userData.tc_kimlik
+        }));
+        
+        // Ana sayfaya yönlendir
+        window.location.href = 'index.html';
+    }
     
     function loginOneTime(userData) {
         // Kullanıcı bilgilerini sessionStorage'a kaydet

@@ -7,6 +7,7 @@ class Rezervasyon(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     tur_id = db.Column(db.Integer, db.ForeignKey('tur.id'), nullable=False)
+    tur_sefer_id = db.Column(db.Integer, db.ForeignKey('tur_seferi.id'), nullable=True)  # Tur seferi ilişkisi eklendi
     musteri_id = db.Column(db.Integer, db.ForeignKey('musteriler.id'), nullable=True)
     ad = db.Column(db.String(100), nullable=False)
     soyad = db.Column(db.String(100), nullable=False)
@@ -21,12 +22,14 @@ class Rezervasyon(db.Model):
     
     # İlişkiler
     tur = db.relationship('Tur', backref='rezervasyonlar')
+    tur_seferi = db.relationship('TurSeferi', backref='rezervasyonlar')  # Yeni ilişki
     musteri = db.relationship('Musteri', backref='rezervasyonlar')
     
     def to_dict(self):
         return {
             'id': self.id,
             'tur_id': self.tur_id,
+            'tur_sefer_id': self.tur_sefer_id,  # Yeni alan
             'ad': self.ad,
             'soyad': self.soyad,
             'email': self.email,

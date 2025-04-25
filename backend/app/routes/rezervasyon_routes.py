@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from app import db
-from app.models import Rezervasyon, Musteri  # Musteri modelini import edin
-from datetime import datetime
+from app.models import Rezervasyon, Musteri, TurSeferi, Tur  # Add Tur import
+from datetime import datetime, timedelta  # Add timedelta import
 
 rezervasyon_bp = Blueprint('rezervasyon', __name__, url_prefix='/api')
 
@@ -14,9 +14,49 @@ def create_rezervasyon():
         
         # Frontend'den gelen değerleri alma
         tur_id = data.get('tur_paketi_id') or data.get('tur_id')
+        tur_sefer_id = data.get('tur_sefer_id')  # Yeni eklenen parametre
         
         if not tur_id:
             return jsonify({'error': 'Tur ID alanı gerekli'}), 400
+            
+        # Tur varlığını kontrol et
+        tur = Tur.query.get(tur_id)
+        if not tur:
+            return jsonify({'error': 'Tur bulunamadı'}), 404
+            
+        # Tur Seferi varsa kontrol et
+        if tur_sefer_id:
+            tur_seferi = TurSeferi.query.get(tur_sefer_id)
+            if not tur_seferi:
+                return jsonify({'error': 'Tur seferi bulunamadı'}), 404
+            # Tur seferinden tur_id'yi al
+            tur_id = tur_seferi.tur_id
+        else:
+            # Turla ilişkili aktif bir sefer bul
+            tur_seferi = TurSeferi.query.filter_by(tur_id=tur_id, durum='aktif').first()
+            
+            # Aktif sefer yoksa yeni bir tane oluştur
+            if not tur_seferi:
+                print("Aktif tur seferi bulunamadı, yeni bir sefer oluşturuluyor...")
+                # Bugünden başlayarak 7 gün sonrası için bir sefer oluştur
+                bugun = datetime.now().date()
+                bitis = bugun + timedelta(days=7)
+                
+                yeni_sefer = TurSeferi(
+                    tur_id=tur_id,
+                    baslangic_tarihi=bugun,
+                    bitis_tarihi=bitis,
+                    kontenjan=20,  # Varsayılan kontenjan
+                    kalan_kontenjan=20,
+                    durum='aktif'
+                )
+                db.session.add(yeni_sefer)
+                db.session.flush()  # ID oluşturmak için flush yap
+                
+                print(f"Yeni tur seferi oluşturuldu. ID: {yeni_sefer.id}")
+                tur_seferi = yeni_sefer
+                
+            tur_sefer_id = tur_seferi.id
             
         # ÖNEMLİ: Önce müşteriyi kontrol et, yoksa oluştur
         email = data.get('email', '')
@@ -55,10 +95,11 @@ def create_rezervasyon():
         except ValueError:
             tarih = datetime.now().date()
         
-        # Rezervasyon oluştur - Müşteri ID'sini de ekle
+        # Rezervasyon oluştur - Tur Seferi ID'sini de ekle
         rezervasyon = Rezervasyon(
             tur_id=tur_id,
-            musteri_id=musteri.id,  # Müşteri ID'sini ekleyin
+            tur_sefer_id=tur_sefer_id,  # Tur seferi ID'sini ekle
+            musteri_id=musteri.id,
             ad=data.get('ad', 'İsimsiz'),
             soyad=data.get('soyad', 'Müşteri'),
             email=email or 'otomatic@example.com',
@@ -71,6 +112,7 @@ def create_rezervasyon():
         
         print("REZERVASYON OLUŞTURULACAK:", {
             'tur_id': rezervasyon.tur_id,
+            'tur_sefer_id': rezervasyon.tur_sefer_id,  # Log'a tur_sefer_id ekle
             'ad': rezervasyon.ad,
             'soyad': rezervasyon.soyad,
             'email': rezervasyon.email,

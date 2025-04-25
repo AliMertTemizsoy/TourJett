@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from app import db
 from app.models import Musteri
 from datetime import datetime
@@ -31,6 +31,9 @@ def login():
             
         if not check_password_hash(musteri.password_hash, password):
             return jsonify({'error': 'Geçersiz şifre'}), 401
+
+        # Store user ID in session after successful login
+        session['user_id'] = musteri.id
             
         # Başarılı login
         return jsonify({
@@ -102,3 +105,31 @@ def signup():
         db.session.rollback()
         print("Signup hatası:", str(e))
         return jsonify({'error': str(e)}), 500
+
+@auth_bp.route('/profile', methods=['GET'])
+def get_profile():
+    user_id = session.get('user_id')
+    
+    if not user_id:
+        return jsonify({'error': 'Authentication required'}), 401
+
+    musteri = Musteri.query.get(user_id)
+
+    if not musteri:
+        return jsonify({'error': 'User not found'}), 404
+
+    return jsonify({
+        'id': musteri.id,
+        'ad': musteri.ad,
+        'soyad': musteri.soyad,
+        'email': musteri.email,
+        'telefon': musteri.telefon,
+        'adres': musteri.adres,
+        'tc_kimlik': musteri.tc_kimlik,
+        'dogum_tarihi': musteri.dogum_tarihi.isoformat() if musteri.dogum_tarihi else None
+    })
+
+@auth_bp.route('/logout', methods=['POST'])
+def logout():
+    session.pop('user_id', None)
+    return jsonify({'success': True, 'message': 'Logout successful'})
