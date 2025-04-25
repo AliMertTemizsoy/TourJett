@@ -50,6 +50,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
+            // Admin girişi kontrolü - updated with proper email format
+            if ((email === 'admin@admin.com' || email === 'admin') && password === 'admin') {
+                console.log('Admin girişi tespit edildi');
+                // Admin bilgilerini sessionStorage'a kaydet
+                sessionStorage.setItem('currentUser', JSON.stringify({
+                    id: 'admin',
+                    name: 'Admin',
+                    surname: 'User',
+                    email: 'admin@admin.com',
+                    role: 'admin'
+                }));
+                
+                // Dashboard sayfasına yönlendir
+                window.location.href = 'dashboard.html';
+                return;
+            }
+            
             try {
                 // API.js'den loginUser fonksiyonunu çağırın
                 if (typeof window.loginUser === 'function') {
