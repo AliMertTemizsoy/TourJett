@@ -14,34 +14,34 @@ document.addEventListener('DOMContentLoaded', async function() {
     const urlParams = new URLSearchParams(window.location.search);
     const turId = urlParams.get('tur_id');
 
-    // Giriş yapmış kullanıcı bilgilerini kontrol et
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    // Giriş yapmış kullanıcı bilgilerini kontrol et - localStorage ve sessionStorage'dan kontrol et
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || sessionStorage.getItem('currentUser') || '{}');
     
     // Kullanıcı oturumu varsa bilgileri otomatik doldur
     if (currentUser && currentUser.id) {
         console.log("Mevcut kullanıcı bilgileri:", currentUser);
         
-        // Form alanlarını doldur - Sorun çözümü burada
-        if (document.getElementById('firstName')) 
-            document.getElementById('firstName').value = currentUser.name || 'Test';
+        // Form alanlarını doldur - Sadece mevcut bilgileri kullan, varsayılan değer kullanma
+        if (document.getElementById('firstName') && currentUser.name) {
+            document.getElementById('firstName').value = currentUser.name;
+        }
             
-        if (document.getElementById('lastName')) 
-            document.getElementById('lastName').value = currentUser.surname || 'User';
+        if (document.getElementById('lastName') && currentUser.surname) {
+            document.getElementById('lastName').value = currentUser.surname;
+        }
             
-        if (document.getElementById('email')) {
-            document.getElementById('email').value = currentUser.email || 'deneme@gmail.com';
+        if (document.getElementById('email') && currentUser.email) {
+            document.getElementById('email').value = currentUser.email;
             document.getElementById('email').readOnly = true;
         }
         
-        // Telefon alanını her durumda doldur - ÖNEMLİ ÇÖZÜM NOKTASI
-        if (document.getElementById('phone')) {
-            // Kullanıcı bilgilerinde telefon yoksa varsayılan bir değer kullan
-            document.getElementById('phone').value = currentUser.phone || '5321234567';
+        if (document.getElementById('phone') && currentUser.phone) {
+            document.getElementById('phone').value = currentUser.phone;
             document.getElementById('phone').readOnly = true;
         }
         
-        if (document.getElementById('nationalId')) {
-            document.getElementById('nationalId').value = currentUser.nationalId || '';
+        if (document.getElementById('nationalId') && currentUser.nationalId) {
+            document.getElementById('nationalId').value = currentUser.nationalId;
             document.getElementById('nationalId').readOnly = true;
         }
     } else {

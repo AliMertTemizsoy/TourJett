@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Login Page</title>
+  <title>Tour Jett - Login</title>
   <link rel="stylesheet" href="assets/css/login_style.css">
   <style>
     .error-message {
@@ -14,6 +14,18 @@
   </style>
 </head>
 <body>
+
+<!-- Login status check - Redirect if already logged in -->
+<script>
+  // Check if user is already logged in
+  document.addEventListener('DOMContentLoaded', function() {
+    const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+    if (currentUser && currentUser.id) {
+      console.log('User already logged in, redirecting to logged-in user page');
+      window.location.href = 'index_loggedinuser.html';
+    }
+  });
+</script>
 
 <section class="forms-section">
   <h1 class="section-title">Join Now!</h1>
@@ -87,24 +99,7 @@
     </div>
   </div>
 </section>
-<!-- Sayfanın sonuna, diğer scriptlerden sonra -->
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-      // Kullanıcı bilgilerini getir
-      const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || localStorage.getItem('currentUser') || '{}');
-      
-      if (currentUser && currentUser.id) {
-          // Form alanlarını doldur
-          document.getElementById('firstName').value = currentUser.name || '';
-          document.getElementById('lastName').value = currentUser.surname || '';
-          document.getElementById('email').value = currentUser.email || '';
-          document.getElementById('phone').value = currentUser.phone || '';
-          document.getElementById('nationalId').value = currentUser.nationalId || '';
-          
-          console.log('Kullanıcı bilgileri formda dolduruldu');
-      }
-  });
-</script>
+
 <script src="assets/js/api.js" defer></script>
 <script src="assets/js/login.js" defer></script>
 </body>

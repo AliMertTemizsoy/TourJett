@@ -163,8 +163,8 @@ document.addEventListener('DOMContentLoaded', function() {
             nationalId: userData.tc_kimlik  // API'den gelen alan adı "tc_kimlik" olmalı
         }));
         
-        // Ana sayfaya yönlendir
-        window.location.href = 'index.html';
+        // Giriş yapan kullanıcı için özel ana sayfaya yönlendir
+        window.location.href = 'index_loggedinuser.html';
     }
     
     function loginOneTime(userData) {
@@ -178,8 +178,8 @@ document.addEventListener('DOMContentLoaded', function() {
             nationalId: userData.tc_kimlik
         }));
         
-        // Ana sayfaya yönlendir
-        window.location.href = 'index.html';
+        // Giriş yapan kullanıcı için özel ana sayfaya yönlendir
+        window.location.href = 'index_loggedinuser.html';
     }
     
     // Logout parametresi true ise kontrolü atla
@@ -190,8 +190,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Oturum kontrolü - zaten giriş yapılmışsa ana sayfaya yönlendir
     const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}'); 
     if (currentUser.id) {
-        // Kullanıcı zaten giriş yapmış, ana sayfaya yönlendir
-        console.log('Kullanıcı zaten giriş yapmış, ana sayfaya yönlendiriliyor...');
-        window.location.href = 'index.html';
+        // Kullanıcı zaten giriş yapmış, giriş yapan kullanıcı için özel ana sayfaya yönlendir
+        console.log('Kullanıcı zaten giriş yapmış, giriş yapan kullanıcı için özel ana sayfaya yönlendiriliyor...');
+        window.location.href = 'index_loggedinuser.html';
     }
 });

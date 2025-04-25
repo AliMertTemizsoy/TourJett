@@ -445,44 +445,6 @@
     <div class="loading-overlay" id="loadingOverlay">
         <div class="spinner"></div>
     </div>
-    <!-- booking.html sayfasının en altına, diğer scriptlerden önce ekleyin -->
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Rezervasyon sayfası yüklendi - kullanıcı bilgileri kontrol ediliyor');
-        
-        // Giriş yapılmış kullanıcı bilgilerini getir
-        const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
-        console.log('Mevcut kullanıcı:', currentUser);
-        
-        if (currentUser && currentUser.id) {
-            // Tarayıcı konsolunda kullanıcı bilgilerini göster (debug için)
-            console.log('Doldurulacak bilgiler:', {
-                firstName: currentUser.name,
-                lastName: currentUser.surname,
-                email: currentUser.email,
-                phone: currentUser.phone,
-                nationalId: currentUser.nationalId
-            });
-            
-            // Form alanlarını doldur
-            const firstNameField = document.querySelector('input[id="firstName"]');
-            const lastNameField = document.querySelector('input[id="lastName"]');
-            const emailField = document.querySelector('input[id="email"]');
-            const phoneField = document.querySelector('input[id="phone"]');
-            const nationalIdField = document.querySelector('input[id="nationalId"]');
-            
-            if (firstNameField && currentUser.name) firstNameField.value = currentUser.name;
-            if (lastNameField && currentUser.surname) lastNameField.value = currentUser.surname;
-            if (emailField && currentUser.email) emailField.value = currentUser.email;
-            if (phoneField && currentUser.phone) phoneField.value = currentUser.phone;
-            if (nationalIdField && currentUser.nationalId) nationalIdField.value = currentUser.nationalId;
-            
-            console.log('Form alanları dolduruldu');
-        } else {
-            console.log('Kullanıcı giriş yapmamış veya bilgileri bulunamadı');
-        }
-    });
-    </script>
     
     <script src="assets/js/api.js"></script>
     <script src="assets/js/booking.js"></script>

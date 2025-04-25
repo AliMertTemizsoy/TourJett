@@ -8,6 +8,20 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
+		 <!-- Required early auth check -->
+		<script>
+			// Simple check - must have user data in session to view this page
+			(function() {
+				const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+				if (!currentUser || !currentUser.id) {
+					console.log('No authenticated user found, redirecting to login page');
+					window.location.href = 'login.html';
+				} else {
+					console.log('Authenticated user:', currentUser.name);
+				}
+			})();
+		</script>
+
 		<!--font-family-->
 		<link href="https://fonts.googleapis.com/css?family=Rufina:400,700" rel="stylesheet" />
 
@@ -97,6 +111,10 @@
 										<li class="smooth-menu"><a href="#subs">subscription</a></li>
 										<li class="user-greeting">
                                             <span class="greetings-btn">Welcome, <span id="user-name">Guest</span></span>
+                                        </li>
+                                        <!-- Add Logout Button -->
+                                        <li class="nav-item">
+                                            <a href="#" class="nav-link" id="logout-button">Logout</a>
                                         </li>
 									   <!--/.project-btn--> 
 									</ul>
@@ -1399,25 +1417,88 @@
 		<!--Custom JS-->
 		<script src="assets/js/custom.js"></script>
 
-
-	</body>
-
-    <script>
+		<script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Retrieve user data from localStorage
-            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-            
-            // Get the user name element
             const userNameElement = document.getElementById('user-name');
+            const logoutButton = document.getElementById('logout-button');
+
+            // First check if the user is in sessionStorage (from login.js)
+            const sessionUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
             
-            // Check if user data exists and update the name
-            if (currentUser && currentUser.name && currentUser.surname) {
-                userNameElement.textContent = `${currentUser.name} ${currentUser.surname}`;
+            if (sessionUser && sessionUser.id) {
+                // User is in sessionStorage, use that data directly
+                userNameElement.textContent = `${sessionUser.name || 'User'} ${sessionUser.surname || ''}`.trim();
+                console.log('User session found in sessionStorage:', sessionUser);
+                
+                // Setup logout button
+                if (logoutButton) {
+                    logoutButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        // Clear session storage
+                        sessionStorage.removeItem('currentUser');
+                        localStorage.removeItem('currentUser');
+                        
+                        // Try API logout if possible
+                        try {
+                            if (typeof window.logoutUserApi === 'function') {
+                                window.logoutUserApi();
+                            }
+                        } catch (err) {
+                            console.log('API logout error:', err);
+                        } finally {
+                            // Always redirect to login page
+                            window.location.href = 'login.html?logout=true';
+                        }
+                    });
+                }
             } else {
-                // Fallback if no user data is found
-                userNameElement.textContent = 'Guest';
+                // No session in storage, try API as a backup
+                getUserProfile().then(userProfile => {
+                    if (userProfile && userProfile.id) {
+                        // Store user data in sessionStorage for consistency
+                        sessionStorage.setItem('currentUser', JSON.stringify({
+                            id: userProfile.id,
+                            name: userProfile.ad,
+                            surname: userProfile.soyad,
+                            email: userProfile.email,
+                            phone: userProfile.telefon,
+                            nationalId: userProfile.tc_kimlik
+                        }));
+                        
+                        userNameElement.textContent = `${userProfile.ad || 'User'} ${userProfile.soyad || ''}`.trim();
+                        console.log('User profile loaded from API and stored:', userProfile);
+                        
+                        // Setup logout button
+                        if (logoutButton) {
+                            logoutButton.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                // Clear storage
+                                sessionStorage.removeItem('currentUser');
+                                localStorage.removeItem('currentUser');
+                                
+                                // API logout
+                                logoutUserApi().then(() => {
+                                    window.location.href = 'login.html?logout=true';
+                                }).catch(error => {
+                                    console.error('Logout failed:', error);
+                                    // Redirect even on error
+                                    window.location.href = 'login.html?logout=true';
+                                });
+                            });
+                        }
+                    } else {
+                        // Not authenticated - redirect to login
+                        console.log('User not authenticated, redirecting to login page.');
+                        window.location.href = 'login.html';
+                    }
+                }).catch(error => {
+                    console.error('Error checking user profile:', error);
+                    window.location.href = 'login.html';
+                });
             }
         });
-        </script>
+    </script>
+
+	</body>
 
 </html>

@@ -277,6 +277,68 @@ async function createDegerlendirme(data) {
     }
 }
 
+// Function to get current user's profile
+async function getUserProfile() {
+    // No MOCK_MODE needed here, relies on backend session/authentication
+    try {
+        const response = await fetch(`${API_BASE_URL}/auth/profile`, {
+            method: 'GET',
+            headers: {
+                // Include credentials (like cookies) if your setup requires it
+                // 'Credentials': 'include' 
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            // If unauthorized (401) or other errors, treat as not logged in
+            if (response.status === 401) {
+                console.log('User not authenticated.');
+                return null; // Indicate no user profile found
+            }
+            throw new Error(data.error || 'Failed to fetch profile');
+        }
+        
+        return data; // Return the user profile data
+    } catch (error) {
+        console.error('Get profile error:', error);
+        // Don't throw here, just return null to indicate failure/not logged in
+        return null; 
+    }
+}
+
+// Function to logout user via API
+async function logoutUserApi() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+                // Include credentials if needed
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Logout failed');
+        }
+        
+        // Clear local/session storage upon successful API logout
+        localStorage.removeItem('currentUser');
+        sessionStorage.removeItem('currentUser');
+        console.log('Logout successful, user data cleared.');
+        return data;
+    } catch (error) {
+        console.error('Logout error:', error);
+        // Still clear local storage as a fallback?
+        localStorage.removeItem('currentUser');
+        sessionStorage.removeItem('currentUser');
+        throw error;
+    }
+}
+
 // Export fonksiyonları
 window.getTurlar = getTurlar;
 window.getTurById = getTurById;
@@ -287,3 +349,5 @@ window.getBolgeler = getBolgeler;
 window.getDestinasyonlar = getDestinasyonlar;
 window.getDegerlendirmeler = getDegerlendirmeler;
 window.createDegerlendirme = createDegerlendirme;
+window.getUserProfile = getUserProfile;
+window.logoutUserApi = logoutUserApi;
