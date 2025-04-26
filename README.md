@@ -1,6 +1,3 @@
-# TourJett - Travel Agency Platform
-
-
 ## Overview
 
 TourJett is a comprehensive travel agency platform that enables users to browse, book, and manage tour packages around the world. Our platform provides an intuitive interface for tourists to explore destinations and make reservations while offering robust management tools for administrators.
