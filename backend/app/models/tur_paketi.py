@@ -10,10 +10,13 @@ class TurPaketi(db.Model):
     aciklama = db.Column(db.Text)
     sure = db.Column(db.String(50))
     fiyat = db.Column(db.Float, nullable=False, default=0)
+    kar = db.Column(db.Float, default=0)  # Tour profit amount
     kapasite = db.Column(db.Integer, default=20)
-    baslangic_bolge_id = db.Column(db.Integer, db.ForeignKey('bolgeler.id'), nullable=True)  # nullable=True ekleyin
+    baslangic_bolge_id = db.Column(db.Integer, db.ForeignKey('bolgeler.id'), nullable=True)
     durum = db.Column(db.String(50), default="Aktif")
     olusturma_tarihi = db.Column(db.DateTime, default=datetime.utcnow)
+    surucu_id = db.Column(db.Integer, db.ForeignKey('surucu.id'))  # Driver assignment
+    arac_tipi = db.Column(db.String(100))  # Car type for the tour package
     
     # JSON format için ekleyin
     tur_tarihi = db.Column(db.Date, nullable=True)  # Nullable olarak ekleyin
@@ -23,6 +26,7 @@ class TurPaketi(db.Model):
 
     # İlişkiler
     baslangic_bolge = db.relationship('Bolge', foreign_keys=[baslangic_bolge_id])
+    surucu = db.relationship('Surucu', backref='tur_paketleri')
     tur_destinasyonlar = db.relationship('TurDestinasyon', 
                                         backref='tur_paketi', 
                                         lazy=True, 
@@ -30,6 +34,7 @@ class TurPaketi(db.Model):
     
     def __repr__(self):
         return f'<TurPaketi {self.ad}>'
+    
     def to_dict(self):
         """Model verilerini JSON'a uygun sözlük olarak döndürür"""
         return {
@@ -38,13 +43,16 @@ class TurPaketi(db.Model):
             'aciklama': self.aciklama,
             'sure': self.sure,
             'fiyat': float(self.fiyat),
+            'kar': float(self.kar) if self.kar is not None else 0,
             'kapasite': self.kapasite,
             'konum': self.konum,
             'max_katilimci': self.max_katilimci,
             'tur_tarihi': self.tur_tarihi.strftime('%Y-%m-%d') if self.tur_tarihi else None,
             'resim_url': self.resim_url,
             'durum': self.durum,
-            'baslangic_bolge_id': self.baslangic_bolge_id
+            'arac_tipi': self.arac_tipi,
+            'baslangic_bolge_id': self.baslangic_bolge_id,
+            'surucu': self.surucu.to_dict() if self.surucu else None
         }
 
 class TurDestinasyon(db.Model):

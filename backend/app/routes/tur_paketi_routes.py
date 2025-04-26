@@ -46,6 +46,11 @@ def create_tur_paketi():
             fiyat = 0.0
             
         try:
+            kar = float(data.get('kar', 0))
+        except (ValueError, TypeError):
+            kar = 0.0
+            
+        try:
             kapasite = int(data.get('kapasite', 20))
         except (ValueError, TypeError):
             kapasite = 20
@@ -64,19 +69,22 @@ def create_tur_paketi():
                 print("Geçersiz tarih formatı")
                 tur_tarihi = None
         
-        # Yeni tur paketi oluştur - tüm alanlar güvenli şekilde belirtildi
+        # Yeni tur paketi oluştur - yeni alanlar eklendi (kar, surucu_id, arac_tipi)
         yeni_paket = TurPaketi(
             ad=data.get('ad'),
             aciklama=data.get('aciklama'),
             sure=data.get('sure'),
             fiyat=fiyat,
+            kar=kar,  # Yeni eklenen kar alanı
             kapasite=kapasite,
             baslangic_bolge_id=data.get('baslangic_bolge_id'),
             konum=data.get('konum'),
             tur_tarihi=tur_tarihi,
             resim_url=data.get('resim_url'),
             max_katilimci=max_katilimci,
-            durum=data.get('durum', 'Aktif')
+            durum=data.get('durum', 'Aktif'),
+            surucu_id=data.get('surucu_id'),  # Yeni eklenen sürücü ID alanı
+            arac_tipi=data.get('arac_tipi')   # Yeni eklenen araç tipi alanı
         )
         
         db.session.add(yeni_paket)

@@ -94,6 +94,30 @@ def create_app(config=None):
             app.register_blueprint(tur_paketi_bp)
         except ImportError:
             print("tur_paketi_routes import edilemedi")
+            
+        try:
+            from app.routes.dashboard_routes import dashboard_bp
+            app.register_blueprint(dashboard_bp)
+        except ImportError:
+            print("dashboard_routes import edilemedi")
+            
+        try:
+            from app.routes.rehber_routes import rehber_bp
+            app.register_blueprint(rehber_bp)
+        except ImportError:
+            print("rehber_routes import edilemedi")
+            
+        try:
+            from app.routes.surucu_routes import surucu_bp
+            app.register_blueprint(surucu_bp)
+        except ImportError:
+            print("surucu_routes import edilemedi")
+            
+        try:
+            from app.routes.konum_routes import konum_bp
+            app.register_blueprint(konum_bp)
+        except ImportError:
+            print("konum_routes import edilemedi")
     
     except Exception as e:
         print(f"Blueprint kayıt hatası: {str(e)}")
@@ -113,6 +137,14 @@ def create_app(config=None):
             return app.send_static_file('login.html')
         except Exception as e:
             return f"Error serving login.html: {str(e)}", 500
+    
+    # Dashboard sayfası rotası
+    @app.route('/dashboard.html')
+    def dashboard_page():
+        try:
+            return app.send_static_file('dashboard.html')
+        except Exception as e:
+            return f"Error serving dashboard.html: {str(e)}", 500
     
     # Test rotasını ekle
     @app.route('/test-db')
