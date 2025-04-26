@@ -1,0 +1,2320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tour Management System - Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #f5f5f5;
+            --dark: #34495e;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: var(--primary);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            transition: all 0.3s;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h3 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .menu-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .page-header h2 {
+            font-size: 1.8rem;
+            color: var(--dark);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-info .user-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Dashboard Stats */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .stat-info h4 {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stat-info p {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--dark);
+        }
+
+        /* Recent Activities & Charts */
+        .dashboard-widgets {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .widget {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .widget-header h3 {
+            color: var(--dark);
+            font-size: 1.2rem;
+        }
+
+        /* Table Styles */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th, .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        .data-table th {
+            background-color: #f8f9fa;
+            color: var(--dark);
+        }
+
+        .data-table tr {
+            border-bottom: 1px solid #eee;
+        }
+
+        .data-table tr:last-child {
+            border-bottom: none;
+        }
+
+        .data-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-confirmed {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background-color: rgba(243, 156, 18, 0.2);
+            color: var(--warning);
+        }
+
+        .status-cancelled {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: var(--danger);
+        }
+
+        /* Forms */
+        .form-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+            gap: 20px;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--secondary);
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Tab System */
+        .tab-container {
+            margin-bottom: 20px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            overflow-x: auto;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .tab-button {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-button.active {
+            color: var(--secondary);
+            border-bottom-color: var(--secondary);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px 0;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+                overflow: hidden;
+            }
+
+            .sidebar .menu-text {
+                display: none;
+            }
+
+            .sidebar-header h3 {
+                display: none;
+            }
+
+            .sidebar-header p {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 70px;
+            }
+
+            .dashboard-widgets {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .action-btn {
+            padding: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .action-btn.edit {
+            color: var(--secondary);
+        }
+
+        .action-btn.delete {
+            color: var(--danger);
+        }
+
+        .action-btn:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        /* Chart container */
+        .chart-container {
+            height: 250px;
+            position: relative;
+        }
+
+        /* Content sections */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* Search and filter */
+        .filter-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            position: relative;
+            min-width: 200px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+        }
+
+        .filter-select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-width: 150px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+            animation: modalFadeIn 0.3s;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-header h3 {
+            color: var(--dark);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #888;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3>Tour Management</h3>
+            <p>Admin Panel</p>
+        </div>
+        <div class="sidebar-menu">
+            <a href="#" class="menu-item active" data-section="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                <span class="menu-text">Dashboard</span>
+            </a>
+            <a href="#" class="menu-item" data-section="tours">
+                <i class="fas fa-map-marked-alt"></i>
+                <span class="menu-text">Tour Management</span>
+            </a>
+            <a href="#" class="menu-item" data-section="reports">
+                <i class="fas fa-chart-line"></i>
+                <span class="menu-text">Reports</span>
+            </a>
+            <a href="#" class="menu-item" data-section="resources">
+                <i class="fas fa-boxes"></i>
+                <span class="menu-text">Resources</span>
+            </a>
+            <a href="#" class="menu-item" data-section="feedback">
+                <i class="fas fa-comments"></i>
+                <span class="menu-text">Feedback</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-sign-out-alt"></i>
+                <span class="menu-text">Logout</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Dashboard Section -->
+        <div class="content-section active" id="dashboard">
+            <div class="page-header">
+                <h2>Dashboard Overview</h2>
+                <div class="user-info">
+                    <div class="user-img">A</div>
+                    <div>Admin</div>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: var(--secondary);">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h4>Total Bookings</h4>
+                        <p>842</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: var(--success);">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h4>Revenue</h4>
+                        <p>₺125,980</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: var(--warning);">
+                        <i class="fas fa-route"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h4>Active Tours</h4>
+                        <p>15</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: var(--danger);">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h4>Customers</h4>
+                        <p>576</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Widgets -->
+            <div class="dashboard-widgets">
+                <!-- Recent Bookings -->
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3>Recent Bookings</h3>
+                        <button class="btn btn-primary">View All</button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Customer</th>
+                                <th>Tour</th>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#B9385</td>
+                                <td>Mehmet Yılmaz</td>
+                                <td>Cappadocia Adventure</td>
+                                <td>24 Apr 2025</td>
+                                <td>₺2,350</td>
+                                <td><span class="status-badge status-confirmed">Confirmed</span></td>
+                            </tr>
+                            <tr>
+                                <td>#B9384</td>
+                                <td>Ayşe Kaya</td>
+                                <td>Antalya Beach Tour</td>
+                                <td>23 Apr 2025</td>
+                                <td>₺1,800</td>
+                                <td><span class="status-badge status-pending">Pending</span></td>
+                            </tr>
+                            <tr>
+                                <td>#B9383</td>
+                                <td>Ali Demir</td>
+                                <td>Istanbul City Tour</td>
+                                <td>22 Apr 2025</td>
+                                <td>₺950</td>
+                                <td><span class="status-badge status-confirmed">Confirmed</span></td>
+                            </tr>
+                            <tr>
+                                <td>#B9382</td>
+                                <td>Zeynep Şahin</td>
+                                <td>Pamukkale & Hierapolis</td>
+                                <td>21 Apr 2025</td>
+                                <td>₺2,100</td>
+                                <td><span class="status-badge status-cancelled">Cancelled</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Revenue Chart -->
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3>Revenue Overview</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Tours -->
+            <div class="widget">
+                <div class="widget-header">
+                    <h3>Upcoming Tours</h3>
+                    <button class="btn btn-primary">View Calendar</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Tour Name</th>
+                            <th>Destination</th>
+                            <th>Date</th>
+                            <th>Bookings</th>
+                            <th>Guide</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Cappadocia Hot Air Balloon</td>
+                            <td>Nevşehir</td>
+                            <td>26 Apr 2025</td>
+                            <td>12/15</td>
+                            <td>Hakan Yılmaz</td>
+                            <td><span class="status-badge status-confirmed">Active</span></td>
+                        </tr>
+                        <tr>
+                            <td>Ephesus Ancient City</td>
+                            <td>İzmir</td>
+                            <td>27 Apr 2025</td>
+                            <td>18/20</td>
+                            <td>Elif Kara</td>
+                            <td><span class="status-badge status-confirmed">Active</span></td>
+                        </tr>
+                        <tr>
+                            <td>Blue Cruise</td>
+                            <td>Fethiye</td>
+                            <td>28 Apr 2025</td>
+                            <td>8/10</td>
+                            <td>Mustafa Demir</td>
+                            <td><span class="status-badge status-pending">Pending</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tour Management Section -->
+        <div class="content-section" id="tours">
+            <div class="page-header">
+                <h2>Tour Management</h2>
+                <button class="btn btn-primary" id="openAddTourModal">Add New Tour</button>
+            </div>
+
+            <div class="filter-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search tours...">
+                </div>
+                <select class="filter-select">
+                    <option value="">All Destinations</option>
+                    <option value="istanbul">Istanbul</option>
+                    <option value="cappadocia">Cappadocia</option>
+                    <option value="antalya">Antalya</option>
+                    <option value="pamukkale">Pamukkale</option>
+                </select>
+                <select class="filter-select">
+                    <option value="">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+
+            <div class="widget">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Tour ID</th>
+                            <th>Tour Name</th>
+                            <th>Destination</th>
+                            <th>Duration</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tourTableBody">
+                        <tr>
+                            <td>T001</td>
+                            <td>Istanbul Historical Tour</td>
+                            <td>Istanbul</td>
+                            <td>1 Day</td>
+                            <td>₺850</td>
+                            <td><span class="status-badge status-confirmed">Active</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn delete"><i class="fas fa-trash-alt"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>T002</td>
+                            <td>Cappadocia Hot Air Balloon</td>
+                            <td>Nevşehir</td>
+                            <td>Half Day</td>
+                            <td>₺2,200</td>
+                            <td><span class="status-badge status-confirmed">Active</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn delete"><i class="fas fa-trash-alt"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>T003</td>
+                            <td>Antalya Beach Tour</td>
+                            <td>Antalya</td>
+                            <td>1 Day</td>
+                            <td>₺1,500</td>
+                            <td><span class="status-badge status-confirmed">Active</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn delete"><i class="fas fa-trash-alt"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>T004</td>
+                            <td>Pamukkale & Hierapolis</td>
+                            <td>Denizli</td>
+                            <td>1 Day</td>
+                            <td>₺1,800</td>
+                            <td><span class="status-badge status-confirmed">Active</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn delete"><i class="fas fa-trash-alt"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>T005</td>
+                            <td>Ephesus Ancient City</td>
+                            <td>İzmir</td>
+                            <td>1 Day</td>
+                            <td>₺1,600</td>
+                            <td><span class="status-badge status-pending">Inactive</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn delete"><i class="fas fa-trash-alt"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Add/Edit Tour Modal -->
+        <div class="modal" id="tourModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Add New Tour</h3>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <form id="tourForm">
+                    <input type="hidden" id="tourId" name="id">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tourName">Tour Name</label>
+                            <input type="text" id="tourName" name="ad" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="tourRegion">Starting Region</label>
+                            <select id="tourRegion" name="baslangic_bolge_id" class="form-control" required>
+                                <option value="">Select Region</option>
+                                <!-- Will be populated from API -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tourLocation">Location</label>
+                            <input type="text" id="tourLocation" name="konum" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="tourPrice">Price (₺)</label>
+                            <input type="number" id="tourPrice" name="fiyat" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tourDuration">Duration</label>
+                            <input type="text" id="tourDuration" name="sure" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="tourDate">Tour Date</label>
+                            <input type="date" id="tourDate" name="tur_tarihi" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tourMaxParticipants">Max Participants</label>
+                            <input type="number" id="tourMaxParticipants" name="max_katilimci" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="tourStatus">Status</label>
+                            <select id="tourStatus" name="durum" class="form-control" required>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tourGuide">Guide</label>
+                            <select id="tourGuide" name="rehber" class="form-control" required>
+                                <option value="">Select Guide</option>
+                                <!-- Will be populated from API -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="tourDriver">Driver</label>
+                            <select id="tourDriver" name="sofor" class="form-control" required>
+                                <option value="">Select Driver</option>
+                                <!-- Will be populated from API -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tourVehicle">Vehicle</label>
+                            <select id="tourVehicle" name="arac_bilgisi" class="form-control" required>
+                                <option value="">Select Vehicle</option>
+                                <!-- Will be populated from API -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tourDescription">Description</label>
+                            <textarea id="tourDescription" name="aciklama" class="form-control" rows="3" required></textarea>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="text-align: right;">
+                            <button type="button" class="btn btn-danger" id="cancelTour">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Tour</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Reports Section -->
+        <div class="content-section" id="reports">
+            <div class="page-header">
+                <h2>Reports</h2>
+            </div>
+
+            <div class="tab-container">
+                <div class="tab-buttons">
+                    <button class="tab-button active" data-tab="financial">Financial Overview</button>
+                    <button class="tab-button" data-tab="sales">Sales by Tour</button>
+                </div>
+
+                <div class="tab-content active" id="financial">
+                    <div class="stats-container">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background-color: var(--success);">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h4>Total Revenue</h4>
+                                <p>₺125,980</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background-color: var(--danger);">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h4>Total Expenses</h4>
+                                <p>₺75,450</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background-color: var(--success);">
+                                <i class="fas fa-ticket-alt"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h4>New Reservations</h4>
+                                <p>28</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="widget">
+                        <div class="widget-header">
+                            <h3>Revenue Overview</h3>
+                            <select class="filter-select">
+                                <option value="monthly">Monthly</option>
+                                <option value="quarterly">Quarterly</option>
+                                <option value="yearly">Yearly</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="revenueBreakdownChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="sales">
+                    <!-- Analysis section -->
+                    <div class="tab-container">
+                        <div class="tab-buttons">
+                            <button class="tab-button active" data-tab="destination-analysis">Destination Analysis</button>
+                        </div>
+
+                        <div class="tab-content active" id="destination-analysis">
+                            <div class="stats-container">
+                                <div class="stat-card">
+                                    <div class="stat-icon" style="background-color: var(--secondary);">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                    </div>
+                                    <div class="stat-info">
+                                        <h4>Top Destination</h4>
+                                        <p>Cappadocia</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon" style="background-color: var(--success);">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="stat-info">
+                                        <h4>Most Visitors</h4>
+                                        <p>265</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon" style="background-color: var(--warning);">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <div class="stat-info">
+                                        <h4>Highest Rating</h4>
+                                        <p>4.9/5.0</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="widget">
+                                <div class="widget-header">
+                                    <h3>Destination Comparison</h3>
+                                    <select class="filter-select" id="destinationMetric">
+                                        <option value="visitors">Visitors</option>
+                                        <option value="revenue">Revenue</option>
+                                        <option value="rating">Rating</option>
+                                    </select>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="destinationsChart"></canvas>
+                                </div>
+                            </div>
+
+                            <div class="widget">
+                                <div class="widget-header">
+                                    <h3>Destination Performance</h3>
+                                    <div class="filter-container">
+                                        <select class="filter-select" id="destinationSort">
+                                            <option value="bookings">Sort by Bookings</option>
+                                            <option value="revenue">Sort by Revenue</option>
+                                            <option value="rating">Sort by Rating</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <table class="data-table" id="destinationTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Destination</th>
+                                            <th>Total Bookings</th>
+                                            <th>Revenue</th>
+                                            <th>Avg. Rating</th>
+                                            <th>Details</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Cappadocia</td>
+                                            <td>265</td>
+                                            <td>₺583,000</td>
+                                            <td>4.9</td>
+                                            <td><button class="btn btn-primary btn-sm view-details" data-destination="Cappadocia">View</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Istanbul</td>
+                                            <td>248</td>
+                                            <td>₺496,000</td>
+                                            <td>4.7</td>
+                                            <td><button class="btn btn-primary btn-sm view-details" data-destination="Istanbul">View</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Antalya</td>
+                                            <td>192</td>
+                                            <td>₺422,400</td>
+                                            <td>4.5</td>
+                                            <td><button class="btn btn-primary btn-sm view-details" data-destination="Antalya">View</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Pamukkale</td>
+                                            <td>137</td>
+                                            <td>₺246,600</td>
+                                            <td>4.8</td>
+                                            <td><button class="btn btn-primary btn-sm view-details" data-destination="Pamukkale">View</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Izmir</td>
+                                            <td>105</td>
+                                            <td>₺189,000</td>
+                                            <td>4.6</td>
+                                            <td><button class="btn btn-primary btn-sm view-details" data-destination="Izmir">View</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Bodrum</td>
+                                            <td>98</td>
+                                            <td>₺215,600</td>
+                                            <td>4.7</td>
+                                            <td><button class="btn btn-primary btn-sm view-details" data-destination="Bodrum">View</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resources Section -->
+        <div class="content-section" id="resources">
+            <div class="page-header">
+                <h2>Resources Management</h2>
+                <div>
+                    <button class="btn btn-primary" id="openAddResourceModal">Add New Resource</button>
+                </div>
+            </div>
+
+            <div class="tab-container">
+                <div class="tab-buttons">
+                    <button class="tab-button active" data-tab="destinations">Destinations</button>
+                    <button class="tab-button" data-tab="guides">Guides</button>
+                    <button class="tab-button" data-tab="drivers">Drivers</button>
+                    <button class="tab-button" data-tab="vehicles">Vehicles</button>
+                </div>
+
+                <!-- Destinations Tab -->
+                <div class="tab-content active" id="destinations">
+                    <div class="filter-container">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search destinations...">
+                        </div>
+                        <select class="filter-select">
+                            <option value="">All Regions</option>
+                            <option value="marmara">Marmara</option>
+                            <option value="aegean">Aegean</option>
+                            <option value="mediterranean">Mediterranean</option>
+                            <option value="central-anatolia">Central Anatolia</option>
+                        </select>
+                    </div>
+
+                    <div class="widget">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Destination</th>
+                                    <th>Region</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="destinationTableBody">
+                                <tr>
+                                    <td>D001</td>
+                                    <td>Istanbul</td>
+                                    <td>Marmara</td>
+                                    <td>Historical city with rich culture</td>
+                                    <td><span class="status-badge status-confirmed">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                            <button class="action-btn delete"><i class="fas fa-trash-alt"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>D002</td>
+                                    <td>Cappadocia</td>
+                                    <td>Central Anatolia</td>
+                                    <td>Famous for hot air balloons and unique landscapes</td>
+                                    <td><span class="status-badge status-confirmed">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                            <button class="action-btn delete"><i class="fas fa-trash-alt"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>D003</td>
+                                    <td>Antalya</td>
+                                    <td>Mediterranean</td>
+                                    <td>Beautiful beaches and resorts</td>
+                                    <td><span class="status-badge status-confirmed">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                            <button class="action-btn delete"><i class="fas fa-trash-alt"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Guides Tab -->
+                <div class="tab-content" id="guides">
+                    <div class="filter-container">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search guides...">
+                        </div>
+                        <select class="filter-select">
+                            <option value="">All Languages</option>
+                            <option value="turkish">Turkish</option>
+                            <option value="english">English</option>
+                            <option value="german">German</option>
+                            <option value="russian">Russian</option>
+                        </select>
+                    </div>
+
+                    <div class="widget">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Languages</th>
+                                    <th>Phone</th>
+                                    <th>Experience</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="guideTableBody">
+                                <tr>
+                                    <td>G001</td>
+                                    <td>Hakan Yılmaz</td>
+                                    <td>Turkish, English, German</td>
+                                    <td>+90 555 123 4567</td>
+                                    <td>5 years</td>
+                                    <td><span class="status-badge status-confirmed">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                            <button class="action-btn delete"><i class="fas fa-trash-alt"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>G002</td>
+                                    <td>Elif Kara</td>
+                                    <td>Turkish, English, Russian</td>
+                                    <td>+90 555 234 5678</td>
+                                    <td>7 years</td>
+                                    <td><span class="status-badge status-confirmed">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                            <button class="action-btn delete"><i class="fas fa-trash-alt"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>G003</td>
+                                    <td>Mehmet Şahin</td>
+                                    <td>Turkish, English</td>
+                                    <td>+90 555 345 6789</td>
+                                    <td>3 years</td>
+                                    <td><span class="status-badge status-pending">On Leave</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                            <button class="action-btn delete"><i class="fas fa-trash-alt"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Drivers Tab -->
+                <div class="tab-content" id="drivers">
+                    <div class="filter-container">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search drivers...">
+                        </div>
+                        <select class="filter-select">
+                            <option value="">All License Types</option>
+                            <option value="d">D (Bus)</option>
+                            <option value="b">B (Car)</option>
+                        </select>
+                    </div>
+
+                    <div class="widget">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>License Type</th>
+                                    <th>Phone</th>
+                                    <th>Experience</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="driverTableBody">
+                                <tr>
+                                    <td>D001</td>
+                                    <td>Ahmet Demir</td>
+                                    <td>D (Bus)</td>
+                                    <td>+90 555 456 7890</td>
+                                    <td>10 years</td>
+                                    <td><span class="status-badge status-confirmed">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                            <button class="action-btn delete"><i class="fas fa-trash-alt"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>D002</td>
+                                    <td>Murat Yıldız</td>
+                                    <td>D (Bus)</td>
+                                    <td>+90 555 567 8901</td>
+                                    <td>8 years</td>
+                                    <td><span class="status-badge status-confirmed">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                            <button class="action-btn delete"><i class="fas fa-trash-alt"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>D003</td>
+                                    <td>Kemal Can</td>
+                                    <td>B (Car)</td>
+                                    <td>+90 555 678 9012</td>
+                                    <td>5 years</td>
+                                    <td><span class="status-badge status-pending">On Leave</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                            <button class="action-btn delete"><i class="fas fa-trash-alt"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Vehicles Tab -->
+                <div class="tab-content" id="vehicles">
+                    <div class="filter-container">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search vehicles...">
+                        </div>
+                        <select class="filter-select">
+                            <option value="">All Types</option>
+                            <option value="bus">Bus</option>
+                            <option value="minibus">Minibus</option>
+                            <option value="car">Car</option>
+                        </select>
+                    </div>
+
+                    <div class="widget">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Vehicle</th>
+                                    <th>Type</th>
+                                    <th>Capacity</th>
+                                    <th>License Plate</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vehicleTableBody">
+                                <tr>
+                                    <td>V001</td>
+                                    <td>Mercedes Tourismo</td>
+                                    <td>Bus</td>
+                                    <td>46</td>
+                                    <td>34 ABC 123</td>
+                                    <td><span class="status-badge status-confirmed">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                            <button class="action-btn delete"><i class="fas fa-trash-alt"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>V002</td>
+                                    <td>Mercedes Sprinter</td>
+                                    <td>Minibus</td>
+                                    <td>16</td>
+                                    <td>34 DEF 456</td>
+                                    <td><span class="status-badge status-confirmed">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                            <button class="action-btn delete"><i class="fas fa-trash-alt"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>V003</td>
+                                    <td>Volkswagen Caravelle</td>
+                                    <td>Van</td>
+                                    <td>9</td>
+                                    <td>34 GHI 789</td>
+                                    <td><span class="status-badge status-pending">Maintenance</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                            <button class="action-btn delete"><i class="fas fa-trash-alt"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback Section -->
+        <div class="content-section" id="feedback">
+            <div class="page-header">
+                <h2>User Feedback</h2>
+                <div class="filter-container">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search feedback...">
+                    </div>
+                    <select class="filter-select">
+                        <option value="">All Tours</option>
+                        <option value="istanbul">Istanbul Historical Tour</option>
+                        <option value="cappadocia">Cappadocia Hot Air Balloon</option>
+                        <option value="antalya">Antalya Beach Tour</option>
+                    </select>
+                    <select class="filter-select">
+                        <option value="">All Ratings</option>
+                        <option value="5">5 Stars</option>
+                        <option value="4">4 Stars</option>
+                        <option value="3">3 Stars</option>
+                        <option value="2">2 Stars</option>
+                        <option value="1">1 Star</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="widget">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>User</th>
+                            <th>Tour</th>
+                            <th>Rating</th>
+                            <th>Comment</th>
+                        </tr>
+                    </thead>
+                    <tbody id="feedbackTableBody">
+                        <tr>
+                            <td>24 Apr 2025</td>
+                            <td>Mehmet Yılmaz</td>
+                            <td>Cappadocia Adventure</td>
+                            <td>
+                                <div class="star-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </td>
+                            <td>Amazing experience! The balloon ride was incredible and the views were breathtaking. Our guide was very knowledgeable.</td>
+                        </tr>
+                        <tr>
+                            <td>23 Apr 2025</td>
+                            <td>Ayşe Kaya</td>
+                            <td>Antalya Beach Tour</td>
+                            <td>
+                                <div class="star-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                            </td>
+                            <td>Beautiful beaches and clear water. The tour could have included more time for swimming.</td>
+                        </tr>
+                        <tr>
+                            <td>22 Apr 2025</td>
+                            <td>Ali Demir</td>
+                            <td>Istanbul City Tour</td>
+                            <td>
+                                <div class="star-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                            </td>
+                            <td>Excellent tour of Istanbul's historical sites. Our guide Hakan was very informative and friendly.</td>
+                        </tr>
+                        <tr>
+                            <td>21 Apr 2025</td>
+                            <td>Zeynep Şahin</td>
+                            <td>Pamukkale & Hierapolis</td>
+                            <td>
+                                <div class="star-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                            </td>
+                            <td>The natural formations were beautiful but the tour felt rushed. Would have liked more time to explore.</td>
+                        </tr>
+                        <tr>
+                            <td>20 Apr 2025</td>
+                            <td>Emre Özdemir</td>
+                            <td>Ephesus Ancient City</td>
+                            <td>
+                                <div class="star-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </td>
+                            <td>One of the best historical tours I've been on. The ancient city is very well preserved and our guide was excellent.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Add Resource Modal -->
+        <div class="modal" id="resourceModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="resourceModalTitle">Add New Resource</h3>
+                    <button class="close-modal">&times;</button>
+                </div>
+                
+                <!-- Resource Type Selection (only shown for adding new) -->
+                <div id="resourceTypeSelection">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="resourceType">Resource Type</label>
+                            <select id="resourceType" class="form-control" required>
+                                <option value="">Select Resource Type</option>
+                                <option value="destination">Destination</option>
+                                <option value="guide">Guide</option>
+                                <option value="driver">Driver</option>
+                                <option value="vehicle">Vehicle</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Destination Form -->
+                <form id="destinationForm" style="display: none;">
+                    <input type="hidden" id="destinationId" name="id">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="destinationName">Destination Name</label>
+                            <input type="text" id="destinationName" name="ad" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="destinationRegion">Region</label>
+                            <select id="destinationRegion" name="bolge_id" class="form-control" required>
+                                <option value="">Select Region</option>
+                                <!-- Will be populated from API -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="destinationDescription">Description</label>
+                            <textarea id="destinationDescription" name="aciklama" class="form-control" rows="3" required></textarea>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="destinationStatus">Status</label>
+                            <select id="destinationStatus" name="durum" class="form-control" required>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="text-align: right;">
+                            <button type="button" class="btn btn-danger cancel-form">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Destination</button>
+                        </div>
+                    </div>
+                </form>
+                
+                <!-- Guide Form -->
+                <form id="guideForm" style="display: none;">
+                    <input type="hidden" id="guideId" name="id">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="guideName">Full Name</label>
+                            <input type="text" id="guideName" name="ad" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="guidePhone">Phone Number</label>
+                            <input type="tel" id="guidePhone" name="telefon" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="guideLanguages">Languages</label>
+                            <input type="text" id="guideLanguages" name="diller" class="form-control" required placeholder="Turkish, English, German, etc.">
+                        </div>
+                        <div class="form-group">
+                            <label for="guideExperience">Experience (years)</label>
+                            <input type="number" id="guideExperience" name="deneyim" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="guideStatus">Status</label>
+                            <select id="guideStatus" name="durum" class="form-control" required>
+                                <option value="active">Active</option>
+                                <option value="on_leave">On Leave</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="text-align: right;">
+                            <button type="button" class="btn btn-danger cancel-form">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Guide</button>
+                        </div>
+                    </div>
+                </form>
+                
+                <!-- Driver Form -->
+                <form id="driverForm" style="display: none;">
+                    <input type="hidden" id="driverId" name="id">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="driverName">Full Name</label>
+                            <input type="text" id="driverName" name="ad" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="driverPhone">Phone Number</label>
+                            <input type="tel" id="driverPhone" name="telefon" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="driverLicense">License Type</label>
+                            <select id="driverLicense" name="ehliyet_tipi" class="form-control" required>
+                                <option value="">Select License Type</option>
+                                <option value="B">B (Car)</option>
+                                <option value="D">D (Bus)</option>
+                                <option value="D1">D1 (Minibus)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="driverExperience">Experience (years)</label>
+                            <input type="number" id="driverExperience" name="deneyim" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="driverStatus">Status</label>
+                            <select id="driverStatus" name="durum" class="form-control" required>
+                                <option value="active">Active</option>
+                                <option value="on_leave">On Leave</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="text-align: right;">
+                            <button type="button" class="btn btn-danger cancel-form">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Driver</button>
+                        </div>
+                    </div>
+                </form>
+                
+                <!-- Vehicle Form -->
+                <form id="vehicleForm" style="display: none;">
+                    <input type="hidden" id="vehicleId" name="id">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="vehicleName">Vehicle Model</label>
+                            <input type="text" id="vehicleName" name="ad" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="vehicleType">Type</label>
+                            <select id="vehicleType" name="tip" class="form-control" required>
+                                <option value="">Select Type</option>
+                                <option value="bus">Bus</option>
+                                <option value="minibus">Minibus</option>
+                                <option value="van">Van</option>
+                                <option value="car">Car</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="vehicleCapacity">Capacity</label>
+                            <input type="number" id="vehicleCapacity" name="kapasite" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="vehiclePlate">License Plate</label>
+                            <input type="text" id="vehiclePlate" name="plaka" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="vehicleStatus">Status</label>
+                            <select id="vehicleStatus" name="durum" class="form-control" required>
+                                <option value="active">Active</option>
+                                <option value="maintenance">Maintenance</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="text-align: right;">
+                            <button type="button" class="btn btn-danger cancel-form">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Vehicle</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navigation handling
+            const menuItems = document.querySelectorAll('.menu-item');
+            const contentSections = document.querySelectorAll('.content-section');
+            
+            menuItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = this.getAttribute('data-section');
+                    
+                    // Active menu handling
+                    menuItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show target section
+                    contentSections.forEach(section => {
+                        section.classList.remove('active');
+                    });
+                    
+                    if (target) {
+                        document.getElementById(target).classList.add('active');
+                    }
+                    
+                    // Initialize charts when switching to reports section
+                    if(target === 'reports') {
+                        initializeReportCharts();
+                    }
+                });
+            });
+            
+            // Main tab system
+            document.querySelectorAll('.tab-container > .tab-buttons > .tab-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const target = this.getAttribute('data-tab');
+                    const tabContainer = this.closest('.tab-container');
+                    
+                    tabContainer.querySelectorAll('.tab-button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    tabContainer.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    this.classList.add('active');
+                    tabContainer.querySelector(`.tab-content#${target}`).classList.add('active');
+                    
+                    // Reinitialize charts when changing tabs
+                    if(target === 'destination-analysis') {
+                        initializeDestinationsChart();
+                    } else if(target === 'financial') {
+                        initializeRevenueBreakdownChart();
+                    }
+                });
+            });
+            
+            // Sales by Tour nested tabs
+            document.querySelectorAll('#sales .tab-container > .tab-buttons > .tab-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const target = this.getAttribute('data-tab');
+                    const tabContainer = this.closest('.tab-container');
+                    
+                    tabContainer.querySelectorAll('.tab-button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    tabContainer.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    this.classList.add('active');
+                    tabContainer.querySelector(`.tab-content#${target}`).classList.add('active');
+                    
+                    // Ensure charts are properly rendered
+                    if (target === 'destination-analysis') {
+                        initializeDestinationsChart();
+                    }
+                });
+            });
+            
+            // Initialize all charts
+            initializeDashboardCharts();
+            
+            // Function to initialize dashboard charts
+            function initializeDashboardCharts() {
+                if (document.getElementById('revenueChart')) {
+                    const ctx = document.getElementById('revenueChart').getContext('2d');
+                    if (Chart.getChart('revenueChart')) {
+                        Chart.getChart('revenueChart').destroy();
+                    }
+                    new Chart(ctx, {
+                        type: 'bar', // Changed from line to bar
+                        data: {
+                            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                            datasets: [{
+                                label: 'Revenue (₺)',
+                                data: [15000, 19000, 16000, 22000, 18000, 25000],
+                                backgroundColor: 'rgba(52, 152, 219, 0.6)',
+                                borderColor: '#3498db',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false
+                        }
+                    });
+                }
+            }
+            
+            // Function to initialize report charts
+            function initializeReportCharts() {
+                initializeRevenueBreakdownChart();
+                initializeDestinationsChart();
+            }
+            
+            // Revenue Breakdown Chart
+            function initializeRevenueBreakdownChart() {
+                if (document.getElementById('revenueBreakdownChart')) {
+                    const ctx = document.getElementById('revenueBreakdownChart').getContext('2d');
+                    if (Chart.getChart('revenueBreakdownChart')) {
+                        Chart.getChart('revenueBreakdownChart').destroy();
+                    }
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                            datasets: [{
+                                label: 'Revenue (₺)',
+                                data: [15000, 19000, 16000, 22000, 18000, 25000],
+                                backgroundColor: 'rgba(46, 204, 113, 0.6)',
+                                borderColor: '#2ecc71',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false
+                        }
+                    });
+                }
+            }
+            
+            // Destinations Chart
+            function initializeDestinationsChart() {
+                if (document.getElementById('destinationsChart')) {
+                    const ctx = document.getElementById('destinationsChart').getContext('2d');
+                    if (Chart.getChart('destinationsChart')) {
+                        Chart.getChart('destinationsChart').destroy();
+                    }
+                    
+                    // Get selected metric
+                    const metricSelect = document.getElementById('destinationMetric');
+                    const metric = metricSelect ? metricSelect.value : 'visitors';
+                    
+                    // Chart data based on metric
+                    let chartData;
+                    let chartLabel;
+                    let chartColor;
+                    
+                    if (metric === 'revenue') {
+                        chartData = [583000, 496000, 422400, 246600, 189000, 215600];
+                        chartLabel = 'Revenue (₺)';
+                        chartColor = 'rgba(46, 204, 113, 0.6)';
+                    } else if (metric === 'rating') {
+                        chartData = [4.9, 4.7, 4.5, 4.8, 4.6, 4.7];
+                        chartLabel = 'Average Rating';
+                        chartColor = 'rgba(243, 156, 18, 0.6)';
+                    } else { // visitors
+                        chartData = [265, 248, 192, 137, 105, 98];
+                        chartLabel = 'Number of Visitors';
+                        chartColor = 'rgba(52, 152, 219, 0.6)';
+                    }
+                    
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Cappadocia', 'Istanbul', 'Antalya', 'Pamukkale', 'Izmir', 'Bodrum'],
+                            datasets: [{
+                                label: chartLabel,
+                                data: chartData,
+                                backgroundColor: chartColor,
+                                borderColor: chartColor.replace('0.6', '1'),
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false
+                        }
+                    });
+                }
+            }
+            
+            // Add change event for destination metric select
+            const destinationMetric = document.getElementById('destinationMetric');
+            if (destinationMetric) {
+                destinationMetric.addEventListener('change', initializeDestinationsChart);
+            }
+            
+            // Dedicated event listeners for Resources section edit buttons
+            document.querySelectorAll('#destinations .action-btn.edit').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const destinationId = row.cells[0].textContent;
+                    editDestination(destinationId);
+                });
+            });
+            
+            document.querySelectorAll('#guides .action-btn.edit').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const guideId = row.cells[0].textContent;
+                    editGuide(guideId);
+                });
+            });
+            
+            document.querySelectorAll('#drivers .action-btn.edit').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const driverId = row.cells[0].textContent;
+                    editDriver(driverId);
+                });
+            });
+            
+            document.querySelectorAll('#vehicles .action-btn.edit').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const vehicleId = row.cells[0].textContent;
+                    editVehicle(vehicleId);
+                });
+            });
+
+            // Resource modal handling
+            const resourceModal = document.getElementById('resourceModal');
+            const openAddResourceModal = document.getElementById('openAddResourceModal');
+            
+            // Open Add Resource Modal
+            openAddResourceModal.addEventListener('click', function() {
+                document.getElementById('resourceModalTitle').textContent = 'Add New Resource';
+                document.getElementById('resourceTypeSelection').style.display = 'block';
+                
+                // Reset and hide all forms
+                document.getElementById('destinationForm').style.display = 'none';
+                document.getElementById('guideForm').style.display = 'none';
+                document.getElementById('driverForm').style.display = 'none';
+                document.getElementById('vehicleForm').style.display = 'none';
+                
+                // Reset resource type selection
+                document.getElementById('resourceType').value = '';
+                
+                // Show modal
+                resourceModal.style.display = 'flex';
+            });
+            
+            // Resource Type Selection Handler
+            document.getElementById('resourceType').addEventListener('change', function() {
+                const resourceType = this.value;
+                
+                // Hide all forms
+                document.getElementById('destinationForm').style.display = 'none';
+                document.getElementById('guideForm').style.display = 'none';
+                document.getElementById('driverForm').style.display = 'none';
+                document.getElementById('vehicleForm').style.display = 'none';
+                
+                // Show selected form
+                if (resourceType === 'destination') {
+                    document.getElementById('destinationForm').style.display = 'block';
+                } else if (resourceType === 'guide') {
+                    document.getElementById('guideForm').style.display = 'block';
+                } else if (resourceType === 'driver') {
+                    document.getElementById('driverForm').style.display = 'block';
+                } else if (resourceType === 'vehicle') {
+                    document.getElementById('vehicleForm').style.display = 'block';
+                }
+            });
+            
+            // Close modal buttons
+            document.querySelectorAll('.close-modal, .cancel-form').forEach(button => {
+                button.addEventListener('click', function() {
+                    resourceModal.style.display = 'none';
+                    document.getElementById('tourModal').style.display = 'none';
+                });
+            });
+            
+            // Edit destination function
+            function editDestination(id) {
+                // Fetch destination data from API (mocked here)
+                const destination = {
+                    id: id,
+                    name: document.querySelector(`#destinations tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(2)`).textContent,
+                    region: document.querySelector(`#destinations tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(3)`).textContent,
+                    description: document.querySelector(`#destinations tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(4)`).textContent,
+                    status: document.querySelector(`#destinations tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(5) .status-badge`).textContent.toLowerCase()
+                };
+                
+                // Set form values
+                document.getElementById('destinationId').value = destination.id;
+                document.getElementById('destinationName').value = destination.name;
+                // You would set the region select value here once populated from API
+                document.getElementById('destinationDescription').value = destination.description;
+                document.getElementById('destinationStatus').value = destination.status === 'active' ? 'active' : 'inactive';
+                
+                // Update modal title
+                document.getElementById('resourceModalTitle').textContent = 'Edit Destination';
+                
+                // Hide resource type selection and show destination form
+                document.getElementById('resourceTypeSelection').style.display = 'none';
+                document.getElementById('destinationForm').style.display = 'block';
+                document.getElementById('guideForm').style.display = 'none';
+                document.getElementById('driverForm').style.display = 'none';
+                document.getElementById('vehicleForm').style.display = 'none';
+                
+                // Show modal
+                resourceModal.style.display = 'flex';
+            }
+            
+            // Edit guide function
+            function editGuide(id) {
+                // Fetch guide data from API (mocked here)
+                const guide = {
+                    id: id,
+                    name: document.querySelector(`#guides tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(2)`).textContent,
+                    languages: document.querySelector(`#guides tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(3)`).textContent,
+                    phone: document.querySelector(`#guides tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(4)`).textContent,
+                    experience: document.querySelector(`#guides tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(5)`).textContent.split(' ')[0],
+                    status: document.querySelector(`#guides tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(6) .status-badge`).textContent.toLowerCase()
+                };
+                
+                // Set form values
+                document.getElementById('guideId').value = guide.id;
+                document.getElementById('guideName').value = guide.name;
+                document.getElementById('guideLanguages').value = guide.languages;
+                document.getElementById('guidePhone').value = guide.phone;
+                document.getElementById('guideExperience').value = guide.experience;
+                document.getElementById('guideStatus').value = 
+                    guide.status === 'active' ? 'active' : 
+                    guide.status === 'on leave' ? 'on_leave' : 'inactive';
+                
+                // Update modal title
+                document.getElementById('resourceModalTitle').textContent = 'Edit Guide';
+                
+                // Hide resource type selection and show guide form
+                document.getElementById('resourceTypeSelection').style.display = 'none';
+                document.getElementById('destinationForm').style.display = 'none';
+                document.getElementById('guideForm').style.display = 'block';
+                document.getElementById('driverForm').style.display = 'none';
+                document.getElementById('vehicleForm').style.display = 'none';
+                
+                // Show modal
+                resourceModal.style.display = 'flex';
+            }
+            
+            // Edit driver function
+            function editDriver(id) {
+                // Fetch driver data from API (mocked here)
+                const driver = {
+                    id: id,
+                    name: document.querySelector(`#drivers tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(2)`).textContent,
+                    licenseType: document.querySelector(`#drivers tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(3)`).textContent.split(' ')[0],
+                    phone: document.querySelector(`#drivers tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(4)`).textContent,
+                    experience: document.querySelector(`#drivers tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(5)`).textContent.split(' ')[0],
+                    status: document.querySelector(`#drivers tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(6) .status-badge`).textContent.toLowerCase()
+                };
+                
+                // Set form values
+                document.getElementById('driverId').value = driver.id;
+                document.getElementById('driverName').value = driver.name;
+                document.getElementById('driverLicense').value = driver.licenseType;
+                document.getElementById('driverPhone').value = driver.phone;
+                document.getElementById('driverExperience').value = driver.experience;
+                document.getElementById('driverStatus').value = 
+                    driver.status === 'active' ? 'active' : 
+                    driver.status === 'on leave' ? 'on_leave' : 'inactive';
+                
+                // Update modal title
+                document.getElementById('resourceModalTitle').textContent = 'Edit Driver';
+                
+                // Hide resource type selection and show driver form
+                document.getElementById('resourceTypeSelection').style.display = 'none';
+                document.getElementById('destinationForm').style.display = 'none';
+                document.getElementById('guideForm').style.display = 'none';
+                document.getElementById('driverForm').style.display = 'block';
+                document.getElementById('vehicleForm').style.display = 'none';
+                
+                // Show modal
+                resourceModal.style.display = 'flex';
+            }
+            
+            // Edit vehicle function
+            function editVehicle(id) {
+                // Fetch vehicle data from API (mocked here)
+                const vehicle = {
+                    id: id,
+                    name: document.querySelector(`#vehicles tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(2)`).textContent,
+                    type: document.querySelector(`#vehicles tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(3)`).textContent,
+                    capacity: document.querySelector(`#vehicles tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(4)`).textContent,
+                    plate: document.querySelector(`#vehicles tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(5)`).textContent,
+                    status: document.querySelector(`#vehicles tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(6) .status-badge`).textContent.toLowerCase()
+                };
+                
+                // Set form values
+                document.getElementById('vehicleId').value = vehicle.id;
+                document.getElementById('vehicleName').value = vehicle.name;
+                document.getElementById('vehicleType').value = vehicle.type.toLowerCase();
+                document.getElementById('vehicleCapacity').value = vehicle.capacity;
+                document.getElementById('vehiclePlate').value = vehicle.plate;
+                document.getElementById('vehicleStatus').value = 
+                    vehicle.status === 'active' ? 'active' : 
+                    vehicle.status === 'maintenance' ? 'maintenance' : 'inactive';
+                
+                // Update modal title
+                document.getElementById('resourceModalTitle').textContent = 'Edit Vehicle';
+                
+                // Hide resource type selection and show vehicle form
+                document.getElementById('resourceTypeSelection').style.display = 'none';
+                document.getElementById('destinationForm').style.display = 'none';
+                document.getElementById('guideForm').style.display = 'none';
+                document.getElementById('driverForm').style.display = 'none';
+                document.getElementById('vehicleForm').style.display = 'block';
+                
+                // Show modal
+                resourceModal.style.display = 'flex';
+            }
+            
+            // Tour edit functionality
+            document.querySelectorAll('#tours .action-btn.edit').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const tourId = row.cells[0].textContent;
+                    editTour(tourId);
+                });
+            });
+            
+            // Edit tour function
+            function editTour(id) {
+                // Fetch tour data (mocked here)
+                const tour = {
+                    id: id,
+                    name: document.querySelector(`#tourTableBody tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(2)`).textContent,
+                    destination: document.querySelector(`#tourTableBody tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(3)`).textContent,
+                    duration: document.querySelector(`#tourTableBody tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(4)`).textContent,
+                    price: document.querySelector(`#tourTableBody tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(5)`).textContent.replace('₺', '').replace(',', ''),
+                    status: document.querySelector(`#tourTableBody tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(6) .status-badge`).textContent.toLowerCase()
+                };
+                
+                // Set form values
+                document.getElementById('tourId').value = tour.id;
+                document.getElementById('tourName').value = tour.name;
+                document.getElementById('tourLocation').value = tour.destination;
+                document.getElementById('tourDuration').value = tour.duration;
+                document.getElementById('tourPrice').value = tour.price;
+                document.getElementById('tourStatus').value = tour.status === 'active' ? 'active' : 'inactive';
+                
+                // Update modal title
+                document.getElementById('modalTitle').textContent = 'Edit Tour';
+                
+                // Show modal
+                document.getElementById('tourModal').style.display = 'flex';
+            }
+
+            // Add New Tour button event listener
+            const openAddTourModal = document.getElementById('openAddTourModal');
+            const tourModal = document.getElementById('tourModal');
+            
+            openAddTourModal.addEventListener('click', function() {
+                // Reset form fields
+                document.getElementById('tourForm').reset();
+                document.getElementById('tourId').value = '';
+                document.getElementById('modalTitle').textContent = 'Add New Tour';
+                
+                // Show modal
+                tourModal.style.display = 'flex';
+            });
+            
+            // Tour form submission
+            document.getElementById('tourForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get form data
+                const formData = new FormData(this);
+                const tourData = {};
+                
+                formData.forEach((value, key) => {
+                    tourData[key] = value;
+                });
+                
+                // Here you would normally send the data to your API
+                console.log('Tour data to submit:', tourData);
+                
+                // For demo purposes, add a new row to the table if it's a new tour
+                if (!tourData.id) {
+                    addNewTourToTable(tourData);
+                } else {
+                    updateTourInTable(tourData);
+                }
+                
+                // Hide modal
+                tourModal.style.display = 'none';
+                
+                // Show success message
+                alert('Tour saved successfully!');
+            });
+            
+            // Helper function to add new tour to the table
+            function addNewTourToTable(tour) {
+                const tbody = document.getElementById('tourTableBody');
+                const newRow = document.createElement('tr');
+                const newId = 'T' + String(tbody.children.length + 1).padStart(3, '0');
+                
+                newRow.innerHTML = `
+                    <td>${newId}</td>
+                    <td>${tour.ad}</td>
+                    <td>${tour.konum}</td>
+                    <td>${tour.sure}</td>
+                    <td>₺${tour.fiyat}</td>
+                    <td><span class="status-badge status-${tour.durum === 'active' ? 'confirmed' : 'pending'}">${tour.durum === 'active' ? 'Active' : 'Inactive'}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn delete"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </td>
+                `;
+                
+                // Add edit event listener to the new row
+                newRow.querySelector('.action-btn.edit').addEventListener('click', function() {
+                    editTour(newId);
+                });
+                
+                // Add delete event listener
+                newRow.querySelector('.action-btn.delete').addEventListener('click', function() {
+                    if (confirm('Are you sure you want to delete this tour?')) {
+                        newRow.remove();
+                        alert('Tour deleted successfully!');
+                    }
+                });
+                
+                tbody.appendChild(newRow);
+            }
+            
+            // Helper function to update tour in the table
+            function updateTourInTable(tour) {
+                const id = tour.id;
+                const rowIndex = parseInt(id.substring(1)) - 1;
+                const row = document.querySelector(`#tourTableBody tr:nth-child(${rowIndex + 1})`);
+                
+                if (row) {
+                    row.cells[1].textContent = tour.ad;
+                    row.cells[2].textContent = tour.konum;
+                    row.cells[3].textContent = tour.sure;
+                    row.cells[4].textContent = `₺${tour.fiyat}`;
+                    row.cells[5].innerHTML = `<span class="status-badge status-${tour.durum === 'active' ? 'confirmed' : 'pending'}">${tour.durum === 'active' ? 'Active' : 'Inactive'}</span>`;
+                }
+            }
+            
+            // Cancel tour button event listener
+            document.getElementById('cancelTour').addEventListener('click', function() {
+                tourModal.style.display = 'none';
+            });
+            
+            // Add delete functionality to existing tour rows
+            document.querySelectorAll('#tours .action-btn.delete').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const tourId = row.cells[0].textContent;
+                    
+                    if (confirm(`Are you sure you want to delete tour ${tourId}?`)) {
+                        row.remove();
+                        alert('Tour deleted successfully!');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

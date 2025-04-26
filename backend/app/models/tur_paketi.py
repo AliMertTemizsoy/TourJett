@@ -30,7 +30,22 @@ class TurPaketi(db.Model):
     
     def __repr__(self):
         return f'<TurPaketi {self.ad}>'
-
+    def to_dict(self):
+        """Model verilerini JSON'a uygun sözlük olarak döndürür"""
+        return {
+            'id': self.id,
+            'ad': self.ad,
+            'aciklama': self.aciklama,
+            'sure': self.sure,
+            'fiyat': float(self.fiyat),
+            'kapasite': self.kapasite,
+            'konum': self.konum,
+            'max_katilimci': self.max_katilimci,
+            'tur_tarihi': self.tur_tarihi.strftime('%Y-%m-%d') if self.tur_tarihi else None,
+            'resim_url': self.resim_url,
+            'durum': self.durum,
+            'baslangic_bolge_id': self.baslangic_bolge_id
+        }
 
 class TurDestinasyon(db.Model):
     __tablename__ = 'tur_destinasyonlar'

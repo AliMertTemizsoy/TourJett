@@ -219,4 +219,61 @@ $(document).ready(function(){
         loadTours(); // Sayfa açıldığında turları yükle
 });	
 
+// Tur paketlerini yükle
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM loaded, checking for packages container");
+    // Tur paketlerini yükle
+    const packagesContainer = document.querySelector('.packages-content');
+    if (packagesContainer) {
+        console.log("Packages container found, loading tour packages");
+        // Yükleniyor mesajını göster
+        packagesContainer.innerHTML = '<div class="text-center"><p>Turlar yükleniyor...</p></div>';
+        
+        // API'den tur paketlerini çek
+        getTurlar()
+            .then(data => {
+                console.log('Tur verileri:', data);
+                
+                // HTML içeriği oluştur
+                if (data && data.length > 0) {
+                    let packagesHTML = '';
+                    data.forEach(tur => {
+                        packagesHTML += `
+                            <div class="col-md-4 col-sm-6">
+                                <div class="single-package-item">
+                                    <img src="${tur.resim_url || 'assets/images/packages/default.jpg'}" alt="${tur.ad}">
+                                    <div class="single-package-item-txt">
+                                        <h3>${tur.ad} <span class="pull-right">${tur.fiyat}₺</span></h3>
+                                        <div class="packages-para">
+                                            <p>${tur.aciklama}</p>
+                                            <p><span><i class="fa fa-clock-o"></i> ${tur.sure}</span></p>
+                                        </div>
+                                        <div class="packages-review">
+                                            <p><i class="fa fa-map-marker"></i> ${tur.konum}</p>
+                                        </div>
+                                        <div class="about-btn">
+                                            <a href="package-details.html?id=${tur.id}" class="about-view packages-btn">
+                                                Şimdi Rezervasyon Yap
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    packagesContainer.innerHTML = packagesHTML;
+                } else {
+                    packagesContainer.innerHTML = '<div class="text-center"><p>Henüz tur paketi bulunmamaktadır.</p></div>';
+                }
+            })
+            .catch(error => {
+                console.error('Tur yükleme hatası:', error);
+                packagesContainer.innerHTML = `<div class="text-center"><p>Turlar yüklenirken bir hata oluştu: ${error.message}</p></div>`;
+            });
+    } else {
+        console.log("Packages container not found");
+    }
+});
+
 	

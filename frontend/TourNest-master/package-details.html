@@ -111,6 +111,61 @@
             text-align: center;
             padding: 50px 0;
         }
+        /* Reviews section styles */
+        .review-item {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .review-author {
+            font-weight: bold;
+        }
+        .review-date {
+            color: #777;
+            font-size: 0.9em;
+        }
+        .review-stars {
+            margin-bottom: 10px;
+        }
+        .review-stars .fa-star {
+            color: #FFD700;
+        }
+        .review-stars .fa-star-o {
+            color: #ccc;
+        }
+        .review-comment {
+            font-style: italic;
+        }
+        .review-form-container {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 30px;
+        }
+        .rating-input {
+            font-size: 24px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+        .rating-input .fa-star {
+            color: #FFD700;
+        }
+        .rating-input .fa-star-o {
+            color: #ccc;
+        }
+        #reviews-list {
+            margin-bottom: 30px;
+        }
+        .no-reviews {
+            font-style: italic;
+            color: #777;
+        }
     </style>
 </head>
 
@@ -199,6 +254,9 @@
                                 <li role="presentation">
                                     <a href="#accommodation" aria-controls="accommodation" role="tab" data-toggle="tab">Konaklama</a>
                                 </li>
+                                <li role="presentation">
+                                    <a href="#reviews" aria-controls="reviews" role="tab" data-toggle="tab">Yorumlar</a>
+                                </li>
                             </ul>
 
                             <div class="tab-content">
@@ -229,6 +287,39 @@
                                             <li>Marmara Resort</li>
                                             <li>Blue Palace Hotel</li>
                                         </ul>
+                                    </div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane" id="reviews">
+                                    <div class="tab-inner-content">
+                                        <div id="reviews-container">
+                                            <h4>Değerlendirmeler</h4>
+                                            <div id="reviews-list">
+                                                <p id="loading-reviews">Yorumlar yükleniyor...</p>
+                                            </div>
+                                            
+                                            <div class="review-form-container">
+                                                <h4>Yorum Yapın</h4>
+                                                <form id="review-form">
+                                                    <div class="form-group">
+                                                        <label for="review-rating">Puanlama:</label>
+                                                        <div class="rating-input">
+                                                            <span class="fa fa-star-o" data-rating="1"></span>
+                                                            <span class="fa fa-star-o" data-rating="2"></span>
+                                                            <span class="fa fa-star-o" data-rating="3"></span>
+                                                            <span class="fa fa-star-o" data-rating="4"></span>
+                                                            <span class="fa fa-star-o" data-rating="5"></span>
+                                                            <input type="hidden" name="rating" id="review-rating" value="0">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="review-comment">Yorumunuz:</label>
+                                                        <textarea class="form-control" id="review-comment" rows="4" required></textarea>
+                                                    </div>
+                                                    <div class="alert alert-danger" id="review-error" style="display: none;"></div>
+                                                    <button type="submit" class="about-view packages-btn">Yorum Gönder</button>
+                                                </form>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -407,6 +498,18 @@
                         document.getElementById('program-content').innerHTML = programHTML;
                     }
                     
+                    // Yorumları yükle
+                    loadReviews(turId);
+                    
+                    // Yorum yıldız derecelendirme sistemi
+                    initRatingSystem();
+                    
+                    // Yorum formunu dinle
+                    document.getElementById('review-form').addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        submitReview(turId);
+                    });
+                    
                 } catch (error) {
                     console.error("Tur detayları alınırken hata:", error);
                     document.getElementById('loading-spinner').innerHTML = `
@@ -429,6 +532,278 @@
                 `;
             }
         });
+
+        // Yorumları yükleme fonksiyonu
+        async function loadReviews(turId) {
+            const reviewsList = document.getElementById('reviews-list');
+            
+            try {
+                let reviews;
+                // API fonksiyonu var mı kontrol et
+                if (window.getDegerlendirmeler) {
+                    reviews = await window.getDegerlendirmeler(turId);
+                } else {
+                    // Doğrudan API'ye istek yap
+                    const response = await fetch(`http://localhost:5000/api/degerlendirmeler?tur_paketi_id=${turId}`);
+                    if (!response.ok) throw new Error('Değerlendirmeler alınamadı');
+                    reviews = await response.json();
+                }
+                
+                // Yükleniyor yazısını kaldır
+                reviewsList.innerHTML = '';
+                
+                // Değerlendirme yoksa mesaj göster
+                if (reviews.length === 0) {
+                    reviewsList.innerHTML = '<p class="no-reviews">Bu tur için henüz değerlendirme yapılmamış.</p>';
+                    return;
+                }
+                
+                // Değerlendirmeleri listele
+                reviews.forEach(review => {
+                    const reviewDate = new Date(review.olusturma_tarihi);
+                    const formattedDate = reviewDate.toLocaleDateString('tr-TR');
+                    
+                    // Yıldız HTML'ini oluştur
+                    let starsHtml = '';
+                    for (let i = 1; i <= 5; i++) {
+                        if (i <= review.puan) {
+                            starsHtml += '<i class="fa fa-star"></i>';
+                        } else {
+                            starsHtml += '<i class="fa fa-star-o"></i>';
+                        }
+                    }
+                    
+                    const reviewHtml = `
+                        <div class="review-item">
+                            <div class="review-header">
+                                <span class="review-author">${review.musteri_adi || 'Misafir'}</span>
+                                <span class="review-date">${formattedDate}</span>
+                            </div>
+                            <div class="review-stars">
+                                ${starsHtml}
+                            </div>
+                            <div class="review-comment">
+                                ${review.yorum || 'Bu kullanıcı bir yorum bırakmadı.'}
+                            </div>
+                        </div>
+                    `;
+                    
+                    reviewsList.innerHTML += reviewHtml;
+                });
+                
+            } catch (error) {
+                console.error('Değerlendirmeler yüklenirken hata oluştu:', error);
+                reviewsList.innerHTML = `
+                    <div class="alert alert-danger">
+                        <p>Değerlendirmeler yüklenirken bir sorun oluştu: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Yıldız derecelendirme sistemini başlatma
+        function initRatingSystem() {
+            const stars = document.querySelectorAll('.rating-input span');
+            const ratingInput = document.getElementById('review-rating');
+            
+            stars.forEach(star => {
+                // Hover olayları
+                star.addEventListener('mouseover', function() {
+                    const rating = this.getAttribute('data-rating');
+                    
+                    stars.forEach(s => {
+                        if (s.getAttribute('data-rating') <= rating) {
+                            s.classList.remove('fa-star-o');
+                            s.classList.add('fa-star');
+                        } else {
+                            s.classList.remove('fa-star');
+                            s.classList.add('fa-star-o');
+                        }
+                    });
+                });
+                
+                // Tıklama olayı
+                star.addEventListener('click', function() {
+                    const rating = this.getAttribute('data-rating');
+                    ratingInput.value = rating;
+                    
+                    stars.forEach(s => {
+                        if (s.getAttribute('data-rating') <= rating) {
+                            s.classList.remove('fa-star-o');
+                            s.classList.add('fa-star');
+                        } else {
+                            s.classList.remove('fa-star');
+                            s.classList.add('fa-star-o');
+                        }
+                    });
+                });
+            });
+            
+            // Mouse çıkınca son seçili değere göre yıldızları göster
+            document.querySelector('.rating-input').addEventListener('mouseleave', function() {
+                const currentRating = ratingInput.value;
+                
+                stars.forEach(s => {
+                    if (s.getAttribute('data-rating') <= currentRating) {
+                        s.classList.remove('fa-star-o');
+                        s.classList.add('fa-star');
+                    } else {
+                        s.classList.remove('fa-star');
+                        s.classList.add('fa-star-o');
+                    }
+                });
+            });
+        }
+        
+        // Yorum gönderme fonksiyonu
+        async function submitReview(turId) {
+            const errorElement = document.getElementById('review-error');
+            const reviewRating = document.getElementById('review-rating').value;
+            const reviewComment = document.getElementById('review-comment').value;
+            
+            errorElement.style.display = 'none';
+            
+            // Kullanıcının oturum açıp açmadığını kontrol et
+            const currentUser = getUserFromLocalStorage();
+            if (!currentUser || !currentUser.id) {
+                errorElement.innerHTML = 'Yorum yapabilmek için giriş yapmanız gerekmektedir.';
+                errorElement.style.display = 'block';
+                return;
+            }
+            
+            // Puanın girildiğinden emin ol
+            if (reviewRating === '0') {
+                errorElement.innerHTML = 'Lütfen bir puan seçiniz.';
+                errorElement.style.display = 'block';
+                return;
+            }
+            
+            // Yorum verisini hazırla
+            const reviewData = {
+                musteri_id: currentUser.id,
+                tur_paketi_id: parseInt(turId),
+                puan: parseInt(reviewRating),
+                yorum: reviewComment
+            };
+            
+            try {
+                let result;
+                // API fonksiyonu var mı kontrol et
+                if (window.createDegerlendirme) {
+                    result = await window.createDegerlendirme(reviewData);
+                } else {
+                    // Doğrudan API'ye istek yap
+                    const response = await fetch('http://localhost:5000/api/degerlendirmeler', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(reviewData)
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Değerlendirme eklenemedi');
+                    }
+                    
+                    result = await response.json();
+                }
+                
+                // Başarılı mesajı göster
+                alert('Değerlendirmeniz için teşekkür ederiz!');
+                
+                // Formu sıfırla
+                document.getElementById('review-comment').value = '';
+                document.getElementById('review-rating').value = '0';
+                
+                // Yıldız derecelendirmesini sıfırla
+                const stars = document.querySelectorAll('.rating-input span');
+                stars.forEach(s => {
+                    s.classList.remove('fa-star');
+                    s.classList.add('fa-star-o');
+                });
+                
+                // Yorumları tekrar yükle
+                loadReviews(turId);
+                
+            } catch (error) {
+                console.error('Değerlendirme gönderirken hata:', error);
+                errorElement.innerHTML = `Değerlendirme gönderilemedi: ${error.message}`;
+                errorElement.style.display = 'block';
+            }
+        }
+        
+        // LocalStorage'dan kullanıcı bilgilerini al
+        function getUserFromLocalStorage() {
+            // Olası birden fazla anahtar kontrolü yapalım
+            const possibleKeys = ['currentUser', 'user', 'loggedInUser', 'userInfo'];
+            let userData = null;
+            
+            // Tüm olası anahtarları kontrol edelim
+            for (const key of possibleKeys) {
+                const userString = localStorage.getItem(key);
+                if (userString) {
+                    try {
+                        userData = JSON.parse(userString);
+                        console.log(`Kullanıcı bilgileri '${key}' anahtarından bulundu:`, userData);
+                        
+                        // Eğer id yoksa ama diğer bilgiler varsa
+                        if (!userData.id && userData.user_id) {
+                            userData.id = userData.user_id;
+                        }
+                        
+                        // Kullanıcı verisi içeriğini kontrol et ve debugging yap
+                        if (userData) {
+                            console.log('Bulunan kullanıcı verisi:', userData);
+                            console.log('ID var mı?', userData.id ? 'Evet: ' + userData.id : 'Hayır');
+                        }
+                        
+                        if (userData.id) {
+                            return userData;
+                        }
+                    } catch (e) {
+                        console.error(`${key} anahtarındaki veri geçerli JSON değil:`, e);
+                    }
+                }
+            }
+            
+            // Hiç kullanıcı verisine ulaşılamadıysa, mevcut sessionStorage'a da bak
+            for (const key of possibleKeys) {
+                const userString = sessionStorage.getItem(key);
+                if (userString) {
+                    try {
+                        userData = JSON.parse(userString);
+                        console.log(`Kullanıcı bilgileri sessionStorage '${key}' anahtarından bulundu:`, userData);
+                        
+                        // Eğer id yoksa ama diğer bilgiler varsa
+                        if (!userData.id && userData.user_id) {
+                            userData.id = userData.user_id;
+                        }
+                        
+                        if (userData.id) {
+                            return userData;
+                        }
+                    } catch (e) {
+                        console.error(`SessionStorage ${key} anahtarındaki veri geçerli JSON değil:`, e);
+                    }
+                }
+            }
+            
+            // HTML5 Local Storage içeriğini konsolda göster (debugging için)
+            console.log('LocalStorage içeriği:');
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                console.log(`${key} = ${localStorage.getItem(key).substring(0, 50)}...`);
+            }
+            
+            console.log('SessionStorage içeriği:');
+            for (let i = 0; i < sessionStorage.length; i++) {
+                const key = sessionStorage.key(i);
+                console.log(`${key} = ${sessionStorage.getItem(key).substring(0, 50)}...`);
+            }
+            
+            return null;
+        }
     </script>
 </body>
 

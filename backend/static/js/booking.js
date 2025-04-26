@@ -13,9 +13,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     // URL'den tur_id parametresini al
     const urlParams = new URLSearchParams(window.location.search);
     const turId = urlParams.get('tur_id');
-    
-    // Tur seferi ID'si için bir değişken tanımla
-    let turSeferiId = null;
 
     // Giriş yapmış kullanıcı bilgilerini kontrol et - localStorage ve sessionStorage'dan kontrol et
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || sessionStorage.getItem('currentUser') || '{}');
@@ -57,22 +54,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             const tur = await getTurById(turId);
             if (tur) {
                 console.log("Yüklenen tur bilgisi:", tur);
-                
-                // Tur seferi ID varsa onu al (API dönüşümü farklı olabilir)
-                if (tur.sefer_id) {
-                    turSeferiId = tur.sefer_id;
-                    console.log("Tur seferi ID bulundu:", turSeferiId);
-                }
-                
-                // Eğer API tur_seferleri diye bir dizi dönüyorsa, ilk aktif seferi al
-                if (tur.tur_seferleri && tur.tur_seferleri.length > 0) {
-                    const aktifSefer = tur.tur_seferleri.find(sefer => sefer.durum === 'aktif');
-                    if (aktifSefer) {
-                        turSeferiId = aktifSefer.id;
-                        console.log("Aktif tur seferi ID bulundu:", turSeferiId);
-                    }
-                }
-                
                 tourDetails.innerHTML = `
                     <h2>${tur.ad || tur.adi}</h2>
                     <p><strong>Duration:</strong> ${tur.sure}</p>
@@ -245,16 +226,15 @@ document.addEventListener('DOMContentLoaded', async function() {
 
                     // Form verilerini backend'in beklediği formatta hazırla
                     const formData = {
-                        tur_id: parseInt(turId, 10), // Normal tur ID'sini gönder
-                        tur_sefer_id: turSeferiId, // Eğer varsa, tur seferi ID'sini ekleyerek gönder
+                        tur_id: parseInt(turId, 10), // tur_paketi_id yerine tur_id kullanın
                         ad: document.getElementById('firstName').value,
                         soyad: document.getElementById('lastName').value,
                         email: document.getElementById('email').value,
                         telefon: document.getElementById('phone').value,
-                        tc_kimlik: document.getElementById('tc_kimlik') ? document.getElementById('tc_kimlik').value : "",
-                        adres: document.getElementById('adres') ? document.getElementById('adres').value : "",
+                        tc_kimlik: document.getElementById('nationalId') ? document.getElementById('nationalId').value : "",
+                        adres: document.getElementById('address') ? document.getElementById('address').value : "",
                         kisi_sayisi: parseInt(participantsSelect.value) || 1,
-                        oda_tipi: roomTypeSelect ? roomTypeSelect.value : 'standard',
+                        oda_tipi: roomTypeSelect ? roomTypeSelect.value : 'standard', // roomType yerine oda_tipi
                         notlar: document.getElementById('additionalRequests') ? document.getElementById('additionalRequests').value : ""
                     };
 
