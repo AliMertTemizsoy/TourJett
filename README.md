@@ -1,6 +1,5 @@
 # TourJett - Travel Agency Platform
 
-![TourJett Logo](frontend/TourNest-master/assets/logo/logo.png)
 
 ## Overview
 
