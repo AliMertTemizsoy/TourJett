@@ -52,12 +52,7 @@ def create_app(config=None):
         app.register_blueprint(auth_bp)
         app.register_blueprint(tur_bp)
         
-        # Diğer blueprint'leri kaydet (varsa)
-        try:
-            from app.routes.bolge_routes import bolge_bp
-            app.register_blueprint(bolge_bp)
-        except ImportError:
-            print("bolge_routes import edilemedi")
+        # Diğer blueprint'leri kaydet
             
         try:
             from app.routes.musteri_routes import musteri_bp
@@ -76,12 +71,6 @@ def create_app(config=None):
             app.register_blueprint(destinasyon_bp)
         except ImportError:
             print("destinasyon_routes import edilemedi")
-            
-        try:
-            from app.routes.kaynak_routes import kaynak_bp
-            app.register_blueprint(kaynak_bp)
-        except ImportError:
-            print("kaynak_routes import edilemedi")
             
         try:
             from app.routes.degerlendirme_routes import degerlendirme_bp
@@ -114,10 +103,10 @@ def create_app(config=None):
             print("surucu_routes import edilemedi")
             
         try:
-            from app.routes.konum_routes import konum_bp
-            app.register_blueprint(konum_bp)
+            from app.routes.vehicle_routes import vehicle_bp
+            app.register_blueprint(vehicle_bp)
         except ImportError:
-            print("konum_routes import edilemedi")
+            print("vehicle_routes import edilemedi")
     
     except Exception as e:
         print(f"Blueprint kayıt hatası: {str(e)}")

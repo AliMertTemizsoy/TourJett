@@ -4,6 +4,7 @@ from app.models.tur import Tur
 from app.models.musteri import Musteri
 from app.models.rehber import Rehber
 from app.models.surucu import Surucu
+from app.models.destinasyon import Destinasyon
 from app import db
 from sqlalchemy import func, desc, or_
 from datetime import datetime, timedelta
@@ -140,6 +141,7 @@ def get_upcoming_tours():
             TurSeferi.kalan_kontenjan.label('remaining_capacity'),
             TurSeferi.durum.label('status'),
             Tur.arac_tipi.label('carType'),
+            Tur.destinasyon_id.label('location_id'),
             func.concat(Rehber.ad, ' ', Rehber.soyad).label('guide_name'),
             func.concat(Surucu.ad, ' ', Surucu.soyad).label('driver_name'),
             func.count(Rezervasyon.id).label('booking_count')
@@ -148,13 +150,17 @@ def get_upcoming_tours():
          .outerjoin(Surucu, TurSeferi.surucu_id == Surucu.id)\
          .outerjoin(Rezervasyon, TurSeferi.id == Rezervasyon.tur_sefer_id)\
          .filter(TurSeferi.baslangic_tarihi >= today)\
-         .group_by(Tur.id, TurSeferi.id, Rehber.ad, Rehber.soyad, Surucu.ad, Surucu.soyad)\
+         .group_by(Tur.id, TurSeferi.id, Rehber.ad, Rehber.soyad, Surucu.ad, Surucu.soyad, Tur.adi, 
+                  TurSeferi.baslangic_tarihi, TurSeferi.kontenjan, TurSeferi.kalan_kontenjan, 
+                  TurSeferi.durum, Tur.arac_tipi, Tur.destinasyon_id)\
          .order_by(TurSeferi.baslangic_tarihi)\
-         .limit(5).all()
+         .all()
+        
+        print(f"Found {len(upcoming_tours)} upcoming tours")
         
         # If there are no upcoming tours, create some sample data
         if not upcoming_tours:
-            # Sample tour data
+            # Sample tour data remains the same...
             sample_tours = [
                 {
                     'id': 1,
@@ -202,22 +208,11 @@ def get_upcoming_tours():
         tours_list = []
         for tour in upcoming_tours:
             # Get location for each tour
-            location_query = db.session.query(
-                db.func.coalesce(
-                    Tur.konum_id, 
-                    "Unknown Location"
-                )
-            ).filter(Tur.id == tour.id).first()
-            
             destination = "Unknown Location"
-            if location_query:
-                location_id = location_query[0]
-                # Try to get location name if location_id is not None
-                if location_id:
-                    from app.models.konum import Konum
-                    location = db.session.query(Konum.ad).filter(Konum.id == location_id).first()
-                    if location:
-                        destination = location[0]
+            if tour.location_id:
+                location = db.session.query(Destinasyon.ad).filter(Destinasyon.id == tour.location_id).first()
+                if location:
+                    destination = location[0]
             
             # Format the date
             tour_date = tour.date
@@ -240,7 +235,7 @@ def get_upcoming_tours():
                 'carType': tour.carType or "Not specified",
                 'guide': tour.guide_name or "Unassigned",
                 'driver': tour.driver_name or "Unassigned",
-                'profit': float(profit)
+                'profit': float(profit or 0)
             })
         
         return jsonify(tours_list)

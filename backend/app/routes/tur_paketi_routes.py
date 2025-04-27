@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app import db
 from app.models.tur_paketi import TurPaketi
+from app.models.tur import Tur  # Access Tur model
 from datetime import datetime
 import traceback  # Hata izleme için
 
@@ -33,72 +34,79 @@ def create_tur_paketi():
     """Yeni bir tur paketi oluşturur"""
     try:
         data = request.get_json()
-        print(f"Gelen veri: {data}")  # Debug için
+        print(f"Gelen veri: {data}")
+
+        # Zorunlu alanlar kontrolü
+        if not data.get('ad') and not data.get('tur_id'):
+            return jsonify({'error': 'Tur paketi adı veya tur_id gereklidir'}), 400
         
-        # Gerekli kontroller
-        if not data.get('ad'):
-            return jsonify({'error': 'Tur paketi adı gereklidir'}), 400
+        if data.get('rehber_id') is None:
+            return jsonify({'error': 'Rehber (rehber_id) gereklidir'}), 400
+
+        if data.get('kar') is None:
+            return jsonify({'error': 'Kar alanı gereklidir'}), 400
+
+        if data.get('vehicle_id') is None:
+            return jsonify({'error': 'Vehicle (vehicle_id) gereklidir'}), 400
+
+        tur = None
+        if data.get('tur_id'):
+            tur = Tur.query.get(data['tur_id'])
+            if not tur:
+                return jsonify({'error': 'Belirtilen Tur bulunamadı'}), 404
         
-        # Veri dönüşümleri güvenli hale getirildi
-        try:
-            fiyat = float(data.get('fiyat', 0))
-        except (ValueError, TypeError):
-            fiyat = 0.0
-            
-        try:
-            kar = float(data.get('kar', 0))
-        except (ValueError, TypeError):
-            kar = 0.0
-            
-        try:
-            kapasite = int(data.get('kapasite', 20))
-        except (ValueError, TypeError):
-            kapasite = 20
-            
-        try:
-            max_katilimci = int(data.get('max_katilimci', 20))
-        except (ValueError, TypeError):
-            max_katilimci = 20
-            
-        # Tarih dönüşümü
+        ad = data.get('ad') or (tur.adi if tur else None)
+        sure = data.get('sure') or (tur.sure if tur else None)
+        fiyat = float(data.get('fiyat', tur.fiyat if tur else 0))
+        resim_url = data.get('resim_url') or (tur.resim if tur else None)
+        baslangic_destinasyon_id = data.get('baslangic_destinasyon_id') or (tur.destinasyon_id if tur else None)
+        destinasyon_detay = data.get('destinasyon_detay') or (tur.destinasyon.ad if tur and tur.destinasyon else None)
+
+        kar = float(data.get('kar', 0))
+        kapasite = int(data.get('kapasite', 20))
+        max_katilimci = int(data.get('max_katilimci', 20))
+        durum = data.get('durum', 'Aktif')
+        surucu_id = data.get('surucu_id')
+        rehber_id = data.get('rehber_id')
+        vehicle_id = data.get('vehicle_id')
+
         tur_tarihi = None
         if data.get('tur_tarihi'):
             try:
                 tur_tarihi = datetime.strptime(data.get('tur_tarihi'), '%Y-%m-%d').date()
             except ValueError:
                 print("Geçersiz tarih formatı")
-                tur_tarihi = None
         
-        # Yeni tur paketi oluştur - yeni alanlar eklendi (kar, surucu_id, arac_tipi)
         yeni_paket = TurPaketi(
-            ad=data.get('ad'),
-            aciklama=data.get('aciklama'),
-            sure=data.get('sure'),
+            ad=ad,
+            aciklama=data.get('aciklama', tur.aciklama if tur else None),
+            sure=sure,
             fiyat=fiyat,
-            kar=kar,  # Yeni eklenen kar alanı
+            kar=kar,
             kapasite=kapasite,
-            baslangic_bolge_id=data.get('baslangic_bolge_id'),
-            konum=data.get('konum'),
+            baslangic_destinasyon_id=baslangic_destinasyon_id,
+            destinasyon_detay=destinasyon_detay,
             tur_tarihi=tur_tarihi,
-            resim_url=data.get('resim_url'),
+            resim_url=resim_url,
             max_katilimci=max_katilimci,
-            durum=data.get('durum', 'Aktif'),
-            surucu_id=data.get('surucu_id'),  # Yeni eklenen sürücü ID alanı
-            arac_tipi=data.get('arac_tipi')   # Yeni eklenen araç tipi alanı
+            durum=durum,
+            surucu_id=surucu_id,
+            rehber_id=rehber_id,
+            vehicle_id=vehicle_id
         )
-        
+
         db.session.add(yeni_paket)
         db.session.commit()
-        
+
         return jsonify({
             'success': True,
             'message': 'Tur paketi başarıyla oluşturuldu',
             'id': yeni_paket.id,
             'data': yeni_paket.to_dict()
         }), 201
-        
+
     except Exception as e:
         db.session.rollback()
         print(f"Tur paketi oluşturma hatası: {str(e)}")
-        traceback.print_exc()  # Detaylı hata çıktısı
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
