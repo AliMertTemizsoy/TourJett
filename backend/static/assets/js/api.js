@@ -141,13 +141,13 @@ const ApiService = {
             delete: (id) => apiCall(`/surucu/${id}`, 'DELETE'),
         },
         
-        // Vehicle APIs
+        // Vehicle APIs - Fixed path to match backend route
         vehicles: {
-            getAll: () => apiCall('/vehicle'),
-            getById: (id) => apiCall(`/vehicle/${id}`),
-            create: (vehicleData) => apiCall('/vehicle', 'POST', vehicleData),
-            update: (id, vehicleData) => apiCall(`/vehicle/${id}`, 'PUT', vehicleData),
-            delete: (id) => apiCall(`/vehicle/${id}`, 'DELETE'),
+            getAll: () => apiCall('/vehicles'),
+            getById: (id) => apiCall(`/vehicles/${id}`),
+            create: (vehicleData) => apiCall('/vehicles', 'POST', vehicleData),
+            update: (id, vehicleData) => apiCall(`/vehicles/${id}`, 'PUT', vehicleData),
+            delete: (id) => apiCall(`/vehicles/${id}`, 'DELETE'),
         },
     },
     

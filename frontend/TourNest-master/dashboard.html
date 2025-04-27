@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TourJett - Admin Dashboard</title>
+    <title>Tour Management System - Admin Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -1106,6 +1106,7 @@
             <div class="tab-container">
                 <div class="tab-buttons">
                     <button class="tab-button active" data-tab="destinations">Destinations</button>
+                    <button class="tab-button" data-tab="turs">Tours</button>
                     <button class="tab-button" data-tab="guides">Guides</button>
                     <button class="tab-button" data-tab="drivers">Drivers</button>
                     <button class="tab-button" data-tab="vehicles">Vehicles</button>
@@ -1168,6 +1169,35 @@
                                         </div>
                                     </td>
                                 </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tours Tab -->
+                <div class="tab-content" id="turs">
+                    <div class="filter-container">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search tours...">
+                        </div>
+                    </div>
+
+                    <div class="widget">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tour Name</th>
+                                    <th>Destination</th>
+                                    <th>Duration</th>
+                                    <th>Price</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tourResourceTableBody">
+                                <!-- Tour rows will go here -->
                             </tbody>
                         </table>
                     </div>
@@ -1537,6 +1567,7 @@
                             <select id="resourceType" class="form-control" required>
                                 <option value="">Select Resource Type</option>
                                 <option value="destination">Destination</option>
+                                <option value="tur">Tour</option>
                                 <option value="guide">Guide</option>
                                 <option value="driver">Driver</option>
                                 <option value="vehicle">Vehicle</option>
@@ -1576,38 +1607,91 @@
                         </div>
                     </div>
                 </form>
-                
+
+                <!-- Tour Form -->
+                <form id="tourResourceForm" style="display: none;">
+                    <input type="hidden" id="resourceTourId" name="id">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="resourceTourName">Tour Name</label>
+                            <input type="text" id="resourceTourName" name="ad" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="resourceTourDestination">Destination</label>
+                            <input type="text" id="resourceTourDestination" name="konum" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="resourceTourDuration">Duration</label>
+                            <input type="text" id="resourceTourDuration" name="sure" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="resourceTourPrice">Price</label>
+                            <input type="number" id="resourceTourPrice" name="fiyat" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="resourceTourStatus">Status</label>
+                            <select id="resourceTourStatus" name="durum" class="form-control" required>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="text-align: right;">
+                            <button type="button" class="btn btn-danger cancel-form">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Tour</button>
+                        </div>
+                    </div>
+                </form>
+
                 <!-- Guide Form -->
                 <form id="guideForm" style="display: none;">
                     <input type="hidden" id="guideId" name="id">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="guideName">Full Name</label>
-                            <input type="text" id="guideName" name="ad" class="form-control" required>
+                            <label for="guideFirstName">First Name</label>
+                            <input type="text" id="guideFirstName" name="ad" class="form-control" required>
                         </div>
+                        <div class="form-group">
+                            <label for="guideLastName">Last Name</label>
+                            <input type="text" id="guideLastName" name="soyad" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
                         <div class="form-group">
                             <label for="guidePhone">Phone Number</label>
                             <input type="tel" id="guidePhone" name="telefon" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="guideEmail">Email (Optional)</label>
+                            <input type="email" id="guideEmail" name="email" class="form-control">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="guideLanguages">Languages</label>
-                            <input type="text" id="guideLanguages" name="diller" class="form-control" required placeholder="Turkish, English, German, etc.">
+                            <input type="text" id="guideLanguages" name="dil_bilgisi" class="form-control" required placeholder="Turkish, English, German, etc.">
                         </div>
                         <div class="form-group">
                             <label for="guideExperience">Experience (years)</label>
-                            <input type="number" id="guideExperience" name="deneyim" class="form-control" required>
+                            <input type="number" id="guideExperience" name="deneyim_yili" class="form-control" required>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="guideStatus">Status</label>
-                            <select id="guideStatus" name="durum" class="form-control" required>
-                                <option value="active">Active</option>
-                                <option value="on_leave">On Leave</option>
-                                <option value="inactive">Inactive</option>
+                            <select id="guideStatus" name="aktif" class="form-control" required>
+                                <option value="true">Active</option>
+                                <option value="false">Inactive</option>
                             </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="guideDescription">Description (Optional)</label>
+                            <textarea id="guideDescription" name="aciklama" class="form-control" rows="2"></textarea>
                         </div>
                     </div>
                     <div class="form-row">
@@ -1623,15 +1707,19 @@
                     <input type="hidden" id="driverId" name="id">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="driverName">Full Name</label>
-                            <input type="text" id="driverName" name="ad" class="form-control" required>
+                            <label for="driverFirstName">First Name</label>
+                            <input type="text" id="driverFirstName" name="ad" class="form-control" required>
                         </div>
+                        <div class="form-group">
+                            <label for="driverLastName">Last Name</label>
+                            <input type="text" id="driverLastName" name="soyad" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
                         <div class="form-group">
                             <label for="driverPhone">Phone Number</label>
                             <input type="tel" id="driverPhone" name="telefon" class="form-control" required>
                         </div>
-                    </div>
-                    <div class="form-row">
                         <div class="form-group">
                             <label for="driverLicense">License Type</label>
                             <select id="driverLicense" name="ehliyet_tipi" class="form-control" required>
@@ -1640,6 +1728,12 @@
                                 <option value="D">D (Bus)</option>
                                 <option value="D1">D1 (Minibus)</option>
                             </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="driverLicenseNumber">License Number</label>
+                            <input type="text" id="driverLicenseNumber" name="ehliyet_no" class="form-control" required>
                         </div>
                         <div class="form-group">
                             <label for="driverExperience">Experience (years)</label>
@@ -1984,6 +2078,7 @@
                 document.getElementById('guideForm').style.display = 'none';
                 document.getElementById('driverForm').style.display = 'none';
                 document.getElementById('vehicleForm').style.display = 'none';
+                document.getElementById('tourResourceForm').style.display = 'none';
                 
                 // Show selected form
                 if (resourceType === 'destination') {
@@ -1994,7 +2089,10 @@
                     document.getElementById('driverForm').style.display = 'block';
                 } else if (resourceType === 'vehicle') {
                     document.getElementById('vehicleForm').style.display = 'block';
+                } else if (resourceType === 'tur') {
+                    document.getElementById('tourResourceForm').style.display = 'block';
                 }
+
             });
             
             // Close modal buttons
@@ -2040,7 +2138,8 @@
                 // Fetch guide data from API (mocked here)
                 const guide = {
                     id: id,
-                    name: document.querySelector(`#guides tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(2)`).textContent,
+                    firstName: document.querySelector(`#guides tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(2)`).textContent.split(' ')[0],
+                    lastName: document.querySelector(`#guides tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(2)`).textContent.split(' ').slice(1).join(' '),
                     languages: document.querySelector(`#guides tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(3)`).textContent,
                     phone: document.querySelector(`#guides tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(4)`).textContent,
                     experience: document.querySelector(`#guides tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(5)`).textContent.split(' ')[0],
@@ -2049,13 +2148,13 @@
                 
                 // Set form values
                 document.getElementById('guideId').value = guide.id;
-                document.getElementById('guideName').value = guide.name;
+                document.getElementById('guideFirstName').value = guide.firstName;
+                document.getElementById('guideLastName').value = guide.lastName;
                 document.getElementById('guideLanguages').value = guide.languages;
                 document.getElementById('guidePhone').value = guide.phone;
                 document.getElementById('guideExperience').value = guide.experience;
                 document.getElementById('guideStatus').value = 
-                    guide.status === 'active' ? 'active' : 
-                    guide.status === 'on leave' ? 'on_leave' : 'inactive';
+                    guide.status === 'active' ? 'true' : 'false';
                 
                 // Update modal title
                 document.getElementById('resourceModalTitle').textContent = 'Edit Guide';
@@ -2911,7 +3010,190 @@
                 }
             });
             
-            // ... Similar form handling for guide, driver, and vehicle forms ...
+            // Guide Form
+            document.getElementById('guideForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Get form data
+                const formData = new FormData(this);
+                const guideData = {};
+                
+                formData.forEach((value, key) => {
+                    guideData[key] = value;
+                });
+                
+                // Convert form field names to match API requirements
+                const apiGuideData = {
+                    id: guideData.id,
+                    ad: guideData.ad,
+                    soyad: guideData.soyad,
+                    telefon: guideData.telefon,
+                    email: guideData.email,
+                    dil_bilgisi: guideData.dil_bilgisi,
+                    deneyim_yili: parseInt(guideData.deneyim_yili),
+                    aktif: guideData.aktif === 'true',
+                    aciklama: guideData.aciklama
+                };
+                
+                try {
+                    const loadingBtn = document.querySelector('#guideForm button[type="submit"]');
+                    const originalText = loadingBtn.textContent;
+                    loadingBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                    loadingBtn.disabled = true;
+                    
+                    console.log('Sending guide data:', apiGuideData);
+                    
+                    if (guideData.id) {
+                        // Update existing guide
+                        await ApiService.resources.guides.update(guideData.id, apiGuideData);
+                    } else {
+                        // Create new guide
+                        await ApiService.resources.guides.create(apiGuideData);
+                    }
+                    
+                    // Hide modal
+                    document.getElementById('resourceModal').style.display = 'none';
+                    
+                    // Reset button state
+                    loadingBtn.textContent = originalText;
+                    loadingBtn.disabled = false;
+                    
+                    // Reload guide list
+                    loadResourceData();
+                    
+                    // Show success message
+                    alert('Guide saved successfully!');
+                } catch (error) {
+                    console.error('Failed to save guide:', error);
+                    alert('Failed to save guide. Please try again. Error: ' + error.message);
+                    
+                    const loadingBtn = document.querySelector('#guideForm button[type="submit"]');
+                    loadingBtn.textContent = 'Save Guide';
+                    loadingBtn.disabled = false;
+                }
+            });
+            
+            // Driver Form
+            document.getElementById('driverForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Get form data
+                const formData = new FormData(this);
+                const driverData = {};
+                
+                formData.forEach((value, key) => {
+                    driverData[key] = value;
+                });
+                
+                // Convert form field names to match API requirements
+                const apiDriverData = {
+                    id: driverData.id,
+                    ad: driverData.ad,
+                    soyad: driverData.soyad,
+                    telefon: driverData.telefon,
+                    ehliyet_tipi: driverData.ehliyet_tipi,
+                    ehliyet_no: driverData.ehliyet_no,
+                    deneyim_yili: parseInt(driverData.deneyim),
+                    aktif: driverData.durum === 'active'
+                };
+                
+                try {
+                    const loadingBtn = document.querySelector('#driverForm button[type="submit"]');
+                    const originalText = loadingBtn.textContent;
+                    loadingBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                    loadingBtn.disabled = true;
+                    
+                    console.log('Sending driver data:', apiDriverData);
+                    
+                    if (driverData.id) {
+                        // Update existing driver
+                        await ApiService.resources.drivers.update(driverData.id, apiDriverData);
+                    } else {
+                        // Create new driver
+                        await ApiService.resources.drivers.create(apiDriverData);
+                    }
+                    
+                    // Hide modal
+                    document.getElementById('resourceModal').style.display = 'none';
+                    
+                    // Reset button state
+                    loadingBtn.textContent = originalText;
+                    loadingBtn.disabled = false;
+                    
+                    // Reload driver list
+                    loadResourceData();
+                    
+                    // Show success message
+                    alert('Driver saved successfully!');
+                } catch (error) {
+                    console.error('Failed to save driver:', error);
+                    alert('Failed to save driver. Please try again. Error: ' + error.message);
+                    
+                    const loadingBtn = document.querySelector('#driverForm button[type="submit"]');
+                    loadingBtn.textContent = 'Save Driver';
+                    loadingBtn.disabled = false;
+                }
+            });
+            
+            // Vehicle Form
+            document.getElementById('vehicleForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Get form data
+                const formData = new FormData(this);
+                const vehicleData = {};
+                
+                formData.forEach((value, key) => {
+                    vehicleData[key] = value;
+                });
+                
+                // Convert form field names to match API requirements
+                const apiVehicleData = {
+                    id: vehicleData.id,
+                    model: vehicleData.ad,
+                    type: vehicleData.tip,
+                    capacity: parseInt(vehicleData.kapasite),
+                    license_plate: vehicleData.plaka,
+                    status: vehicleData.durum
+                };
+                
+                try {
+                    const loadingBtn = document.querySelector('#vehicleForm button[type="submit"]');
+                    const originalText = loadingBtn.textContent;
+                    loadingBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                    loadingBtn.disabled = true;
+                    
+                    console.log('Sending vehicle data:', apiVehicleData);
+                    
+                    if (vehicleData.id) {
+                        // Update existing vehicle
+                        await ApiService.resources.vehicles.update(vehicleData.id, apiVehicleData);
+                    } else {
+                        // Create new vehicle
+                        await ApiService.resources.vehicles.create(apiVehicleData);
+                    }
+                    
+                    // Hide modal
+                    document.getElementById('resourceModal').style.display = 'none';
+                    
+                    // Reset button state
+                    loadingBtn.textContent = originalText;
+                    loadingBtn.disabled = false;
+                    
+                    // Reload vehicle list
+                    loadResourceData();
+                    
+                    // Show success message
+                    alert('Vehicle saved successfully!');
+                } catch (error) {
+                    console.error('Failed to save vehicle:', error);
+                    alert('Failed to save vehicle. Please try again. Error: ' + error.message);
+                    
+                    const loadingBtn = document.querySelector('#vehicleForm button[type="submit"]');
+                    loadingBtn.textContent = 'Save Vehicle';
+                    loadingBtn.disabled = false;
+                }
+            });
             
             // Initial charts and data visualization setup
             // ... existing chart initialization functions ...
