@@ -5,6 +5,49 @@ from datetime import datetime, timedelta  # Add timedelta import
 
 rezervasyon_bp = Blueprint('rezervasyon', __name__, url_prefix='/api')
 
+@rezervasyon_bp.route('/rezervasyonlar', methods=['GET'])
+@rezervasyon_bp.route('/rezervasyon', methods=['GET'])
+def get_rezervasyonlar():
+    """Tüm rezervasyonları listeler"""
+    try:
+        # İsteğe bağlı filtreler
+        musteri_id = request.args.get('musteri_id')
+        tur_id = request.args.get('tur_id')
+        
+        # Sorgu oluştur
+        query = Rezervasyon.query
+        
+        # Filtreler uygulanır
+        if musteri_id:
+            query = query.filter_by(musteri_id=musteri_id)
+        if tur_id:
+            query = query.filter_by(tur_id=tur_id)
+            
+        # Rezervasyonları al
+        rezervasyonlar = query.all()
+        
+        # JSON formatında döndür
+        return jsonify([{
+            'id': r.id,
+            'tur_id': r.tur_id,
+            'tur_sefer_id': r.tur_sefer_id,
+            'musteri_id': r.musteri_id,
+            'ad': r.ad,
+            'soyad': r.soyad,
+            'email': r.email,
+            'telefon': r.telefon,
+            'tarih': r.tarih.strftime('%Y-%m-%d') if r.tarih else None,
+            'kisi_sayisi': r.kisi_sayisi,
+            'oda_tipi': r.oda_tipi,
+            'ozel_istekler': r.ozel_istekler
+        } for r in rezervasyonlar])
+        
+    except Exception as e:
+        print(f"Rezervasyon listeleme hatası: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
 @rezervasyon_bp.route('/rezervasyonlar', methods=['POST'])
 @rezervasyon_bp.route('/rezervasyon', methods=['POST'])
 def create_rezervasyon():
