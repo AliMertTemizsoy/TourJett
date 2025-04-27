@@ -79,9 +79,9 @@ const ApiService = {
     tours: {
         getAll: () => apiCall('/turlar'),
         getById: (id) => apiCall(`/turlar/${id}`),
-        create: (tourData) => apiCall('/tur', 'POST', tourData),
-        update: (id, tourData) => apiCall(`/tur/${id}`, 'PUT', tourData),
-        delete: (id) => apiCall(`/tur/${id}`, 'DELETE'),
+        create: (tourData) => apiCall('/turlar', 'POST', tourData),
+        update: (id, tourData) => apiCall(`/turlar/${id}`, 'PUT', tourData),
+        delete: (id) => apiCall(`/turlar/${id}`, 'DELETE'),
     },
     
     // Reservation APIs
@@ -95,65 +95,65 @@ const ApiService = {
     
     // Customer APIs
     customers: {
-        getAll: () => apiCall('/musteri'),
-        getById: (id) => apiCall(`/musteri/${id}`),
-        create: (customerData) => apiCall('/musteri', 'POST', customerData),
-        update: (id, customerData) => apiCall(`/musteri/${id}`, 'PUT', customerData),
-        delete: (id) => apiCall(`/musteri/${id}`, 'DELETE'),
+        getAll: () => apiCall('/musteriler'),
+        getById: (id) => apiCall(`/musteriler/${id}`),
+        create: (customerData) => apiCall('/musteriler', 'POST', customerData),
+        update: (id, customerData) => apiCall(`/musteriler/${id}`, 'PUT', customerData),
+        delete: (id) => apiCall(`/musteriler/${id}`, 'DELETE'),
     },
     
-    // Region APIs
+    // Region APIs (now using destinasyon)
     regions: {
-        getAll: () => apiCall('/bolge'),
-        getById: (id) => apiCall(`/bolge/${id}`),
+        getAll: () => apiCall('/destinasyonlar'),
+        getById: (id) => apiCall(`/destinasyonlar/${id}`),
     },
     
     // Destination APIs
     destinations: {
-        getAll: () => apiCall('/destinasyon'),
-        getById: (id) => apiCall(`/destinasyon/${id}`),
-        create: (destinationData) => apiCall('/destinasyon', 'POST', destinationData),
-        update: (id, destinationData) => apiCall(`/destinasyon/${id}`, 'PUT', destinationData),
-        delete: (id) => apiCall(`/destinasyon/${id}`, 'DELETE'),
+        getAll: () => apiCall('/destinasyonlar'),
+        getById: (id) => apiCall(`/destinasyonlar/${id}`),
+        create: (destinationData) => apiCall('/destinasyonlar', 'POST', destinationData),
+        update: (id, destinationData) => apiCall(`/destinasyonlar/${id}`, 'PUT', destinationData),
+        delete: (id) => apiCall(`/destinasyonlar/${id}`, 'DELETE'),
     },
     
     // Resource APIs
     resources: {
         // Guide APIs
         guides: {
-            getAll: () => apiCall('/kaynak/rehber'),
-            getById: (id) => apiCall(`/kaynak/rehber/${id}`),
-            create: (guideData) => apiCall('/kaynak/rehber', 'POST', guideData),
-            update: (id, guideData) => apiCall(`/kaynak/rehber/${id}`, 'PUT', guideData),
-            delete: (id) => apiCall(`/kaynak/rehber/${id}`, 'DELETE'),
+            getAll: () => apiCall('/rehber'),
+            getById: (id) => apiCall(`/rehber/${id}`),
+            create: (guideData) => apiCall('/rehber', 'POST', guideData),
+            update: (id, guideData) => apiCall(`/rehber/${id}`, 'PUT', guideData),
+            delete: (id) => apiCall(`/rehber/${id}`, 'DELETE'),
         },
         
         // Driver APIs
         drivers: {
-            getAll: () => apiCall('/kaynak/sofor'),
-            getById: (id) => apiCall(`/kaynak/sofor/${id}`),
-            create: (driverData) => apiCall('/kaynak/sofor', 'POST', driverData),
-            update: (id, driverData) => apiCall(`/kaynak/sofor/${id}`, 'PUT', driverData),
-            delete: (id) => apiCall(`/kaynak/sofor/${id}`, 'DELETE'),
+            getAll: () => apiCall('/surucu'),
+            getById: (id) => apiCall(`/surucu/${id}`),
+            create: (driverData) => apiCall('/surucu', 'POST', driverData),
+            update: (id, driverData) => apiCall(`/surucu/${id}`, 'PUT', driverData),
+            delete: (id) => apiCall(`/surucu/${id}`, 'DELETE'),
         },
         
         // Vehicle APIs
         vehicles: {
-            getAll: () => apiCall('/kaynak/arac'),
-            getById: (id) => apiCall(`/kaynak/arac/${id}`),
-            create: (vehicleData) => apiCall('/kaynak/arac', 'POST', vehicleData),
-            update: (id, vehicleData) => apiCall(`/kaynak/arac/${id}`, 'PUT', vehicleData),
-            delete: (id) => apiCall(`/kaynak/arac/${id}`, 'DELETE'),
+            getAll: () => apiCall('/vehicles'),
+            getById: (id) => apiCall(`/vehicles/${id}`),
+            create: (vehicleData) => apiCall('/vehicles', 'POST', vehicleData),
+            update: (id, vehicleData) => apiCall(`/vehicles/${id}`, 'PUT', vehicleData),
+            delete: (id) => apiCall(`/vehicles/${id}`, 'DELETE'),
         },
     },
     
     // Review APIs
     reviews: {
-        getAll: () => apiCall('/degerlendirme'),
-        getById: (id) => apiCall(`/degerlendirme/${id}`),
-        create: (reviewData) => apiCall('/degerlendirme', 'POST', reviewData),
-        update: (id, reviewData) => apiCall(`/degerlendirme/${id}`, 'PUT', reviewData),
-        delete: (id) => apiCall(`/degerlendirme/${id}`, 'DELETE'),
+        getAll: () => apiCall('/degerlendirmeler'),
+        getById: (id) => apiCall(`/degerlendirmeler/${id}`),
+        create: (reviewData) => apiCall('/degerlendirmeler', 'POST', reviewData),
+        update: (id, reviewData) => apiCall(`/degerlendirmeler/${id}`, 'PUT', reviewData),
+        delete: (id) => apiCall(`/degerlendirmeler/${id}`, 'DELETE'),
     },
     
     // Dashboard Statistics APIs
