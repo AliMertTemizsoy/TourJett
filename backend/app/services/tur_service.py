@@ -1,6 +1,6 @@
 from app import db
 from app.models.tur import TurPaketi, TurDestinasyon, TurSeferi
-from app.models.bolge import Destinasyon
+from app.models.destinasyon import Destinasyon
 
 # Tur Paketi servisleri
 def get_all_tur_paketleri():

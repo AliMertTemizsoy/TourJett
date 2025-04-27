@@ -52,12 +52,7 @@ def create_app(config=None):
         app.register_blueprint(auth_bp)
         app.register_blueprint(tur_bp)
         
-        # Diğer blueprint'leri kaydet (varsa)
-        try:
-            from app.routes.bolge_routes import bolge_bp
-            app.register_blueprint(bolge_bp)
-        except ImportError:
-            print("bolge_routes import edilemedi")
+        # Diğer blueprint'leri kaydet
             
         try:
             from app.routes.musteri_routes import musteri_bp
@@ -78,12 +73,6 @@ def create_app(config=None):
             print("destinasyon_routes import edilemedi")
             
         try:
-            from app.routes.kaynak_routes import kaynak_bp
-            app.register_blueprint(kaynak_bp)
-        except ImportError:
-            print("kaynak_routes import edilemedi")
-            
-        try:
             from app.routes.degerlendirme_routes import degerlendirme_bp
             app.register_blueprint(degerlendirme_bp)
         except ImportError:
@@ -94,6 +83,30 @@ def create_app(config=None):
             app.register_blueprint(tur_paketi_bp)
         except ImportError:
             print("tur_paketi_routes import edilemedi")
+            
+        try:
+            from app.routes.dashboard_routes import dashboard_bp
+            app.register_blueprint(dashboard_bp)
+        except ImportError:
+            print("dashboard_routes import edilemedi")
+            
+        try:
+            from app.routes.rehber_routes import rehber_bp
+            app.register_blueprint(rehber_bp)
+        except ImportError:
+            print("rehber_routes import edilemedi")
+            
+        try:
+            from app.routes.surucu_routes import surucu_bp
+            app.register_blueprint(surucu_bp)
+        except ImportError:
+            print("surucu_routes import edilemedi")
+            
+        try:
+            from app.routes.vehicle_routes import vehicle_bp
+            app.register_blueprint(vehicle_bp)
+        except ImportError:
+            print("vehicle_routes import edilemedi")
     
     except Exception as e:
         print(f"Blueprint kayıt hatası: {str(e)}")
@@ -113,6 +126,14 @@ def create_app(config=None):
             return app.send_static_file('login.html')
         except Exception as e:
             return f"Error serving login.html: {str(e)}", 500
+    
+    # Dashboard sayfası rotası
+    @app.route('/dashboard.html')
+    def dashboard_page():
+        try:
+            return app.send_static_file('dashboard.html')
+        except Exception as e:
+            return f"Error serving dashboard.html: {str(e)}", 500
     
     # Test rotasını ekle
     @app.route('/test-db')

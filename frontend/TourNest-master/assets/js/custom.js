@@ -219,6 +219,20 @@ $(document).ready(function(){
         loadTours(); // Sayfa açıldığında turları yükle
 });	
 
+// Tur paketlerini API'den çekmek için fonksiyon
+function getTurlar() {
+    console.log("Fetching tours from API...");
+    return window.ApiService.tours.getAll()
+        .then(response => {
+            console.log("API Response:", response);
+            return response;
+        })
+        .catch(error => {
+            console.error("Error fetching tours:", error);
+            throw error;
+        });
+}
+
 // Tur paketlerini yükle
 document.addEventListener('DOMContentLoaded', function() {
     console.log("DOM loaded, checking for packages container");
@@ -276,4 +290,3 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-	

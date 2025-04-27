@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from app.models.bolge import Bolge, Destinasyon
+from app.models.destinasyon import Destinasyon
 from app import db
 
 destinasyon_bp = Blueprint('destinasyon', __name__, url_prefix='/api/destinasyonlar')
@@ -8,13 +8,15 @@ destinasyon_bp = Blueprint('destinasyon', __name__, url_prefix='/api/destinasyon
 def get_destinasyonlar():
     destinasyonlar = Destinasyon.query.all()
     return jsonify([{
-        'id': d.id, 
-        'bolge_id': d.bolge_id,
-        'ad': d.ad, 
-        'tur': d.tur,
+        'id': d.id,
+        'parent_id': d.parent_id,
+        'ad': d.ad,
         'aciklama': d.aciklama,
         'adres': d.adres,
-        'fiyat': d.fiyat
+        'ulke': d.ulke,
+        'sehir': d.sehir,
+        'enlem': d.enlem,
+        'boylam': d.boylam
     } for d in destinasyonlar])
 
 @destinasyon_bp.route('/<int:id>', methods=['GET'])
@@ -22,38 +24,42 @@ def get_destinasyon(id):
     destinasyon = Destinasyon.query.get(id)
     if destinasyon:
         return jsonify({
-            'id': destinasyon.id, 
-            'bolge_id': destinasyon.bolge_id,
-            'ad': destinasyon.ad, 
-            'tur': destinasyon.tur,
+            'id': destinasyon.id,
+            'parent_id': destinasyon.parent_id,
+            'ad': destinasyon.ad,
             'aciklama': destinasyon.aciklama,
             'adres': destinasyon.adres,
-            'fiyat': destinasyon.fiyat
+            'ulke': destinasyon.ulke,
+            'sehir': destinasyon.sehir,
+            'enlem': destinasyon.enlem,
+            'boylam': destinasyon.boylam
         })
     return jsonify({'error': 'Destinasyon bulunamadı'}), 404
 
 @destinasyon_bp.route('/', methods=['POST'])
 def add_destinasyon():
     data = request.get_json()
-    
-    # Bölgenin var olup olmadığını kontrol et
-    bolge_id = data.get('bolge_id')
-    bolge = Bolge.query.get(bolge_id)
-    if not bolge:
-        return jsonify({'error': 'Belirtilen bölge bulunamadı'}), 404
-        
+
+    parent_id = data.get('parent_id')
+    if parent_id:
+        parent = Destinasyon.query.get(parent_id)
+        if not parent:
+            return jsonify({'error': 'Belirtilen üst destinasyon bulunamadı'}), 404
+
     yeni_destinasyon = Destinasyon(
-        bolge_id=bolge_id,
+        parent_id=parent_id,
         ad=data.get('ad'),
-        tur=data.get('tur'),
         aciklama=data.get('aciklama'),
         adres=data.get('adres'),
-        fiyat=data.get('fiyat', 0)
+        ulke=data.get('ulke'),
+        sehir=data.get('sehir'),
+        enlem=data.get('enlem'),
+        boylam=data.get('boylam')
     )
-    
+
     db.session.add(yeni_destinasyon)
     db.session.commit()
-    
+
     return jsonify({
         'message': 'Destinasyon başarıyla eklendi',
         'id': yeni_destinasyon.id
@@ -64,22 +70,24 @@ def update_destinasyon(id):
     destinasyon = Destinasyon.query.get(id)
     if not destinasyon:
         return jsonify({'error': 'Destinasyon bulunamadı'}), 404
-        
+
     data = request.get_json()
-    
+
     destinasyon.ad = data.get('ad', destinasyon.ad)
-    destinasyon.tur = data.get('tur', destinasyon.tur)
     destinasyon.aciklama = data.get('aciklama', destinasyon.aciklama)
     destinasyon.adres = data.get('adres', destinasyon.adres)
-    destinasyon.fiyat = data.get('fiyat', destinasyon.fiyat)
-    
-    # Bölge değiştirilecekse, yeni bölgenin var olduğunu kontrol et
-    if 'bolge_id' in data:
-        bolge = Bolge.query.get(data['bolge_id'])
-        if not bolge:
-            return jsonify({'error': 'Belirtilen bölge bulunamadı'}), 404
-        destinasyon.bolge_id = data['bolge_id']
-    
+    destinasyon.ulke = data.get('ulke', destinasyon.ulke)
+    destinasyon.sehir = data.get('sehir', destinasyon.sehir)
+    destinasyon.enlem = data.get('enlem', destinasyon.enlem)
+    destinasyon.boylam = data.get('boylam', destinasyon.boylam)
+
+    if 'parent_id' in data:
+        if data['parent_id']:
+            parent = Destinasyon.query.get(data['parent_id'])
+            if not parent:
+                return jsonify({'error': 'Belirtilen üst destinasyon bulunamadı'}), 404
+        destinasyon.parent_id = data['parent_id']
+
     db.session.commit()
     return jsonify({'message': 'Destinasyon güncellendi'})
 
@@ -88,7 +96,7 @@ def delete_destinasyon(id):
     destinasyon = Destinasyon.query.get(id)
     if not destinasyon:
         return jsonify({'error': 'Destinasyon bulunamadı'}), 404
-        
+
     db.session.delete(destinasyon)
     db.session.commit()
     return jsonify({'message': 'Destinasyon silindi'})

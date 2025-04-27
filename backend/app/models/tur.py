@@ -1,8 +1,10 @@
-# backend/app/models/tur.py
 from app import db
 from datetime import datetime
 
 class Tur(db.Model):
+    """
+    Tur model cleaned: Removed rehber_id, surucu_id, kar and arac_tipi.
+    """
     id = db.Column(db.Integer, primary_key=True)
     adi = db.Column(db.String(200), nullable=False)
     sure = db.Column(db.String(50), nullable=False)
@@ -10,11 +12,11 @@ class Tur(db.Model):
     aciklama = db.Column(db.Text)
     resim = db.Column(db.String(200))
     kategori = db.Column(db.String(100))
-    konum_id = db.Column(db.Integer, db.ForeignKey('konum.id'))
+    destinasyon_id = db.Column(db.Integer, db.ForeignKey('destinasyonlar.id'))
     aktif = db.Column(db.Boolean, default=True)
     
-    # İlişkiler
-    konum = db.relationship('Konum', backref='turlar')
+    # Relationships
+    destinasyon = db.relationship('Destinasyon', backref='turlar')
     
     def to_dict(self):
         return {
@@ -25,23 +27,30 @@ class Tur(db.Model):
             'aciklama': self.aciklama,
             'resim': self.resim,
             'kategori': self.kategori,
-            'konum': self.konum.ad if self.konum else None,
+            'destinasyon': self.destinasyon.ad if self.destinasyon else None,
             'aktif': self.aktif
         }
 
 class TurSeferi(db.Model):
+    """
+    TurSeferi model.
+    """
+    __tablename__ = 'tur_seferi'
+    
     id = db.Column(db.Integer, primary_key=True)
     tur_id = db.Column(db.Integer, db.ForeignKey('tur.id'), nullable=False)
     baslangic_tarihi = db.Column(db.Date, nullable=False)
     bitis_tarihi = db.Column(db.Date, nullable=False)
     kontenjan = db.Column(db.Integer, default=30)
     kalan_kontenjan = db.Column(db.Integer)
-    fiyat = db.Column(db.Float)  # Özel fiyat, null ise tur fiyatı kullanılır
-    durum = db.Column(db.String(20), default='aktif')  # aktif, iptal, tamamlandı
+    fiyat = db.Column(db.Float)
+    durum = db.Column(db.String(20), default='aktif')
+    vehicle_id = db.Column(db.Integer, db.ForeignKey('vehicles.id'))  # only vehicle relationship
     
-    # İlişkiler
+    # Relationships
     tur = db.relationship('Tur', backref='seferler')
-    
+    vehicle = db.relationship('Vehicles', backref='tur_seferleri')
+
     def __init__(self, **kwargs):
         super(TurSeferi, self).__init__(**kwargs)
         if self.kalan_kontenjan is None and self.kontenjan is not None:
@@ -57,7 +66,7 @@ class TurSeferi(db.Model):
             'kontenjan': self.kontenjan,
             'kalan_kontenjan': self.kalan_kontenjan,
             'fiyat': self.fiyat if self.fiyat else (self.tur.fiyat if self.tur else None),
-            'durum': self.durum
+            'durum': self.durum,
+            'vehicle_id': self.vehicle_id,
+            'vehicle_info': f"{self.vehicle.model} ({self.vehicle.license_plate})" if self.vehicle else None
         }
-
-# TurPaketi sınıfını kaldırın veya buradan silin
