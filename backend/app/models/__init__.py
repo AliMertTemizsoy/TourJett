@@ -5,5 +5,5 @@ from app.models.rezervasyon import Rezervasyon
 from app.models.musteri import Musteri
 from app.models.destinasyon import Destinasyon
 from app.models.degerlendirme import Degerlendirme
-from app.models.tur_paketi import TurPaketi
+from app.models.tur_paketi import TurPaketi, TurDestinasyon
 from app.models.vehicle import Vehicles
