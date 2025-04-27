@@ -16,7 +16,7 @@ class TurPaketi(db.Model):
     fiyat = db.Column(db.Float, nullable=False, default=0)
     kar = db.Column(db.Float, nullable=False, default=0)
     kapasite = db.Column(db.Integer, default=20)
-    baslangic_destinasyon_id = db.Column(db.Integer, db.ForeignKey('destinasyonlar.id'), nullable=True)
+    destinasyon_id = db.Column(db.Integer, db.ForeignKey('destinasyonlar.id'), nullable=True)
     durum = db.Column(db.String(50), default="Aktif")
     olusturma_tarihi = db.Column(db.DateTime, default=datetime.utcnow)
     surucu_id = db.Column(db.Integer, db.ForeignKey('surucu.id'), nullable=True)
@@ -29,10 +29,10 @@ class TurPaketi(db.Model):
     max_katilimci = db.Column(db.Integer, default=20)
 
     # Relationships
-    baslangic_destinasyon = db.relationship('Destinasyon', foreign_keys=[baslangic_destinasyon_id])
+    destinasyon = db.relationship('Destinasyon', foreign_keys=[destinasyon_id])
     surucu = db.relationship('Surucu', backref='tur_paketleri')
     rehber = db.relationship('Rehber', backref='tur_paketleri')
-    vehicle = db.relationship('Vehicles', backref='tur_paketleri')  # ✅ New relationship
+    vehicle = db.relationship('Vehicles', backref='tur_paketleri')  
     tur_destinasyonlar = db.relationship(
         'TurDestinasyon',
         backref='tur_paketi',
@@ -58,10 +58,11 @@ class TurPaketi(db.Model):
             'tur_tarihi': self.tur_tarihi.strftime('%Y-%m-%d') if self.tur_tarihi else None,
             'resim_url': self.resim_url,
             'durum': self.durum,
-            'baslangic_destinasyon_id': self.baslangic_destinasyon_id,
+            # No baslangic_destinasyon anymore!
+            'destinasyonlar': [td.destinasyon.to_dict() for td in self.tur_destinasyonlar] if self.tur_destinasyonlar else [],
             'surucu': self.surucu.to_dict() if self.surucu else None,
             'rehber': self.rehber.to_dict() if self.rehber else None,
-            'vehicle': self.vehicle.to_dict() if self.vehicle else None  # ✅ Include vehicle in output
+            'vehicle': self.vehicle.to_dict() if self.vehicle else None
         }
 
 

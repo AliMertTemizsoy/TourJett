@@ -59,7 +59,7 @@ def create_tur_paketi():
         sure = data.get('sure') or (tur.sure if tur else None)
         fiyat = float(data.get('fiyat', tur.fiyat if tur else 0))
         resim_url = data.get('resim_url') or (tur.resim if tur else None)
-        baslangic_destinasyon_id = data.get('baslangic_destinasyon_id') or (tur.destinasyon_id if tur else None)
+        destinasyon_id = data.get('destinasyon_id') or (tur.destinasyon_id if tur else None)
         destinasyon_detay = data.get('destinasyon_detay') or (tur.destinasyon.ad if tur and tur.destinasyon else None)
 
         kar = float(data.get('kar', 0))
@@ -84,7 +84,7 @@ def create_tur_paketi():
             fiyat=fiyat,
             kar=kar,
             kapasite=kapasite,
-            baslangic_destinasyon_id=baslangic_destinasyon_id,
+            destinasyon_id=destinasyon_id,
             destinasyon_detay=destinasyon_detay,
             tur_tarihi=tur_tarihi,
             resim_url=resim_url,
