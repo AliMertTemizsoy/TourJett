@@ -70,7 +70,8 @@ const apiCall = async (endpoint, method = 'GET', data = null) => {
 const ApiService = {
     // Authentication APIs
     auth: {
-        login: (username, password) => apiCall('/auth/login', 'POST', { username, password }),
+        login: (email, password) => apiCall('/auth/login', 'POST', { email, password }),
+        signup: (userData) => apiCall('/auth/signup', 'POST', userData),
         logout: () => apiCall('/auth/logout', 'POST'),
         getCurrentUser: () => apiCall('/auth/me'),
     },
@@ -163,6 +164,129 @@ const ApiService = {
         getUpcomingTours: () => apiCall('/dashboard/upcoming-tours'),
         getRevenueData: () => apiCall('/dashboard/revenue'),
     },
+};
+
+// Login User function - Used by login.js
+window.loginUser = async function(credentials) {
+    console.log('Login attempt with:', credentials);
+    try {
+        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email: credentials.email,
+                password: credentials.password
+            }),
+            credentials: 'include'
+        });
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`Login error: HTTP ${response.status}`, errorText);
+            throw new Error('E-posta veya şifre hatalı. Lütfen tekrar deneyin.');
+        }
+        
+        const data = await response.json();
+        console.log('Login API response:', data);
+        return data;
+    } catch (error) {
+        console.error('Login error:', error);
+        throw new Error(error.message || 'E-posta veya şifre hatalı. Lütfen tekrar deneyin.');
+    }
+};
+
+// Signup User function - Used by login.js
+window.signupUser = async function(userData) {
+    console.log('Signup attempt with:', userData);
+    try {
+        const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData),
+            credentials: 'include'
+        });
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`Signup error: HTTP ${response.status}`, errorText);
+            throw new Error('Kayıt işlemi başarısız oldu. Lütfen tekrar deneyin.');
+        }
+        
+        const data = await response.json();
+        console.log('Signup API response:', data);
+        return data;
+    } catch (error) {
+        console.error('Signup error:', error);
+        throw new Error(error.message || 'Kayıt işlemi başarısız oldu. Lütfen tekrar deneyin.');
+    }
+};
+
+// Get Tour By ID function - Used by package-details.js and booking.js
+window.getTurById = async function(id) {
+    console.log('Getting tour details for ID:', id);
+    try {
+        // Önce Tur Paketi olarak dene
+        try {
+            const response = await fetch(`${API_BASE_URL}/turpaketleri/${id}`);
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Tur paketi bulundu:", data);
+                return data;
+            }
+        } catch (error) {
+            console.log("Tur paketi bulunamadı, turlar endpoint'i deneniyor...");
+        }
+        
+        // Tur paketi bulunamazsa, Tur olarak dene
+        try {
+            const response = await fetch(`${API_BASE_URL}/turlar/${id}`);
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Tur bulundu:", data);
+                return data;
+            } else {
+                throw new Error(`Tur bulunamadı: ${response.status}`);
+            }
+        } catch (error) {
+            console.error("Tur da bulunamadı:", error);
+            throw new Error(`Tur bulunamadı: ${error.message}`);
+        }
+    } catch (error) {
+        console.error("Tur verileri alınamadı:", error);
+        throw error;
+    }
+};
+
+// Create Rezervasyon function - Used by booking.js
+window.createRezervasyon = async function(reservationData) {
+    console.log('Creating reservation with data:', reservationData);
+    try {
+        const response = await fetch(`${API_BASE_URL}/rezervasyon`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(reservationData),
+            credentials: 'include'
+        });
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`Reservation error: HTTP ${response.status}`, errorText);
+            throw new Error('Rezervasyon oluşturulamadı.');
+        }
+        
+        const data = await response.json();
+        console.log('Reservation API response:', data);
+        return data;
+    } catch (error) {
+        console.error('Reservation error:', error);
+        throw new Error(error.message || 'Rezervasyon oluşturulamadı. Lütfen tekrar deneyin.');
+    }
 };
 
 // Export the API Service
