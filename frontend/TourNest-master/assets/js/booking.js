@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 `;
                 // Fiyatı güncellemek için basePrice'ı backend'den gelen fiyatla değiştir
                 window.basePrice = tur.fiyat;
-                updatePrice();
+                calculateTotal();
             } else {
                 tourDetails.innerHTML = '<p>Tur bilgileri yüklenirken bir hata oluştu.</p>';
             }
@@ -91,216 +91,96 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
 
-    // Price calculation
-    function updatePrice() {
-        const basePrice = window.basePrice || 1950; // Backend'den gelen fiyat veya varsayılan
+    // Price calculation functions
+    function calculateTotal() {
+        // Base price is ₺1.950
+        const basePrice = 1950;
+        
+        // Get number of participants
+        const participants = parseInt(document.getElementById('participants').value) || 1;
+        document.getElementById('participantsCount').textContent = participants;
+        
+        // Calculate accommodation fee based on room type
+        const roomType = document.getElementById('roomType').value;
+        let accommodationFee = 0;
+        
+        // Add additional fee based on room type
+        if (roomType === 'deluxe') {
+            accommodationFee = 150;
+        } else if (roomType === 'suite') {
+            accommodationFee = 300;
+        } else if (roomType === 'family') {
+            accommodationFee = 250;
+        }
+        
+        // Display accommodation fee with Turkish Lira symbol and thousand separator
+        document.getElementById('accommodationFee').textContent = '₺' + accommodationFee.toLocaleString('tr-TR');
+        
+        // Calculate total (base price * participants + accommodation fee + booking fee)
         const bookingFee = 75;
-        const participants = parseInt(participantsSelect.value) || 1;
-        let roomUpgrade = 0;
-
-        // Room upgrades
-        switch(roomTypeSelect.value) {
-            case 'deluxe':
-                roomUpgrade = 150;
-                break;
-            case 'suite':
-                roomUpgrade = 300;
-                break;
-            case 'family':
-                roomUpgrade = 250;
-                break;
-            default:
-                roomUpgrade = 0;
-        }
-
-        participantsCount.textContent = participants;
-        accommodationFee.textContent = '₺' + roomUpgrade;
-
-        const total = (basePrice * participants) + roomUpgrade + bookingFee;
-        totalPrice.textContent = '₺' + total.toLocaleString();
+        const total = (basePrice * participants) + accommodationFee + bookingFee;
+        
+        // Format the total with Turkish Lira symbol and thousand separator with comma for decimals
+        document.getElementById('totalPrice').textContent = '₺' + total.toLocaleString('tr-TR');
     }
 
-    // Event listeners for price updates
-    if (participantsSelect) participantsSelect.addEventListener('change', updatePrice);
-    if (roomTypeSelect) roomTypeSelect.addEventListener('change', updatePrice);
-
-    // Format card number input
-    const cardNumberInput = document.getElementById('cardNumber');
-    if (cardNumberInput) {
-        cardNumberInput.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length > 0) {
-                value = value.match(new RegExp('.{1,4}', 'g')).join(' ');
-            }
-            e.target.value = value;
-        });
-    }
-
-    // Format expiry date
-    const expiryInput = document.getElementById('expiry');
-    if (expiryInput) {
-        expiryInput.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length > 2) {
-                value = value.slice(0, 2) + '/' + value.slice(2, 4);
-            }
-            e.target.value = value;
-        });
-    }
-
-    // Limit CVV to 3 digits
-    const cvvInput = document.getElementById('cvv');
-    if (cvvInput) {
-        cvvInput.addEventListener('input', function(e) {
-            e.target.value = e.target.value.replace(/\D/g, '').slice(0, 3);
-        });
-    }
-
-    // Form validation
-    function validateForm() {
-        let isValid = true;
-
-        // Reset error messages
-        const errorMessages = document.querySelectorAll('.error-message');
-        errorMessages.forEach(msg => {
-            msg.style.display = 'none';
-        });
-
-        // Validate required fields
-        const requiredFields = bookingForm.querySelectorAll('[required]');
-        requiredFields.forEach(field => {
-            if (!field.value.trim()) {
-                const errorId = field.id + 'Error';
-                const errorElement = document.getElementById(errorId);
-                if (errorElement) {
-                    errorElement.style.display = 'block';
-                }
-                isValid = false;
-            }
-        });
-
-        // Validate email format
-        const emailField = document.getElementById('email');
-        if (emailField && emailField.value && !emailField.value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-            document.getElementById('emailError').style.display = 'block';
-            isValid = false;
-        }
-
-        // Validate phone format (simple validation)
-        const phoneField = document.getElementById('phone');
-        if (phoneField && phoneField.value && phoneField.value.replace(/\D/g, '').length < 10) {
-            document.getElementById('phoneError').style.display = 'block';
-            isValid = false;
-        }
-
-        // Validate card number (simple validation)
-        const cardNumberField = document.getElementById('cardNumber');
-        if (cardNumberField && cardNumberField.value && cardNumberField.value.replace(/\s/g, '').length < 16) {
-            document.getElementById('cardNumberError').style.display = 'block';
-            isValid = false;
-        }
-
-        // Validate expiry date
-        const expiryField = document.getElementById('expiry');
-        if (expiryField && expiryField.value) {
-            const [month, year] = expiryField.value.split('/');
-            const currentDate = new Date();
-            const currentYear = currentDate.getFullYear() % 100;
-            const currentMonth = currentDate.getMonth() + 1;
-
-            if (!month || !year || month < 1 || month > 12 || 
-                (year < currentYear || (year == currentYear && month < currentMonth))) {
-                document.getElementById('expiryError').style.display = 'block';
-                isValid = false;
-            }
-        }
-
-        // Validate CVV
-        const cvvField = document.getElementById('cvv');
-        if (cvvField && cvvField.value && cvvField.value.length !== 3) {
-            document.getElementById('cvvError').style.display = 'block';
-            isValid = false;
-        }
-
-        // Validate terms checkbox
-        const termsCheck = document.getElementById('termsCheck');
-        if (termsCheck && !termsCheck.checked) {
-            document.getElementById('termsCheckError').style.display = 'block';
-            isValid = false;
-        }
-
-        return isValid;
-    }
-
-    // Form submission with API call
-    if (bookingForm) {
-        bookingForm.addEventListener('submit', async function(e) {
+    // Initialize on document load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set up event listeners for price calculation
+        document.getElementById('participants').addEventListener('change', calculateTotal);
+        document.getElementById('roomType').addEventListener('change', calculateTotal);
+        
+        // Initial calculation
+        calculateTotal();
+        
+        // Form submission handling
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            console.log("Form gönderiliyor...");
-
-            if (validateForm()) {
-                try {
-                    // Show loading indicator
-                    if (loadingOverlay) loadingOverlay.style.display = 'flex';
-
-                    // Form verilerini backend'in beklediği formatta hazırla
-                    const formData = {
-                        tur_paketi_id: parseInt(turId, 10), // tur_id yerine tur_paketi_id olarak güncelledim
-                        tur_sefer_id: turSeferiId, // Eğer varsa, tur seferi ID'sini ekleyerek gönder
-                        ad: document.getElementById('firstName').value,
-                        soyad: document.getElementById('lastName').value,
-                        email: document.getElementById('email').value,
-                        telefon: document.getElementById('phone').value,
-                        tc_kimlik: document.getElementById('tc_kimlik') ? document.getElementById('tc_kimlik').value : "",
-                        adres: document.getElementById('adres') ? document.getElementById('adres').value : "",
-                        kisi_sayisi: parseInt(participantsSelect.value) || 1,
-                        oda_tipi: roomTypeSelect ? roomTypeSelect.value : 'standard',
-                        notlar: document.getElementById('additionalRequests') ? document.getElementById('additionalRequests').value : ""
-                    };
-
-                    console.log("Backend'e gönderilecek veri:", formData);
-
-                    // Kullanıcı oturumu varsa musteri_id ekle
-                    if (currentUser && currentUser.id) {
-                        formData.musteri_id = currentUser.id;
-                        console.log("Kullanıcı oturumu tespit edildi. Müşteri ID:", currentUser.id);
-                    }
-
-                    // Backend'e POST isteği gönder
-                    const response = await createRezervasyon(formData);
-                    console.log("API Yanıtı:", response);
-
-                    // Hide loading indicator
-                    if (loadingOverlay) loadingOverlay.style.display = 'none';
-
-                    if (response.error) {
-                        alert(response.error || 'Rezervasyon sırasında bir hata oluştu.');
-                    } else {
-                        // Hide form and show success message
-                        bookingForm.style.display = 'none';
-                        if (successMessage) {
-                            successMessage.style.display = 'block';
-                            // Booking ID'yi göster
-                            const bookingIdElement = document.getElementById('bookingId');
-                            if (bookingIdElement) {
-                                bookingIdElement.textContent = response.rezervasyon_id || response.id || 'BK-' + Math.floor(Math.random() * 10000000);
-                            }
-                            // Scroll to success message
-                            successMessage.scrollIntoView({ behavior: 'smooth' });
-                        } else {
-                            alert("Rezervasyonunuz başarıyla oluşturuldu! Rezervasyon ID: " + 
-                                 (response.rezervasyon_id || response.id || 'BK-' + Math.floor(Math.random() * 10000000)));
-                        }
-                    }
-                } catch (error) {
-                    console.error("Rezervasyon hatası:", error);
-                    if (loadingOverlay) loadingOverlay.style.display = 'none';
-                    alert("Rezervasyon sırasında bir hata oluştu: " + error.message);
-                }
-            }
+            handleBookingSubmission();
         });
-    }
+    });
 
-    // Initialize prices
-    updatePrice();
+    // Handle form submission
+    async function handleBookingSubmission() {
+        // Show loading overlay
+        document.getElementById('loadingOverlay').style.display = 'flex';
+        
+        // Simulate API call delay
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        try {
+            // Get form data
+            const formData = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                tc_kimlik: document.getElementById('tc_kimlik').value,
+                adres: document.getElementById('adres').value,
+                participants: document.getElementById('participants').value,
+                roomType: document.getElementById('roomType').value,
+                additionalRequests: document.getElementById('additionalRequests').value,
+                // Payment details would be handled securely in a real application
+            };
+            
+            // Generate a random booking ID for demo purposes
+            const bookingId = 'BK-' + Math.floor(Math.random() * 1000000);
+            
+            // Display success message with booking ID
+            document.getElementById('bookingId').textContent = bookingId;
+            document.getElementById('successMessage').style.display = 'block';
+            document.getElementById('bookingForm').style.display = 'none';
+            
+            // Log the booking data (for demo purposes only)
+            console.log('Booking submitted:', formData);
+            
+        } catch (error) {
+            // Handle errors
+            console.error('Booking submission failed:', error);
+            alert('There was an error processing your booking. Please try again.');
+        } finally {
+            // Hide loading overlay
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+    }
 });
