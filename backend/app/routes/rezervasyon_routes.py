@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from app import db
-from app.models import Rezervasyon, Musteri, TurSeferi, Tur  # Add Tur import
-from datetime import datetime, timedelta  # Add timedelta import
+from app.models import Rezervasyon, Musteri, TurSeferi, Tur, TurPaketi
+from datetime import datetime, timedelta
 
 rezervasyon_bp = Blueprint('rezervasyon', __name__, url_prefix='/api')
 
@@ -13,6 +13,7 @@ def get_rezervasyonlar():
         # İsteğe bağlı filtreler
         musteri_id = request.args.get('musteri_id')
         tur_id = request.args.get('tur_id')
+        tur_paketi_id = request.args.get('tur_paketi_id')
         
         # Sorgu oluştur
         query = Rezervasyon.query
@@ -22,6 +23,8 @@ def get_rezervasyonlar():
             query = query.filter_by(musteri_id=musteri_id)
         if tur_id:
             query = query.filter_by(tur_id=tur_id)
+        if tur_paketi_id:
+            query = query.filter_by(tur_paketi_id=tur_paketi_id)
             
         # Rezervasyonları al
         rezervasyonlar = query.all()
@@ -30,6 +33,7 @@ def get_rezervasyonlar():
         return jsonify([{
             'id': r.id,
             'tur_id': r.tur_id,
+            'tur_paketi_id': r.tur_paketi_id,  # Yeni alan eklendi
             'tur_sefer_id': r.tur_sefer_id,
             'musteri_id': r.musteri_id,
             'ad': r.ad,
@@ -56,51 +60,73 @@ def create_rezervasyon():
         print("GELEN VERİ:", data)  # Debug log
         
         # Frontend'den gelen değerleri alma
-        tur_id = data.get('tur_paketi_id') or data.get('tur_id')
-        tur_sefer_id = data.get('tur_sefer_id')  # Yeni eklenen parametre
+        tur_paketi_id = data.get('tur_paketi_id')
+        tur_id = data.get('tur_id')
+        tur_sefer_id = data.get('tur_sefer_id')
         
-        if not tur_id:
-            return jsonify({'error': 'Tur ID alanı gerekli'}), 400
+        # Ya tur_id ya da tur_paketi_id gerekli
+        if not tur_id and not tur_paketi_id:
+            return jsonify({'error': 'Tur ID veya Tur Paketi ID alanı gerekli'}), 400
             
-        # Tur varlığını kontrol et
-        tur = Tur.query.get(tur_id)
-        if not tur:
-            return jsonify({'error': 'Tur bulunamadı'}), 404
+        # Tur veya Tur Paketi kontrolü
+        if tur_paketi_id:
+            tur_paketi = TurPaketi.query.get(tur_paketi_id)
+            if not tur_paketi:
+                return jsonify({'error': 'Tur paketi bulunamadı'}), 404
+        elif tur_id:
+            tur = Tur.query.get(tur_id)
+            if not tur:
+                return jsonify({'error': 'Tur bulunamadı'}), 404
+        
+        # Tur seferi varsa kontrol et, yoksa oluştur
+        if not tur_sefer_id:
+            # Mevcut bir tur seferi bulmaya çalış
+            if tur_id:
+                # Tur ID'si varsa, bu tur için bir sefer bul
+                tur_seferi = TurSeferi.query.filter_by(tur_id=tur_id, durum='aktif').first()
+            else:
+                # Sadece aktif herhangi bir sefer bul
+                tur_seferi = TurSeferi.query.filter_by(durum='aktif').first()
             
-        # Tur Seferi varsa kontrol et
-        if tur_sefer_id:
-            tur_seferi = TurSeferi.query.get(tur_sefer_id)
-            if not tur_seferi:
-                return jsonify({'error': 'Tur seferi bulunamadı'}), 404
-            # Tur seferinden tur_id'yi al
-            tur_id = tur_seferi.tur_id
-        else:
-            # Turla ilişkili aktif bir sefer bul
-            tur_seferi = TurSeferi.query.filter_by(tur_id=tur_id, durum='aktif').first()
-            
-            # Aktif sefer yoksa yeni bir tane oluştur
             if not tur_seferi:
                 print("Aktif tur seferi bulunamadı, yeni bir sefer oluşturuluyor...")
-                # Bugünden başlayarak 7 gün sonrası için bir sefer oluştur
                 bugun = datetime.now().date()
                 bitis = bugun + timedelta(days=7)
                 
+                # Bir tur seferi için geçerli bir tur ID'si gerekli
+                # Eğer tur_id yoksa, veritabanındaki ilk turu al
+                if not tur_id:
+                    default_tur = Tur.query.first()
+                    if not default_tur:
+                        # Eğer hiç tur yoksa bir tane oluştur
+                        default_tur = Tur(
+                            adi="Geçici Tur",
+                            sure="1 gün",
+                            fiyat=0,
+                            aciklama="Sistem tarafından otomatik oluşturulmuş tur"
+                        )
+                        db.session.add(default_tur)
+                        db.session.flush()
+                    tur_id_for_sefer = default_tur.id
+                else:
+                    tur_id_for_sefer = tur_id
+                
                 yeni_sefer = TurSeferi(
-                    tur_id=tur_id,
+                    tur_id=tur_id_for_sefer,
                     baslangic_tarihi=bugun,
                     bitis_tarihi=bitis,
-                    kontenjan=20,  # Varsayılan kontenjan
+                    kontenjan=20,
                     kalan_kontenjan=20,
                     durum='aktif'
                 )
                 db.session.add(yeni_sefer)
-                db.session.flush()  # ID oluşturmak için flush yap
+                db.session.flush()
                 
                 print(f"Yeni tur seferi oluşturuldu. ID: {yeni_sefer.id}")
                 tur_seferi = yeni_sefer
-                
-            tur_sefer_id = tur_seferi.id
             
+            tur_sefer_id = tur_seferi.id
+        
         # ÖNEMLİ: Önce müşteriyi kontrol et, yoksa oluştur
         email = data.get('email', '')
         telefon = data.get('telefon', '')
@@ -138,10 +164,11 @@ def create_rezervasyon():
         except ValueError:
             tarih = datetime.now().date()
         
-        # Rezervasyon oluştur - Tur Seferi ID'sini de ekle
+        # Rezervasyon oluştur - artık tur_paketi_id alanımız var!
         rezervasyon = Rezervasyon(
             tur_id=tur_id,
-            tur_sefer_id=tur_sefer_id,  # Tur seferi ID'sini ekle
+            tur_paketi_id=tur_paketi_id,  # Yeni eklenen alan
+            tur_sefer_id=tur_sefer_id,
             musteri_id=musteri.id,
             ad=data.get('ad', 'İsimsiz'),
             soyad=data.get('soyad', 'Müşteri'),
@@ -155,7 +182,8 @@ def create_rezervasyon():
         
         print("REZERVASYON OLUŞTURULACAK:", {
             'tur_id': rezervasyon.tur_id,
-            'tur_sefer_id': rezervasyon.tur_sefer_id,  # Log'a tur_sefer_id ekle
+            'tur_paketi_id': rezervasyon.tur_paketi_id,  # Yeni alan eklendi
+            'tur_sefer_id': rezervasyon.tur_sefer_id,
             'ad': rezervasyon.ad,
             'soyad': rezervasyon.soyad,
             'email': rezervasyon.email,

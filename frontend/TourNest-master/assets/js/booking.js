@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
                     // Form verilerini backend'in beklediği formatta hazırla
                     const formData = {
-                        tur_id: parseInt(turId, 10), // Normal tur ID'sini gönder
+                        tur_paketi_id: parseInt(turId, 10), // tur_id yerine tur_paketi_id olarak güncelledim
                         tur_sefer_id: turSeferiId, // Eğer varsa, tur seferi ID'sini ekleyerek gönder
                         ad: document.getElementById('firstName').value,
                         soyad: document.getElementById('lastName').value,

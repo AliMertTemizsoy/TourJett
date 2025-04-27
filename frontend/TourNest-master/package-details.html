@@ -680,33 +680,58 @@
             
             // Yorum verisini hazırla
             const reviewData = {
-                musteri_id: currentUser.id,
+                musteri_id: parseInt(currentUser.id),
                 tur_paketi_id: parseInt(turId),
                 puan: parseInt(reviewRating),
                 yorum: reviewComment
             };
             
+            console.log('Gönderilecek değerlendirme verisi:', reviewData);
+            
             try {
-                let result;
-                // API fonksiyonu var mı kontrol et
-                if (window.createDegerlendirme) {
-                    result = await window.createDegerlendirme(reviewData);
-                } else {
-                    // Doğrudan API'ye istek yap
-                    const response = await fetch('http://localhost:5000/api/degerlendirmeler', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(reviewData)
-                    });
-                    
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.error || 'Değerlendirme eklenemedi');
+                // Doğrudan API'ye istek yap
+                const response = await fetch('http://localhost:5000/api/degerlendirmeler', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(reviewData)
+                });
+                
+                console.log('Status kod:', response.status);
+                console.log('Status text:', response.statusText);
+                console.log('Response headers:', [...response.headers.entries()]);
+                
+                const responseText = await response.text();
+                console.log('API yanıtı metni:', responseText);
+                
+                // Hata durumunda detaylı bilgi göster
+                if (!response.ok) {
+                    if (responseText.includes('<!DOCTYPE html>') || responseText.includes('<html')) {
+                        // HTML hata sayfası döndürüldüyse
+                        throw new Error(`Sunucuda bir hata oluştu (${response.status}). Backend'de bir istisna meydana gelmiş olabilir.`);
                     }
                     
-                    result = await response.json();
+                    // JSON yanıtını işlemeye çalış
+                    let errorData;
+                    try {
+                        errorData = JSON.parse(responseText);
+                        throw new Error(errorData.error || `Sunucu hatası: ${response.status}`);
+                    } catch (e) {
+                        if (e instanceof SyntaxError) {
+                            throw new Error(`Sunucudan geçersiz yanıt: ${responseText.substring(0, 100)}...`);
+                        }
+                        throw e; // Diğer hataları yeniden fırlat
+                    }
+                }
+                
+                // Başarılı yanıt için JSON ayrıştır
+                let result;
+                try {
+                    result = JSON.parse(responseText);
+                } catch (e) {
+                    throw new Error(`Sunucudan geçersiz JSON yanıtı: ${responseText.substring(0, 100)}...`);
                 }
                 
                 // Başarılı mesajı göster

@@ -1,8 +1,9 @@
-from flask import Flask, jsonify, send_from_directory
+from flask import Flask, jsonify, send_from_directory, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
 import os
+import traceback
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -42,6 +43,31 @@ def create_app(config=None):
     # Veritabanı başlatma
     db.init_app(app)
     migrate.init_app(app, db)
+    
+    # Global hata yakalama mekanizması
+    @app.errorhandler(Exception)
+    def handle_exception(e):
+        print(f"Global exception handler caught: {str(e)}")
+        print(traceback.format_exc())
+        
+        # API istekleri için JSON yanıtı döndürme
+        if request.path.startswith('/api/'):
+            response = {
+                "error": str(e),
+                "message": "Sunucu hatası oluştu. Lütfen daha sonra tekrar deneyiniz.",
+                "status": "error"
+            }
+            
+            if app.debug:
+                response["debug_info"] = {
+                    "exception_type": str(type(e).__name__),
+                    "traceback": traceback.format_exc().split('\n')
+                }
+                
+            return jsonify(response), 500
+        
+        # Normal sayfalar için hata mesajı
+        return f"Beklenmeyen bir hata oluştu: {str(e)}", 500
     
     try:
         # Route'ları kaydet

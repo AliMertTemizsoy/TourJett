@@ -221,14 +221,15 @@ $(document).ready(function(){
 
 // Tur paketlerini API'den çekmek için fonksiyon
 function getTurlar() {
-    console.log("Fetching tours from API...");
-    return window.ApiService.tours.getAll()
+    console.log("Fetching tour packages from API...");
+    // Fix: Use tourPackages.getAll() instead of tours.getAll()
+    return window.ApiService.tourPackages.getAll()
         .then(response => {
             console.log("API Response:", response);
             return response;
         })
         .catch(error => {
-            console.error("Error fetching tours:", error);
+            console.error("Error fetching tour packages:", error);
             throw error;
         });
 }

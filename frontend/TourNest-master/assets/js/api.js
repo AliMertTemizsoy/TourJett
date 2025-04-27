@@ -85,6 +85,15 @@ const ApiService = {
         delete: (id) => apiCall(`/turlar/${id}`, 'DELETE'),
     },
     
+    // Tour Package APIs - Yeni eklendi
+    tourPackages: {
+        getAll: () => apiCall('/turpaketleri'),
+        getById: (id) => apiCall(`/turpaketleri/${id}`),
+        create: (packageData) => apiCall('/turpaketleri', 'POST', packageData),
+        update: (id, packageData) => apiCall(`/turpaketleri/${id}`, 'PUT', packageData),
+        delete: (id) => apiCall(`/turpaketleri/${id}`, 'DELETE'),
+    },
+    
     // Reservation APIs
     reservations: {
         getAll: () => apiCall('/rezervasyon'),
