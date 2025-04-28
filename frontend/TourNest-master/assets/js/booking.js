@@ -9,6 +9,48 @@ document.addEventListener('DOMContentLoaded', async function() {
     const loadingOverlay = document.getElementById('loadingOverlay');
     const successMessage = document.getElementById('successMessage');
     const tourDetails = document.querySelector('.tour-details');
+    const cardNumberInput = document.getElementById('cardNumber');
+    const expiryInput = document.getElementById('expiry');
+
+    // Kart numarası formatlamayı ekle - her 4 rakamdan sonra boşluk
+    cardNumberInput.addEventListener('input', function(e) {
+        let value = e.target.value;
+        
+        // Sadece rakamları al
+        value = value.replace(/\D/g, '');
+        
+        // 16 rakamla sınırla
+        value = value.substring(0, 16);
+        
+        // Her 4 rakamdan sonra boşluk ekle
+        let formattedValue = '';
+        for(let i = 0; i < value.length; i++) {
+            if(i > 0 && i % 4 === 0) {
+                formattedValue += ' ';
+            }
+            formattedValue += value[i];
+        }
+        
+        e.target.value = formattedValue;
+    });
+
+    // Son kullanma tarihi formatlamayı ekle - 2 rakamdan sonra / işareti
+    expiryInput.addEventListener('input', function(e) {
+        let value = e.target.value;
+        
+        // Sadece rakamları al
+        value = value.replace(/\D/g, '');
+        
+        // 4 rakamla sınırla (MM/YY)
+        value = value.substring(0, 4);
+        
+        // 2 rakamdan sonra / ekle
+        if(value.length > 2) {
+            value = value.substring(0, 2) + '/' + value.substring(2);
+        }
+        
+        e.target.value = value;
+    });
 
     // URL'den tur_id parametresini al
     const urlParams = new URLSearchParams(window.location.search);
