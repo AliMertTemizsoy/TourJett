@@ -173,20 +173,20 @@ document.addEventListener('DOMContentLoaded', async function() {
         try {
             // Rezervasyon verilerini hazırla
             const reservationData = {
-                musteri_id: currentUser?.id,
-                tur_id: parseInt(turId),
-                tur_sefer_id: turSeferiId,
-                musteri_adi: document.getElementById('firstName').value,
-                musteri_soyadi: document.getElementById('lastName').value,
-                email: document.getElementById('email').value,
-                telefon: document.getElementById('phone').value,
-                tc_kimlik: document.getElementById('tc_kimlik').value,
-                adres: document.getElementById('adres').value,
-                katilimci_sayisi: parseInt(document.getElementById('participants').value),
-                oda_tipi: document.getElementById('roomType').value,
-                ozel_notlar: document.getElementById('additionalRequests').value || '',
-                // Ödeme bilgilerini güvenli bir şekilde işlemek için gerçek bir uygulamada ek adımlar gerekecektir
-                odeme_durumu: 'Tamamlandı'
+            // Backend kodu "musteri_id" değil "musteri_id" beklediği için düzeltme yapıyoruz
+            musteri_id: currentUser?.id,
+            tur_id: parseInt(turId),
+            tur_sefer_id: turSeferiId,
+            // musteri_adi ve musteri_soyadi yerine backend'in beklediği şekilde ad ve soyad kullan
+            ad: document.getElementById('firstName').value,
+            soyad: document.getElementById('lastName').value,
+            email: document.getElementById('email').value,
+            telefon: document.getElementById('phone').value,
+            tc_kimlik: document.getElementById('tc_kimlik').value,
+            adres: document.getElementById('adres').value,
+            kisi_sayisi: parseInt(document.getElementById('participants').value),
+            oda_tipi: document.getElementById('roomType').value,
+            ozel_istekler: document.getElementById('additionalRequests').value || ''
             };
 
             console.log('Rezervasyon verileri:', reservationData);
@@ -194,8 +194,8 @@ document.addEventListener('DOMContentLoaded', async function() {
             // API'ye gönder (eğer varsa)
             let reservationResult;
             try {
-                if (typeof createReservation === 'function') {
-                    reservationResult = await createReservation(reservationData);
+                if (typeof createRezervasyon === 'function') {
+                    reservationResult = await createRezervasyon(reservationData);
                     console.log('Rezervasyon başarıyla oluşturuldu:', reservationResult);
                 } else {
                     // API fonksiyonu yoksa simule et

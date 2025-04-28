@@ -274,7 +274,7 @@ window.getTurById = async function(id) {
 window.createRezervasyon = async function(reservationData) {
     console.log('Creating reservation with data:', reservationData);
     try {
-        const response = await fetch(`${API_BASE_URL}/rezervasyon`, {
+        const response = await fetch('http://localhost:5000/api/rezervasyon', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -286,7 +286,7 @@ window.createRezervasyon = async function(reservationData) {
         if (!response.ok) {
             const errorText = await response.text();
             console.error(`Reservation error: HTTP ${response.status}`, errorText);
-            throw new Error('Rezervasyon oluşturulamadı.');
+            throw new Error('Rezervasyon oluşturulamadı: ' + errorText);
         }
         
         const data = await response.json();
@@ -294,7 +294,7 @@ window.createRezervasyon = async function(reservationData) {
         return data;
     } catch (error) {
         console.error('Reservation error:', error);
-        throw new Error(error.message || 'Rezervasyon oluşturulamadı. Lütfen tekrar deneyin.');
+        throw error;
     }
 };
 
