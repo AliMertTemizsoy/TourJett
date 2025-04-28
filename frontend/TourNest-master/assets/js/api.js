@@ -4,7 +4,10 @@
  */
 
 // Base API URL - updated to work with Docker container
-const API_BASE_URL = 'http://localhost:5000/api';
+// Host adını dinamik olarak belirleyelim - localhost veya backend container
+const API_BASE_URL = window.location.hostname === 'localhost' ? 
+    'http://localhost:5000/api' : 
+    'http://backend:5000/api';
 
 // API Error Handler
 const handleApiError = (error) => {
@@ -274,7 +277,7 @@ window.getTurById = async function(id) {
 window.createRezervasyon = async function(reservationData) {
     console.log('Creating reservation with data:', reservationData);
     try {
-        const response = await fetch('http://localhost:5000/api/rezervasyon', {
+        const response = await fetch(`${API_BASE_URL}/rezervasyon`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

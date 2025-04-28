@@ -175,7 +175,8 @@ document.addEventListener('DOMContentLoaded', async function() {
             const reservationData = {
             // Backend kodu "musteri_id" değil "musteri_id" beklediği için düzeltme yapıyoruz
             musteri_id: currentUser?.id,
-            tur_id: parseInt(turId),
+            // tur_id yerine tur_paketi_id olarak gönderiyoruz
+            tur_paketi_id: parseInt(turId),
             tur_sefer_id: turSeferiId,
             // musteri_adi ve musteri_soyadi yerine backend'in beklediği şekilde ad ve soyad kullan
             ad: document.getElementById('firstName').value,
