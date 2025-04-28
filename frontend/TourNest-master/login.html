@@ -1,106 +1,402 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- META DATA -->
   <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
   <title>Tour Jett - Login</title>
-  <link rel="stylesheet" href="assets/css/login_style.css">
+  
+  <!-- favicon img -->
+  <link rel="shortcut icon" type="image/icon" href="assets/logo/favicon.png"/>
+  
+  <!--font-family-->
+  <link href="https://fonts.googleapis.com/css?family=Rufina:400,700" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!--bootstrap.min.css-->
+  <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
+  
+  <!--font-awesome.min.css-->
+  <link rel="stylesheet" href="assets/css/font-awesome.min.css" />
+  
+  <!--style.css-->
+  <link rel="stylesheet" href="assets/css/style.css" />
+  
   <style>
+    body {
+      background-color: #f0f2f5;
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      background-image: linear-gradient(135deg, #1a3f62, #2c3e50);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+    }
+    
+    /* Arka plan deseni - sabit pozisyonda ve daha büyük */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+    
+    .header-area {
+      background: rgba(0, 0, 0, 0.3);
+    }
+
     .error-message {
       color: #ff3860;
       margin-top: 5px;
       font-size: 14px;
       display: none;
     }
+    
+    .login-section {
+      padding: 30px 0 50px;
+      display: flex;
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .login-container {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      padding: 30px;
+      max-width: 450px;
+      width: 100%;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .login-container h2 {
+      color: #00d8ff;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 500;
+      margin-bottom: 25px;
+      text-align: center;
+      font-size: 26px;
+      letter-spacing: 0.3px;
+    }
+    
+    .login-form .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .login-form label {
+      font-weight: 500;
+      color: #565a5c;
+    }
+    
+    .login-form .form-control {
+      height: 45px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+      padding-left: 15px;
+    }
+    
+    .login-form .form-control:focus {
+      border-color: #00d8ff;
+      box-shadow: 0 0 5px rgba(0,216,255,0.3);
+    }
+    
+    .login-btn {
+      background-color: #00d8ff;
+      border: 1px solid #00d8ff;
+      color: #fff;
+      border-radius: 5px;
+      font-size: 16px;
+      transition: 0.5s;
+      width: 100%;
+      padding: 12px 0;
+      margin-top: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .login-btn:hover {
+      background-color: #00c3e6;
+    }
+    
+    .auth-tabs {
+      text-align: center;
+      margin-bottom: 30px;
+      background: white;
+      border-radius: 30px;
+      display: inline-flex;
+      padding: 5px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      position: relative;
+      z-index: 1;
+    }
+    
+    .auth-tab {
+      display: inline-block;
+      padding: 10px 25px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #565a5c;
+      background: transparent;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      min-width: 120px;
+    }
+    
+    .auth-tab.active {
+      color: #fff;
+      background-color: #00d8ff;
+    }
+    
+    .auth-tab:hover:not(.active) {
+      background-color: rgba(0,216,255,0.1);
+    }
+    
+    .auth-form {
+      display: none;
+    }
+    
+    .auth-form.active {
+      display: block;
+      animation: fadeIn 0.5s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Yeni logo konteyneri - sol üste taşındı */
+    .logo-container {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+    }
+    
+    /* Logo için 3D efekti */
+    .logo-container .logo {
+      position: relative;
+      display: block;
+    }
+    
+    .logo-container .logo img {
+      height: 60px;
+      position: relative;
+      z-index: 2;
+      filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+    }
+    
+    /* Logo arkasındaki beyaz outline efekti */
+    .logo-container .logo::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 5px;
+      transform: scale(1.1, 1.2) translateZ(-10px);
+      z-index: 1;
+      filter: blur(10px);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    }
+    
+    .home-link {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      padding: 8px 15px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 20px;
+      transition: all 0.3s ease;
+      z-index: 10;
+    }
+    
+    .home-link:hover {
+      background: rgba(0, 216, 255, 0.3);
+    }
+    
+    .home-link i {
+      margin-right: 5px;
+    }
+    
+    .tabs-container {
+      text-align: center;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
   </style>
 </head>
+
 <body>
 
 <!-- Login status check - Redirect if already logged in -->
 <script>
   // Check if user is already logged in
   document.addEventListener('DOMContentLoaded', function() {
-    const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || sessionStorage.getItem('currentUser') || '{}');
     if (currentUser && currentUser.id) {
       console.log('User already logged in, redirecting to logged-in user page');
       window.location.href = 'index_loggedinuser.html';
     }
+    
+    // Tab switching functionality
+    const loginTab = document.getElementById('loginTab');
+    const signupTab = document.getElementById('signupTab');
+    
+    loginTab.addEventListener('click', function() {
+      loginTab.classList.add('active');
+      signupTab.classList.remove('active');
+      document.getElementById('loginFormContainer').classList.add('active');
+      document.getElementById('signupFormContainer').classList.remove('active');
+    });
+    
+    signupTab.addEventListener('click', function() {
+      signupTab.classList.add('active');
+      loginTab.classList.remove('active');
+      document.getElementById('signupFormContainer').classList.add('active');
+      document.getElementById('loginFormContainer').classList.remove('active');
+    });
   });
 </script>
 
-<section class="forms-section">
-  <h1 class="section-title">Join Now!</h1>
-  <div class="forms">
-    <div class="form-wrapper is-active">
-      <button type="button" class="switcher switcher-login">
-        Login
-        <span class="underline"></span>
-      </button>
-      <form class="form form-login">
-        <fieldset>
-          <legend>Please, enter your email and password for login.</legend>
-          <div class="input-block">
-            <label for="login-email">E-mail</label>
-            <input id="login-email" type="email" required>
+<!-- Home link -->
+<a href="index.html" class="home-link">
+  <i class="fa fa-home"></i> Back to Home
+</a>
+
+<!-- Logo moved to top left -->
+<div class="logo-container">
+  <div class="logo">
+    <a href="index.html">
+      <img src="assets/logo/logo.png" alt="Tour Jett Logo">
+    </a>
+  </div>
+</div>
+
+<!-- Login and Registration Section Start -->
+<section class="login-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="tabs-container">
+          <div class="auth-tabs">
+            <button id="loginTab" class="auth-tab active">Login</button>
+            <button id="signupTab" class="auth-tab">Sign Up</button>
           </div>
-          <div class="input-block">
-            <label for="login-password">Password</label>
-            <input id="login-password" type="password" required>
+        </div>
+        
+        <div id="loginFormContainer" class="auth-form active">
+          <div class="login-container">
+            <h2>Welcome Back</h2>
+            <form class="login-form" id="loginForm">
+              <div class="form-group">
+                <label for="login-email">Email Address</label>
+                <input id="login-email" type="email" class="form-control" placeholder="Enter your email" required>
+              </div>
+              <div class="form-group">
+                <label for="login-password">Password</label>
+                <input id="login-password" type="password" class="form-control" placeholder="Enter your password" required>
+              </div>
+              <div id="login-error" class="error-message"></div>
+              <button type="submit" class="login-btn">Login</button>
+              <!-- Removed "forgot password" link -->
+            </form>
           </div>
-          <div id="login-error" class="error-message"></div>
-        </fieldset>
-        <button type="submit" class="btn-login">Login</button>
-      </form>
-    </div>
-    <div class="form-wrapper">
-      <button type="button" class="switcher switcher-signup">
-        Sign Up
-        <span class="underline"></span>
-      </button>
-      <form class="form form-signup">
-        <fieldset>
-          <legend>Please, enter your email, password and password confirmation for sign up.</legend>
-          <div class="input-block">
-            <label for="signup-email">E-mail</label>
-            <input id="signup-email" type="email" required>
+        </div>
+        
+        <div id="signupFormContainer" class="auth-form">
+          <div class="login-container">
+            <h2>Create Your Account</h2>
+            <form class="login-form" id="signupForm">
+              <div class="form-group">
+                <label for="name">Name</label>
+                <input id="name" type="text" class="form-control" placeholder="Enter your name" required>
+              </div>
+              <div class="form-group">
+                <label for="surname">Surname</label>
+                <input id="surname" type="text" class="form-control" placeholder="Enter your surname" required>
+              </div>
+              <div class="form-group">
+                <label for="signup-email">Email Address</label>
+                <input id="signup-email" type="email" class="form-control" placeholder="Enter your email" required>
+              </div>
+              <div class="form-group">
+                <label for="signup-phone">Phone Number</label>
+                <input id="signup-phone" type="tel" class="form-control" placeholder="05XXXXXXXXX" required>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="national-id">National ID</label>
+                    <input id="national-id" type="text" class="form-control" placeholder="National ID">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="birth-date">Birth Date</label>
+                    <input id="birth-date" type="date" class="form-control">
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <input id="signup-password" type="password" class="form-control" placeholder="Choose a password" required>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="signup-password-confirm">Confirm Password</label>
+                    <input id="signup-password-confirm" type="password" class="form-control" placeholder="Confirm password" required>
+                  </div>
+                </div>
+              </div>
+              <div id="signup-error" class="error-message"></div>
+              <button type="submit" class="login-btn">Create Account</button>
+            </form>
           </div>
-          <div class="input-block">
-            <label for="signup-password">Password</label>
-            <input id="signup-password" type="password" required>
-          </div>
-          <div class="input-block">
-            <label for="signup-password-confirm">Confirm password</label>
-            <input id="signup-password-confirm" type="password" required>
-          </div>
-          <div class="input-block">
-            <label for="name">Name</label>
-            <input id="name" type="text" required>
-          </div>
-          <div class="input-block">
-            <label for="surname">Surname</label>
-            <input id="surname" type="text" required>
-          </div>
-          <div class="input-block">
-            <label for="national-id">National ID</label>
-            <input id="national-id" type="text">
-          </div>
-          <div class="input-block">
-            <label for="signup-phone">Telefon Numarası</label>
-            <input id="signup-phone" type="tel" placeholder="05XXXXXXXXX">
-            <small class="form-text text-muted">Başında 0 ile girin, örn: 05321234567</small>
-          </div>
-          <div class="input-block">
-            <label for="birth-date">Birth Date</label>
-            <input id="birth-date" type="date">
-          </div>
-          <div id="signup-error" class="error-message"></div>
-        </fieldset>
-        <button type="submit" class="btn-signup">Sign Up</button>
-      </form>
+        </div>
+      </div>
     </div>
   </div>
 </section>
+<!-- Login and Registration Section End -->
 
+<!-- JavaScript Libraries -->
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.min.js"></script>
 <script src="assets/js/api.js" defer></script>
 <script src="assets/js/login.js" defer></script>
+
 </body>
 </html>
