@@ -840,7 +840,10 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="tourLocation">Location</label>
-                            <input type="text" id="tourLocation" name="konum" class="form-control" required>
+                            <select id="tourLocation" name="konum" class="form-control" required>
+                                <option value="">Select Destination</option>
+                                <!-- Will be populated from API -->
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="tourPrice">Price (₺)</label>
@@ -1106,6 +1109,7 @@
             <div class="tab-container">
                 <div class="tab-buttons">
                     <button class="tab-button active" data-tab="destinations">Destinations</button>
+                    <button class="tab-button" data-tab="turs">Tours</button>
                     <button class="tab-button" data-tab="guides">Guides</button>
                     <button class="tab-button" data-tab="drivers">Drivers</button>
                     <button class="tab-button" data-tab="vehicles">Vehicles</button>
@@ -1168,6 +1172,35 @@
                                         </div>
                                     </td>
                                 </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tours Tab -->
+                <div class="tab-content" id="turs">
+                    <div class="filter-container">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search tours...">
+                        </div>
+                    </div>
+
+                    <div class="widget">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tour Name</th>
+                                    <th>Destination</th>
+                                    <th>Duration</th>
+                                    <th>Price</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tourResourceTableBody">
+                                <!-- Tour rows will go here -->
                             </tbody>
                         </table>
                     </div>
@@ -1537,6 +1570,7 @@
                             <select id="resourceType" class="form-control" required>
                                 <option value="">Select Resource Type</option>
                                 <option value="destination">Destination</option>
+                                <option value="tur">Tour</option>
                                 <option value="guide">Guide</option>
                                 <option value="driver">Driver</option>
                                 <option value="vehicle">Vehicle</option>
@@ -1576,7 +1610,50 @@
                         </div>
                     </div>
                 </form>
-                
+
+                <!-- Tour Form -->
+                <form id="tourResourceForm" style="display: none;">
+                    <input type="hidden" id="resourceTourId" name="id">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="resourceTourName">Tour Name</label>
+                            <input type="text" id="resourceTourName" name="ad" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="resourceTourDestination">Destination</label>
+                            <select id="resourceTourDestination" name="konum" class="form-control" required>
+                                <option value="">Select Destination</option>
+                                <!-- Will be populated dynamically -->
+                            </select>
+                        </div>                        
+                        <div class="form-group">
+                            <label for="resourceTourDuration">Duration</label>
+                            <input type="text" id="resourceTourDuration" name="sure" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="resourceTourPrice">Price</label>
+                            <input type="number" id="resourceTourPrice" name="fiyat" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="resourceTourStatus">Status</label>
+                            <select id="resourceTourStatus" name="durum" class="form-control" required>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="text-align: right;">
+                            <button type="button" class="btn btn-danger cancel-form">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Tour</button>
+                        </div>
+                    </div>
+                </form>
+
                 <!-- Guide Form -->
                 <form id="guideForm" style="display: none;">
                     <input type="hidden" id="guideId" name="id">
@@ -1743,7 +1820,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Load initial data
             loadDashboardData();
-            
+            populateDestinations();
             // Navigation handling
             const menuItems = document.querySelectorAll('.menu-item');
             const contentSections = document.querySelectorAll('.content-section');
@@ -2007,6 +2084,7 @@
                 document.getElementById('guideForm').style.display = 'none';
                 document.getElementById('driverForm').style.display = 'none';
                 document.getElementById('vehicleForm').style.display = 'none';
+                document.getElementById('tourResourceForm').style.display = 'none';
                 
                 // Show selected form
                 if (resourceType === 'destination') {
@@ -2017,7 +2095,10 @@
                     document.getElementById('driverForm').style.display = 'block';
                 } else if (resourceType === 'vehicle') {
                     document.getElementById('vehicleForm').style.display = 'block';
+                } else if (resourceType === 'tur') {
+                    document.getElementById('tourResourceForm').style.display = 'block';
                 }
+
             });
             
             // Close modal buttons
@@ -3123,6 +3204,110 @@
             // Initial charts and data visualization setup
             // ... existing chart initialization functions ...
         });
+
+        // Function to load destinations data and populate dropdowns
+        async function loadDestinationsForDropdowns() {
+            try {
+                // Get destination selects
+                const tourLocationSelect = document.getElementById('tourLocation');
+                const resourceTourDestinationSelect = document.getElementById('resourceTourDestination');
+                
+                // Clear any existing options except the first default option
+                if (tourLocationSelect) {
+                    tourLocationSelect.innerHTML = '<option value="">Select Destination</option>';
+                }
+                
+                if (resourceTourDestinationSelect) {
+                    resourceTourDestinationSelect.innerHTML = '<option value="">Select Destination</option>';
+                }
+                
+                // Fetch destinations from API
+                const response = await fetch(`http://localhost:5000/api/destinasyonlar`);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch destinations: ${response.status}`);
+                }
+                
+                const destinations = await response.json();
+                console.log("Loaded destinations:", destinations);
+                
+                if (destinations && destinations.length > 0) {
+                    // Populate both dropdowns
+                    destinations.forEach(destination => {
+                        // Only show active destinations
+                        if (destination.durum === 'active' || destination.durum === true) {
+                            if (tourLocationSelect) {
+                                const option = document.createElement('option');
+                                option.value = destination.id;
+                                option.textContent = destination.ad || destination.name;
+                                tourLocationSelect.appendChild(option);
+                            }
+                            
+                            if (resourceTourDestinationSelect) {
+                                const option = document.createElement('option');
+                                option.value = destination.id;
+                                option.textContent = destination.ad || destination.name;
+                                resourceTourDestinationSelect.appendChild(option);
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to load destinations for dropdowns:', error);
+            }
+        }
+        
+        // Call the function when the page loads or when opening modals
+        document.addEventListener('DOMContentLoaded', loadDestinationsForDropdowns);
+        openAddTourModal.addEventListener('click', loadDestinationsForDropdowns);
+        
+        // Also call the function when opening the resource form for tours
+        document.getElementById('resourceType').addEventListener('change', function() {
+            if (this.value === 'tur') {
+                loadDestinationsForDropdowns();
+            }
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+        async function populateDestinations() {
+            const destinationSelect1 = document.getElementById('tourLocation'); 
+            const destinationSelect2 = document.getElementById('resourceTourDestination'); 
+
+            // Clear old options first
+            [destinationSelect1, destinationSelect2].forEach(select => {
+                if (select) select.innerHTML = '<option value="">Select Destination</option>';
+            });
+
+            try {
+                const response = await fetch('/api/destinasyonlar');
+                if (!response.ok) throw new Error('Failed to fetch destinations');
+
+                const destinations = await response.json();
+                console.log("Loaded destinations:", destinations);
+
+                if (Array.isArray(destinations)) {
+                    destinations.forEach(dest => {
+                        if (dest && dest.id && dest.ad) {
+                            const option = document.createElement('option');
+                            option.value = dest.id;
+                            option.textContent = dest.ad;
+                            
+                            const option2 = document.createElement('option');
+                            option2.value = dest.id;
+                            option2.textContent = dest.ad;
+                            
+                            if (destinationSelect1) destinationSelect1.appendChild(option);
+                            if (destinationSelect2) destinationSelect2.appendChild(option2);
+                        }
+                    });
+                } else {
+                    console.error("API did not return an array:", destinations);
+                }
+            } catch (error) {
+                console.error('Error fetching destinations:', error);
+            }
+        }
+
+        populateDestinations();
+    });
     </script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from app import db
-from app.models import Rezervasyon, Musteri, TurSeferi, Tur, TurPaketi
-from datetime import datetime, timedelta
+from app.models import Rezervasyon, Musteri, Tur, TurPaketi
+from datetime import datetime
 
 rezervasyon_bp = Blueprint('rezervasyon', __name__, url_prefix='/api')
 
@@ -33,8 +33,7 @@ def get_rezervasyonlar():
         return jsonify([{
             'id': r.id,
             'tur_id': r.tur_id,
-            'tur_paketi_id': r.tur_paketi_id,  # Yeni alan eklendi
-            'tur_sefer_id': r.tur_sefer_id,
+            'tur_paketi_id': r.tur_paketi_id,
             'musteri_id': r.musteri_id,
             'ad': r.ad,
             'soyad': r.soyad,
@@ -62,7 +61,6 @@ def create_rezervasyon():
         # Frontend'den gelen değerleri alma
         tur_paketi_id = data.get('tur_paketi_id')
         tur_id = data.get('tur_id')
-        tur_sefer_id = data.get('tur_sefer_id')
         
         # Ya tur_id ya da tur_paketi_id gerekli
         if not tur_id and not tur_paketi_id:
@@ -77,56 +75,7 @@ def create_rezervasyon():
             tur = Tur.query.get(tur_id)
             if not tur:
                 return jsonify({'error': 'Tur bulunamadı'}), 404
-        
-        # Tur seferi varsa kontrol et, yoksa oluştur
-        if not tur_sefer_id:
-            # Mevcut bir tur seferi bulmaya çalış
-            if tur_id:
-                # Tur ID'si varsa, bu tur için bir sefer bul
-                tur_seferi = TurSeferi.query.filter_by(tur_id=tur_id, durum='aktif').first()
-            else:
-                # Sadece aktif herhangi bir sefer bul
-                tur_seferi = TurSeferi.query.filter_by(durum='aktif').first()
             
-            if not tur_seferi:
-                print("Aktif tur seferi bulunamadı, yeni bir sefer oluşturuluyor...")
-                bugun = datetime.now().date()
-                bitis = bugun + timedelta(days=7)
-                
-                # Bir tur seferi için geçerli bir tur ID'si gerekli
-                # Eğer tur_id yoksa, veritabanındaki ilk turu al
-                if not tur_id:
-                    default_tur = Tur.query.first()
-                    if not default_tur:
-                        # Eğer hiç tur yoksa bir tane oluştur
-                        default_tur = Tur(
-                            adi="Geçici Tur",
-                            sure="1 gün",
-                            fiyat=0,
-                            aciklama="Sistem tarafından otomatik oluşturulmuş tur"
-                        )
-                        db.session.add(default_tur)
-                        db.session.flush()
-                    tur_id_for_sefer = default_tur.id
-                else:
-                    tur_id_for_sefer = tur_id
-                
-                yeni_sefer = TurSeferi(
-                    tur_id=tur_id_for_sefer,
-                    baslangic_tarihi=bugun,
-                    bitis_tarihi=bitis,
-                    kontenjan=20,
-                    kalan_kontenjan=20,
-                    durum='aktif'
-                )
-                db.session.add(yeni_sefer)
-                db.session.flush()
-                
-                print(f"Yeni tur seferi oluşturuldu. ID: {yeni_sefer.id}")
-                tur_seferi = yeni_sefer
-            
-            tur_sefer_id = tur_seferi.id
-        
         # ÖNEMLİ: Önce müşteriyi kontrol et, yoksa oluştur
         email = data.get('email', '')
         telefon = data.get('telefon', '')
@@ -164,11 +113,21 @@ def create_rezervasyon():
         except ValueError:
             tarih = datetime.now().date()
         
-        # Rezervasyon oluştur - artık tur_paketi_id alanımız var!
+        # Tur ID yoksa ve tur_paketi_id varsa, paketin ilk turunu al
+        if not tur_id and tur_paketi_id:
+            # Burada gelecekte tur_paketleri ile turlar arasında bir ilişki varsa
+            # ilk turu almak için bir sorgu ekleyebilirsiniz
+            # Şimdilik varsayılan bir tur arıyoruz
+            default_tur = Tur.query.first()
+            if default_tur:
+                tur_id = default_tur.id
+            else:
+                return jsonify({'error': 'Tur ID belirtilmedi ve sistemde hiç tur yok'}), 400
+        
+        # Rezervasyon oluştur - artık tur_sefer_id alanı olmadan!
         rezervasyon = Rezervasyon(
             tur_id=tur_id,
-            tur_paketi_id=tur_paketi_id,  # Yeni eklenen alan
-            tur_sefer_id=tur_sefer_id,
+            tur_paketi_id=tur_paketi_id,
             musteri_id=musteri.id,
             ad=data.get('ad', 'İsimsiz'),
             soyad=data.get('soyad', 'Müşteri'),
@@ -182,8 +141,7 @@ def create_rezervasyon():
         
         print("REZERVASYON OLUŞTURULACAK:", {
             'tur_id': rezervasyon.tur_id,
-            'tur_paketi_id': rezervasyon.tur_paketi_id,  # Yeni alan eklendi
-            'tur_sefer_id': rezervasyon.tur_sefer_id,
+            'tur_paketi_id': rezervasyon.tur_paketi_id,
             'ad': rezervasyon.ad,
             'soyad': rezervasyon.soyad,
             'email': rezervasyon.email,
