@@ -208,7 +208,6 @@
     }
     
     
-    
     .home-link {
       position: absolute;
       top: 20px;
@@ -221,17 +220,49 @@
       padding: 8px 15px;
       background: rgba(0, 0, 0, 0.3);
       border-radius: 20px;
-      transition: all 0.3s ease;
       z-index: 10;
-    }
-    
-    .home-link:hover {
+      width: 140px;
+      height: 40px;
+      box-sizing: border-box;
+      transition: background-color 0.3s ease;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+      -webkit-font-smoothing: subpixel-antialiased;
+}
+
+.home-link:hover {
+  position: absolute;
+      top: 20px;
+      right: 20px;
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      padding: 8px 15px;
+      border-radius: 20px;
+      z-index: 10;
+      width: 140px;
+      height: 40px;
+      box-sizing: border-box;
+      transition: background-color 0.3s ease;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+      -webkit-font-smoothing: subpixel-antialiased;
       background: rgba(0, 216, 255, 0.3);
-    }
-    
-    .home-link i {
-      margin-right: 5px;
-    }
+}
+
+.home-link i {
+      margin-right: 8px;
+      font-size: 16px;
+      width: 16px;
+      flex: 0 0 auto;
+}
+
+.home-link span {
+      flex: 1;
+      white-space: nowrap;
+}
     
     .tabs-container {
       text-align: center;
@@ -276,15 +307,15 @@
 
 <!-- Home link -->
 <a href="index.html" class="home-link">
-  <i class="fa fa-home"></i> Back to Home
+  <i class="fa fa-home"></i><span>Back to Home</span>
 </a>
 
 <!-- Logo moved to top left -->
 <div class="logo-container">
   <div class="logo">
-    <a href="index.html">
+    
       <img src="assets/logo/logo_inverted.PNG" alt="Tour Jett Logo">
-    </a>
+    
   </div>
 </div>
 
