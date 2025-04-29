@@ -1267,7 +1267,7 @@
                                     <td>Turkish, English</td>
                                     <td>+90 555 345 6789</td>
                                     <td>3 years</td>
-                                    <td><span class="status-badge status-pending">On Leave</span></td>
+                                    <td><span class="status-badge status-pending">On Leave</td>
                                     <td>
                                         <div class="action-buttons">
                                             <button class="action-btn edit"><i class="fas fa-edit"></i></button>
@@ -2523,63 +2523,47 @@
             async function loadTourData() {
                 try {
                     document.getElementById('tourTableBody').innerHTML = `
-                        <tr>
-                            <td colspan="7" style="text-align: center;">
-                                <i class="fas fa-spinner fa-spin"></i> Loading tours...
-                            </td>
-                        </tr>
+                        <tr><td colspan="7" class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading tour packages...</td></tr>
                     `;
                     
-                    const tours = await ApiService.tours.getAll();
-                    if (tours && tours.length > 0) {
-                        const tableBody = document.getElementById('tourTableBody');
-                        tableBody.innerHTML = ''; // Clear loading indicator
+                    const tourPackages = await ApiService.tourPackages.getAll();
+                    if (tourPackages && tourPackages.length > 0) {
+                        document.getElementById('tourTableBody').innerHTML = '';
                         
-                        tours.forEach(tour => {
+                        tourPackages.forEach(pkg => {
                             const row = document.createElement('tr');
-                            row.dataset.id = tour.id; // Store ID for easy access
                             row.innerHTML = `
-                                <td>${tour.id}</td>
-                                <td>${tour.ad || tour.name}</td>
-                                <td>${tour.konum || tour.destination}</td>
-                                <td>${tour.sure || tour.duration}</td>
-                                <td>₺${tour.fiyat || tour.price}</td>
-                                <td><span class="status-badge status-${tour.durum === 'active' || tour.status === 'active' ? 'confirmed' : 'pending'}">${tour.durum === 'active' || tour.status === 'active' ? 'Active' : 'Inactive'}</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="action-btn edit"><i class="fas fa-edit"></i></button>
-                                        <button class="action-btn delete"><i class="fas fa-trash-alt"></i></button>
-                                    </div>
+                                <td>${pkg.id}</td>
+                                <td>${pkg.ad}</td>
+                                <td>${pkg.destinasyon_detay || 'Not specified'}</td>
+                                <td>${pkg.sure || 'Not specified'}</td>
+                                <td>${pkg.kapasite || 0} seats</td>
+                                <td><span class="status-badge status-${pkg.durum === 'Aktif' ? 'confirmed' : 'pending'}">${pkg.durum || 'Pending'}</span></td>
+                                <td class="action-buttons">
+                                    <button class="action-btn edit" title="Edit"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn delete" title="Delete"><i class="fas fa-trash-alt"></i></button>
                                 </td>
                             `;
-                            tableBody.appendChild(row);
                             
-                            // Add event listeners to the new row
-                            row.querySelector('.action-btn.edit').addEventListener('click', function() {
-                                editTour(tour.id);
-                            });
-                            
-                            row.querySelector('.action-btn.delete').addEventListener('click', function() {
-                                if (confirm(`Are you sure you want to delete tour ${tour.id}?`)) {
-                                    deleteTour(tour.id);
+                            // Add event listeners to the buttons
+                            row.querySelector('.action-btn.edit').addEventListener('click', () => editTour(pkg.id));
+                            row.querySelector('.action-btn.delete').addEventListener('click', () => {
+                                if (confirm('Are you sure you want to delete this tour package?')) {
+                                    deleteTour(pkg.id);
                                 }
                             });
+                            
+                            document.getElementById('tourTableBody').appendChild(row);
                         });
                     } else {
                         document.getElementById('tourTableBody').innerHTML = `
-                            <tr>
-                                <td colspan="7" style="text-align: center;">No tours found</td>
-                            </tr>
+                            <tr><td colspan="7" class="text-center">No tour packages found.</td></tr>
                         `;
                     }
                 } catch (error) {
                     console.error('Failed to load tours:', error);
                     document.getElementById('tourTableBody').innerHTML = `
-                        <tr>
-                            <td colspan="7" style="text-align: center;">
-                                Failed to load tours. Please try again.
-                            </td>
-                        </tr>
+                        <tr><td colspan="7" class="text-center">Error loading tour packages. Please try again.</td></tr>
                     `;
                 }
             }

@@ -149,6 +149,14 @@ const ApiService = {
             update: (id, vehicleData) => apiCall(`/vehicles/${id}`, 'PUT', vehicleData),
             delete: (id) => apiCall(`/vehicles/${id}`, 'DELETE'),
         },
+        
+        destinations: {
+            getAll: () => apiCall('/destinasyonlar'),
+            getById: (id) => apiCall(`/destinasyonlar/${id}`),
+            create: (destinationData) => apiCall('/destinasyonlar', 'POST', destinationData),
+            update: (id, destinationData) => apiCall(`/destinasyonlar/${id}`, 'PUT', destinationData),
+            delete: (id) => apiCall(`/destinasyonlar/${id}`, 'DELETE'),
+        },
     },
     
     // Review APIs - Fixed to use degerlendirmeler instead of degerlendirme
@@ -178,6 +186,11 @@ const ApiService = {
         delete: (id) => apiCall(`/destinasyonlar/${id}`, 'DELETE'),
     },
 };
+
+// Update tours to correctly use turpaketleri endpoint
+// This ensures the dashboard loads tour packages correctly
+window.loadTourPackages = () => ApiService.tourPackages.getAll();
+window.getTourPackageById = (id) => ApiService.tourPackages.getById(id);
 
 // Backward compatibility for existing functions
 window.getDegerlendirmeler = (turId) => ApiService.reviews.getTourReviews(turId);
