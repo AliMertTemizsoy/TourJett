@@ -1619,11 +1619,11 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="resourceTourDestination">Destination</label>
-                                <select id="tourLocation" name="konum" class="form-control" required>
-                                    <option value="">Select Destination</option>
-                                    <!-- Will be populated from API -->
-                                </select>                            
+                            <label for="tourDestination">Destination</label>
+                            <select id="tourDestination" name="destinasyon_id" class="form-control" required>
+                                <option value="">Select Destination</option>
+                                <!-- Will be populated from API -->
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="resourceTourDuration">Duration</label>
@@ -2094,6 +2094,8 @@
                     document.getElementById('vehicleForm').style.display = 'block';
                 } else if (resourceType === 'tur') {
                     document.getElementById('tourResourceForm').style.display = 'block';
+                    // Load destination options into the tour destination dropdown
+                    loadDestinationOptions('tourDestination');
                 }
 
             });
@@ -3211,6 +3213,83 @@
             
             // Initial charts and data visualization setup
             // ... existing chart initialization functions ...
+
+            // Resource Modal Open Button
+            document.getElementById('openAddResourceModal').addEventListener('click', function() {
+                // Reset forms
+                document.getElementById('destinationForm').reset();
+                document.getElementById('guideForm').reset();
+                document.getElementById('driverForm').reset();
+                document.getElementById('vehicleForm').reset();
+                document.getElementById('tourResourceForm').reset();
+                
+                // Reset and show resource type selection
+                document.getElementById('resourceTypeSelection').style.display = 'block';
+                document.getElementById('destinationForm').style.display = 'none';
+                document.getElementById('guideForm').style.display = 'none';
+                document.getElementById('driverForm').style.display = 'none';
+                document.getElementById('vehicleForm').style.display = 'none';
+                document.getElementById('tourResourceForm').style.display = 'none';
+                
+                // Reset resource type selection
+                document.getElementById('resourceType').value = '';
+                
+                // Load destination options for tour form when modal opens
+                loadDestinationOptions('tourDestination');
+                
+                // Show modal
+                resourceModal.style.display = 'flex';
+            });
+
+            // Tour Resource Form
+            document.getElementById('tourResourceForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Get form data
+                const formData = new FormData(this);
+                const tourData = {};
+                
+                formData.forEach((value, key) => {
+                    tourData[key] = value;
+                });
+                
+                try {
+                    const loadingBtn = document.querySelector('#tourResourceForm button[type="submit"]');
+                    const originalText = loadingBtn.textContent;
+                    loadingBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                    loadingBtn.disabled = true;
+                    
+                    console.log('Sending tour data:', tourData);
+                    
+                    if (tourData.id) {
+                        // Update existing tour
+                        await ApiService.tourPackages.update(tourData.id, tourData);
+                    } else {
+                        // Create new tour
+                        await ApiService.tourPackages.create(tourData);
+                    }
+                    
+                    // Hide modal
+                    document.getElementById('resourceModal').style.display = 'none';
+                    
+                    // Reset button state
+                    loadingBtn.textContent = originalText;
+                    loadingBtn.disabled = false;
+                    
+                    // Reload tour list
+                    loadDestinationsData();
+                    
+                    // Show success message
+                    alert('Tour saved successfully!');
+                } catch (error) {
+                    console.error('Failed to save tour:', error);
+                    alert('Failed to save tour. Please try again. Error: ' + error.message);
+                    
+                    const loadingBtn = document.querySelector('#tourResourceForm button[type="submit"]');
+                    loadingBtn.textContent = 'Save Tour';
+                    loadingBtn.disabled = false;
+                }
+            });
         });
     </script>
 </body>

@@ -192,6 +192,29 @@ const ApiService = {
 window.loadTourPackages = () => ApiService.tourPackages.getAll();
 window.getTourPackageById = (id) => ApiService.tourPackages.getById(id);
 
+// Add helper function to load destination data for dropdowns
+window.loadDestinationOptions = async (selectElementId) => {
+    try {
+        const destinations = await ApiService.destinations.getAll();
+        const selectElement = document.getElementById(selectElementId);
+        
+        if (selectElement && destinations && destinations.length > 0) {
+            selectElement.innerHTML = '<option value="">Select Destination</option>';
+            destinations.forEach(destination => {
+                const option = document.createElement('option');
+                option.value = destination.id;
+                option.textContent = destination.ad || destination.name;
+                selectElement.appendChild(option);
+            });
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error('Failed to load destinations:', error);
+        return false;
+    }
+};
+
 // Backward compatibility for existing functions
 window.getDegerlendirmeler = (turId) => ApiService.reviews.getTourReviews(turId);
 window.createDegerlendirme = (data) => ApiService.reviews.create(data);
