@@ -1342,7 +1342,7 @@
                                     <td>B (Car)</td>
                                     <td>+90 555 678 9012</td>
                                     <td>5 years</td>
-                                    <td><span class="status-badge status-pending">On Leave</td>
+                                    <td><span class="status-badge status-pending">On Leave</span></td>
                                     <td>
                                         <div class="action-buttons">
                                             <button class="action-btn edit"><i class="fas fa-edit"></i></button>
@@ -2587,7 +2587,8 @@
             // Function to load region data (for selects)
             async function loadRegionData() {
                 try {
-                    const regions = await ApiService.regions.getAll();
+                    const regions = await ApiService.destinations.getAll();
+                    // Use destinations data instead of regions since they're the same
                     if (regions && regions.length > 0) {
                         // Populate tour region select
                         const tourRegionSelect = document.getElementById('tourRegion');

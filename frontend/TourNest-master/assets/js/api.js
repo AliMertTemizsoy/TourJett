@@ -168,6 +168,15 @@ const ApiService = {
         getUpcomingTours: () => apiCall('/dashboard/upcoming-tours'),
         getRevenueData: () => apiCall('/dashboard/revenue'),
     },
+
+    // Regions APIs
+    regions: {
+        getAll: () => apiCall('/destinasyonlar'),
+        getById: (id) => apiCall(`/destinasyonlar/${id}`),
+        create: (regionData) => apiCall('/destinasyonlar', 'POST', regionData),
+        update: (id, regionData) => apiCall(`/destinasyonlar/${id}`, 'PUT', regionData),
+        delete: (id) => apiCall(`/destinasyonlar/${id}`, 'DELETE'),
+    },
 };
 
 // Backward compatibility for existing functions

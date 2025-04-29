@@ -114,11 +114,11 @@ const ApiService = {
     
     // Destination APIs
     destinations: {
-        getAll: () => apiCall('/destinasyon'),
-        getById: (id) => apiCall(`/destinasyon/${id}`),
-        create: (destinationData) => apiCall('/destinasyon', 'POST', destinationData),
-        update: (id, destinationData) => apiCall(`/destinasyon/${id}`, 'PUT', destinationData),
-        delete: (id) => apiCall(`/destinasyon/${id}`, 'DELETE'),
+        getAll: () => apiCall('/destinasyonlar'),
+        getById: (id) => apiCall(`/destinasyonlar/${id}`),
+        create: (destinationData) => apiCall('/destinasyonlar', 'POST', destinationData),
+        update: (id, destinationData) => apiCall(`/destinasyonlar/${id}`, 'PUT', destinationData),
+        delete: (id) => apiCall(`/destinasyonlar/${id}`, 'DELETE'),
     },
     
     // Resources APIs
@@ -167,6 +167,15 @@ const ApiService = {
         getRecentBookings: () => apiCall('/dashboard/recent-bookings'),
         getUpcomingTours: () => apiCall('/dashboard/upcoming-tours'),
         getRevenueData: () => apiCall('/dashboard/revenue'),
+    },
+
+    // Regions APIs
+    regions: {
+        getAll: () => apiCall('/destinasyonlar'),
+        getById: (id) => apiCall(`/destinasyonlar/${id}`),
+        create: (regionData) => apiCall('/destinasyonlar', 'POST', regionData),
+        update: (id, regionData) => apiCall(`/destinasyonlar/${id}`, 'PUT', regionData),
+        delete: (id) => apiCall(`/destinasyonlar/${id}`, 'DELETE'),
     },
 };
 
