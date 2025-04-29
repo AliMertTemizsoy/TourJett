@@ -151,14 +151,14 @@ const ApiService = {
         },
     },
     
-    // Review APIs
+    // Review APIs - Fixed to use degerlendirmeler instead of degerlendirme
     reviews: {
-        getAll: () => apiCall('/degerlendirme'),
-        getById: (id) => apiCall(`/degerlendirme/${id}`),
-        create: (reviewData) => apiCall('/degerlendirme', 'POST', reviewData),
-        update: (id, reviewData) => apiCall(`/degerlendirme/${id}`, 'PUT', reviewData),
-        delete: (id) => apiCall(`/degerlendirme/${id}`, 'DELETE'),
-        getTourReviews: (tourId) => apiCall(`/degerlendirme?tur_paketi_id=${tourId}`),
+        getAll: () => apiCall('/degerlendirmeler'),
+        getById: (id) => apiCall(`/degerlendirmeler/${id}`),
+        create: (reviewData) => apiCall('/degerlendirmeler', 'POST', reviewData),
+        update: (id, reviewData) => apiCall(`/degerlendirmeler/${id}`, 'PUT', reviewData),
+        delete: (id) => apiCall(`/degerlendirmeler/${id}`, 'DELETE'),
+        getTourReviews: (tourId) => apiCall(`/degerlendirmeler?tur_paketi_id=${tourId}`),
     },
     
     // Dashboard Statistics APIs

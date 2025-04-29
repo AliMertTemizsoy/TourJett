@@ -2792,45 +2792,71 @@
             // Load reviews/feedback data
             async function loadFeedbackData() {
                 try {
+                    console.log('Loading feedback data...');
+                    // Show loading indicator in the feedback table
+                    document.getElementById('feedbackTableBody').innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center;">
+                                <i class="fas fa-spinner fa-spin"></i> Loading feedback...
+                            </td>
+                        </tr>
+                    `;
+
                     const reviews = await ApiService.reviews.getAll();
+                    console.log('Received reviews:', reviews);
+
                     if (reviews && reviews.length > 0) {
                         const feedbackTableBody = document.getElementById('feedbackTableBody');
-                        if (feedbackTableBody) {
-                            feedbackTableBody.innerHTML = ''; // Clear existing rows
+                        feedbackTableBody.innerHTML = ''; // Clear existing rows
+                        
+                        reviews.forEach(review => {
+                            const row = document.createElement('tr');
                             
-                            reviews.forEach(review => {
-                                const row = document.createElement('tr');
-                                
-                                // Create star rating HTML
-                                const starRating = document.createElement('div');
-                                starRating.className = 'star-rating';
-                                for (let i = 1; i <= 5; i++) {
-                                    const star = document.createElement('i');
-                                    if (i <= review.puan) {
-                                        star.className = 'fas fa-star';
-                                    } else if (i - 0.5 <= review.puan) {
-                                        star.className = 'fas fa-star-half-alt';
-                                    } else {
-                                        star.className = 'far fa-star';
-                                    }
-                                    starRating.appendChild(star);
+                            // Create star rating HTML
+                            const starRating = document.createElement('div');
+                            starRating.className = 'star-rating';
+                            for (let i = 1; i <= 5; i++) {
+                                const star = document.createElement('i');
+                                if (i <= review.puan) {
+                                    star.className = 'fas fa-star';
+                                } else if (i - 0.5 <= review.puan) {
+                                    star.className = 'fas fa-star-half-alt';
+                                } else {
+                                    star.className = 'far fa-star';
                                 }
-                                
-                                row.innerHTML = `
-                                    <td>${formatDate(review.tarih || review.date)}</td>
-                                    <td>${review.musteri_adi || review.customerName}</td>
-                                    <td>${review.tur_adi || review.tourName}</td>
-                                    <td></td>
-                                    <td>${review.yorum || review.comment}</td>
-                                `;
-                                
-                                row.cells[3].appendChild(starRating);
-                                feedbackTableBody.appendChild(row);
-                            });
-                        }
+                                starRating.appendChild(star);
+                            }
+                            
+                            // Format the date
+                            const formattedDate = review.olusturma_tarihi ? formatDate(review.olusturma_tarihi) : 'N/A';
+                            
+                            row.innerHTML = `
+                                <td>${formattedDate}</td>
+                                <td>${review.musteri_adi || 'Anonymous'}</td>
+                                <td>${review.tur_adi || 'Unknown Tour'}</td>
+                                <td></td>
+                                <td>${review.yorum || 'No comment provided'}</td>
+                            `;
+                            
+                            row.cells[3].appendChild(starRating);
+                            feedbackTableBody.appendChild(row);
+                        });
+                    } else {
+                        document.getElementById('feedbackTableBody').innerHTML = `
+                            <tr>
+                                <td colspan="5" style="text-align: center;">No feedback found</td>
+                            </tr>
+                        `;
                     }
                 } catch (error) {
                     console.error('Failed to load feedback:', error);
+                    document.getElementById('feedbackTableBody').innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center;">
+                                Failed to load feedback. Please try again.
+                            </td>
+                        </tr>
+                    `;
                 }
             }
             
