@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify
-from app.models.rezervasyon import Rezervasyon, TurSeferi
-from app.models.tur import Tur
+from app.models.rezervasyon import Rezervasyon
+from app.models.tur import Tur, TurSeferi
 from app.models.musteri import Musteri
 from app.models.rehber import Rehber
 from app.models.surucu import Surucu
@@ -25,21 +25,17 @@ def get_dashboard_stats():
         total_bookings = db.session.query(func.count(Rezervasyon.id)).scalar() or 0
         
         # Calculate total revenue based on booking counts and tour prices
-        # Join rezervasyon with tur through tur_id to get the actual prices
+        # Modified query to use select_from to make the starting point clear
         total_revenue_query = db.session.query(
             func.sum(Tur.fiyat * Rezervasyon.kisi_sayisi)
-        ).join(Tur, Rezervasyon.tur_id == Tur.id).scalar()
+        ).select_from(Rezervasyon).join(Tur, Rezervasyon.tur_id == Tur.id).scalar()
         
         total_revenue = float(total_revenue_query or 0)
         
-        # Calculate total profit
-        total_profit_query = db.session.query(
-            func.sum(Tur.kar * Rezervasyon.kisi_sayisi)
-        ).join(Tur, Rezervasyon.tur_id == Tur.id).scalar()
+        # Calculate total profit (30% of revenue)
+        total_profit = total_revenue * 0.3
         
-        total_profit = float(total_profit_query or 0)
-        
-        # Get active tours - check the aktif field instead of durum
+        # Get active tours using the aktif field which is the correct one from the model
         active_tours = db.session.query(func.count(Tur.id)).filter(
             Tur.aktif == True
         ).scalar() or 0
@@ -80,13 +76,9 @@ def get_recent_bookings():
             Rezervasyon.tarih.label('bookingDate'),
             Rezervasyon.kisi_sayisi.label('personCount'),
             Rezervasyon.durum.label('status'),
-            Tur.fiyat.label('price'),
-            Tur.kar.label('profit'),
-            Tur.arac_tipi.label('carType'),
-            func.concat(Surucu.ad, ' ', Surucu.soyad).label('driver_name')
+            Tur.fiyat.label('price')
         ).join(Musteri, Rezervasyon.musteri_id == Musteri.id, isouter=True)\
          .join(Tur, Rezervasyon.tur_id == Tur.id, isouter=True)\
-         .outerjoin(Surucu, Tur.surucu_id == Surucu.id)\
          .order_by(desc(Rezervasyon.olusturma_tarihi))\
          .limit(5).all()
         
@@ -101,9 +93,8 @@ def get_recent_bookings():
             price_per_person = booking.price or 0
             amount = (booking.personCount or 1) * price_per_person
             
-            # Calculate profit
-            profit_per_person = booking.profit or 0
-            total_profit = (booking.personCount or 1) * profit_per_person
+            # Calculate profit (30% of amount)
+            total_profit = amount * 0.3
             
             bookings_list.append({
                 'id': booking.id,
@@ -112,8 +103,6 @@ def get_recent_bookings():
                 'bookingDate': booking_date or "",
                 'amount': float(amount),
                 'profit': float(total_profit),
-                'carType': booking.carType or "Not specified",
-                'driver': booking.driver_name or "Not assigned",
                 'status': booking.status or "onay_bekliyor"
             })
         
@@ -131,28 +120,23 @@ def get_upcoming_tours():
         # Get current date
         today = datetime.now().date()
         
-        # Get upcoming tours using TurSeferi for dates and capacity
+        # Use TurSeferi model since it contains the actual tour dates and capacities
         upcoming_tours = db.session.query(
+            TurSeferi.id.label('sefer_id'),
             Tur.id,
             Tur.adi.label('name'),
-            TurSeferi.id.label('sefer_id'),
             TurSeferi.baslangic_tarihi.label('date'),
             TurSeferi.kontenjan.label('capacity'),
             TurSeferi.kalan_kontenjan.label('remaining_capacity'),
             TurSeferi.durum.label('status'),
-            Tur.arac_tipi.label('carType'),
-            Tur.destinasyon_id.label('location_id'),
-            func.concat(Rehber.ad, ' ', Rehber.soyad).label('guide_name'),
-            func.concat(Surucu.ad, ' ', Surucu.soyad).label('driver_name'),
+            Destinasyon.id.label('location_id'),
             func.count(Rezervasyon.id).label('booking_count')
-        ).join(TurSeferi, Tur.id == TurSeferi.tur_id)\
-         .outerjoin(Rehber, TurSeferi.rehber_id == Rehber.id)\
-         .outerjoin(Surucu, TurSeferi.surucu_id == Surucu.id)\
-         .outerjoin(Rezervasyon, TurSeferi.id == Rezervasyon.tur_sefer_id)\
+        ).join(Tur, TurSeferi.tur_id == Tur.id)\
+         .outerjoin(Destinasyon, Tur.destinasyon_id == Destinasyon.id)\
+         .outerjoin(Rezervasyon, Rezervasyon.tur_id == Tur.id)\
          .filter(TurSeferi.baslangic_tarihi >= today)\
-         .group_by(Tur.id, TurSeferi.id, Rehber.ad, Rehber.soyad, Surucu.ad, Surucu.soyad, Tur.adi, 
-                  TurSeferi.baslangic_tarihi, TurSeferi.kontenjan, TurSeferi.kalan_kontenjan, 
-                  TurSeferi.durum, Tur.arac_tipi, Tur.destinasyon_id)\
+         .group_by(TurSeferi.id, Tur.id, Tur.adi, TurSeferi.baslangic_tarihi, 
+                  TurSeferi.kontenjan, TurSeferi.kalan_kontenjan, TurSeferi.durum, Destinasyon.id)\
          .order_by(TurSeferi.baslangic_tarihi)\
          .all()
         
@@ -219,9 +203,16 @@ def get_upcoming_tours():
             if tour_date:
                 tour_date = tour_date.strftime('%Y-%m-%d')
                 
-            # Get tour's profit
-            profit_query = db.session.query(Tur.kar).filter(Tur.id == tour.id).first()
-            profit = profit_query[0] if profit_query else 0
+            # Get the tour's price and calculate profit (30% of price)
+            tour_price_query = db.session.query(Tur.fiyat).filter(Tur.id == tour.id).first()
+            tour_price = tour_price_query[0] if tour_price_query else 0
+            profit = tour_price * 0.3
+
+            # Get vehicle information from TurSeferi
+            vehicle_info = "Not specified"
+            vehicle_query = db.session.query(TurSeferi).filter(TurSeferi.id == tour.sefer_id).first()
+            if vehicle_query and vehicle_query.vehicle:
+                vehicle_info = vehicle_query.vehicle.model
                 
             tours_list.append({
                 'id': tour.id,
@@ -232,9 +223,9 @@ def get_upcoming_tours():
                 'capacity': tour.capacity or 0,
                 'bookings': tour.booking_count or 0,
                 'status': tour.status or "aktif",
-                'carType': tour.carType or "Not specified",
-                'guide': tour.guide_name or "Unassigned",
-                'driver': tour.driver_name or "Unassigned",
+                'carType': vehicle_info,
+                'guide': "Unassigned",  # No direct guide relationship in Tur model
+                'driver': "Unassigned",  # No direct driver relationship in Tur model
                 'profit': float(profit or 0)
             })
         
