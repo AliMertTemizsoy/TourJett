@@ -1,6 +1,7 @@
 from app import db
 from app.models.tur_paketi import TurPaketi, TurDestinasyon
-# Diğer importlar...
+from app.models.tur import Tur
+from datetime import datetime
 
 # Tüm turları getir
 def get_all_tur_paketleri(*args):  # *args ekleyerek esnek parametre yapısı
@@ -16,15 +17,43 @@ def create_tur_paketi(data):
         # Veri dönüşümlerini güvenli bir şekilde yap
         sure_value = str(data.get('sure')) if data.get('sure') is not None else None
         
+        # Tur model referansı ile bilgileri doldur
+        tur = None
+        if data.get('tur_id'):
+            tur = Tur.query.get(data['tur_id'])
+        
+        # Değerleri belirle
+        ad = data.get('ad') or (tur.adi if tur else None)
+        aciklama = data.get('aciklama') or (tur.aciklama if tur else None)
+        sure = data.get('sure') or (tur.sure if tur else None)
+        destinasyon_id = data.get('destinasyon_id') or (tur.destinasyon_id if tur else None)
+        destinasyon_detay = data.get('destinasyon_detay') or (tur.destinasyon.ad if tur and tur.destinasyon else None)
+        resim_url = data.get('resim_url') or (tur.resim if tur else None)
+        
+        # Tarih dönüşümü
+        tur_tarihi = None
+        if data.get('tur_tarihi'):
+            try:
+                tur_tarihi = datetime.strptime(data.get('tur_tarihi'), '%Y-%m-%d').date()
+            except ValueError:
+                pass
+        
         yeni_paket = TurPaketi(
-            ad=data.get('ad'),
-            aciklama=data.get('aciklama'),
-            sure=sure_value,  # String olarak dönüştürülmüş değer
-            fiyat=float(data.get('fiyat', 0)),
+            ad=ad,
+            aciklama=aciklama,
+            sure=sure,
             kapasite=int(data.get('kapasite', 20)),
-            baslangic_bolge_id=int(data.get('baslangic_bolge_id')),
-            durum=data.get('durum', 'Aktif')
+            destinasyon_id=destinasyon_id,
+            destinasyon_detay=destinasyon_detay,
+            tur_tarihi=tur_tarihi,
+            resim_url=resim_url,
+            durum=data.get('durum', 'Aktif'),
+            surucu_id=data.get('surucu_id'),
+            rehber_id=data.get('rehber_id'),
+            vehicle_id=data.get('vehicle_id'),
+            tur_id=data.get('tur_id')
         )
+        
         db.session.add(yeni_paket)
         db.session.commit()
         return yeni_paket
@@ -45,14 +74,29 @@ def update_tur_paketi(tur_paketi_id, data):
         tur_paketi.aciklama = data['aciklama']
     if 'sure' in data:
         tur_paketi.sure = str(data['sure'])
-    if 'fiyat' in data:
-        tur_paketi.fiyat = float(data['fiyat'])
     if 'kapasite' in data:
         tur_paketi.kapasite = int(data['kapasite'])
-    if 'baslangic_bolge_id' in data:
-        tur_paketi.baslangic_bolge_id = int(data['baslangic_bolge_id'])
+    if 'destinasyon_id' in data:
+        tur_paketi.destinasyon_id = data['destinasyon_id']
+    if 'destinasyon_detay' in data:
+        tur_paketi.destinasyon_detay = data['destinasyon_detay']
     if 'durum' in data:
         tur_paketi.durum = data['durum']
+    if 'surucu_id' in data:
+        tur_paketi.surucu_id = data['surucu_id']
+    if 'rehber_id' in data:
+        tur_paketi.rehber_id = data['rehber_id']
+    if 'vehicle_id' in data:
+        tur_paketi.vehicle_id = data['vehicle_id']
+    if 'tur_id' in data:
+        tur_paketi.tur_id = data['tur_id']
+    if 'tur_tarihi' in data and data['tur_tarihi']:
+        try:
+            tur_paketi.tur_tarihi = datetime.strptime(data['tur_tarihi'], '%Y-%m-%d').date()
+        except ValueError:
+            print("Geçersiz tarih formatı")
+    if 'resim_url' in data:
+        tur_paketi.resim_url = data['resim_url']
     
     db.session.commit()
     return tur_paketi
@@ -69,10 +113,7 @@ def delete_tur_paketi(tur_paketi_id):
 
 # Eksik olan fonksiyon: Tur destinasyonlarını getir
 def get_tur_destinasyonlari(tur_paketi_id):
-    tur_paketi = get_tur_paketi_by_id(tur_paketi_id)
-    if not tur_paketi:
-        return []
-    return tur_paketi.tur_destinasyonlar
+    return TurDestinasyon.query.filter_by(tur_paketi_id=tur_paketi_id).all()
 
 # Diğer fonksiyonlar
 def add_tur_destinasyon(tur_paketi_id, data):
@@ -91,3 +132,23 @@ def add_tur_destinasyon(tur_paketi_id, data):
     db.session.add(yeni_destinasyon)
     db.session.commit()
     return yeni_destinasyon
+
+# Tura göre paketleri getir
+def get_tur_paketleri_by_tur(tur_id):
+    return TurPaketi.query.filter_by(tur_id=tur_id).all()
+
+# Tarihe göre paketleri getir
+def get_tur_paketleri_by_date(date):
+    return TurPaketi.query.filter_by(tur_tarihi=date).all()
+
+# Rehbere göre paketleri getir
+def get_tur_paketleri_by_rehber(rehber_id):
+    return TurPaketi.query.filter_by(rehber_id=rehber_id).all()
+
+# Sürücüye göre paketleri getir
+def get_tur_paketleri_by_surucu(surucu_id):
+    return TurPaketi.query.filter_by(surucu_id=surucu_id).all()
+
+# Araca göre paketleri getir
+def get_tur_paketleri_by_vehicle(vehicle_id):
+    return TurPaketi.query.filter_by(vehicle_id=vehicle_id).all()

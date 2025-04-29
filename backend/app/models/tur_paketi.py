@@ -2,10 +2,6 @@
 from app import db
 from datetime import datetime
 
-# backend/app/models/tur_paketi.py
-from app import db
-from datetime import datetime
-
 class TurPaketi(db.Model):
     __tablename__ = 'tur_paketleri'
 
@@ -13,32 +9,25 @@ class TurPaketi(db.Model):
     ad = db.Column(db.String(100), nullable=False)
     aciklama = db.Column(db.Text)
     sure = db.Column(db.String(50))
-    fiyat = db.Column(db.Float, nullable=False, default=0)
-    kar = db.Column(db.Float, nullable=False, default=0)
     kapasite = db.Column(db.Integer, default=20)
     destinasyon_id = db.Column(db.Integer, db.ForeignKey('destinasyonlar.id'), nullable=True)
     durum = db.Column(db.String(50), default="Aktif")
     olusturma_tarihi = db.Column(db.DateTime, default=datetime.utcnow)
     surucu_id = db.Column(db.Integer, db.ForeignKey('surucu.id'), nullable=True)
     rehber_id = db.Column(db.Integer, db.ForeignKey('rehber.id'), nullable=False)
-    vehicle_id = db.Column(db.Integer, db.ForeignKey('vehicles.id'), nullable=False)  # ✅ NEW required field
+    vehicle_id = db.Column(db.Integer, db.ForeignKey('vehicles.id'), nullable=False)
+    tur_id = db.Column(db.Integer, db.ForeignKey('tur.id'), nullable=True)  # ✅ Added reference to Tur model
 
     tur_tarihi = db.Column(db.Date, nullable=True)
     resim_url = db.Column(db.String(255), nullable=True)
     destinasyon_detay = db.Column(db.String(100), nullable=True)
-    max_katilimci = db.Column(db.Integer, default=20)
 
     # Relationships
     destinasyon = db.relationship('Destinasyon', foreign_keys=[destinasyon_id])
     surucu = db.relationship('Surucu', backref='tur_paketleri')
     rehber = db.relationship('Rehber', backref='tur_paketleri')
     vehicle = db.relationship('Vehicles', backref='tur_paketleri')  
-    tur_destinasyonlar = db.relationship(
-        'TurDestinasyon',
-        backref='tur_paketi',
-        lazy=True,
-        cascade="all, delete-orphan"
-    )
+    tur = db.relationship('Tur', backref='tur_paketleri')  # ✅ Added relationship with Tur model
 
     def __repr__(self):
         return f'<TurPaketi {self.ad}>'
@@ -50,19 +39,20 @@ class TurPaketi(db.Model):
             'ad': self.ad,
             'aciklama': self.aciklama,
             'sure': self.sure,
-            'fiyat': float(self.fiyat),
-            'kar': float(self.kar),
             'kapasite': self.kapasite,
             'destinasyon_detay': self.destinasyon_detay,
-            'max_katilimci': self.max_katilimci,
             'tur_tarihi': self.tur_tarihi.strftime('%Y-%m-%d') if self.tur_tarihi else None,
             'resim_url': self.resim_url,
             'durum': self.durum,
-            # No baslangic_destinasyon anymore!
-            'destinasyonlar': [td.destinasyon.to_dict() for td in self.tur_destinasyonlar] if self.tur_destinasyonlar else [],
+            'destinasyon_id': self.destinasyon_id,
+            'surucu_id': self.surucu_id,
+            'rehber_id': self.rehber_id,
+            'vehicle_id': self.vehicle_id,
+            'tur_id': self.tur_id,
             'surucu': self.surucu.to_dict() if self.surucu else None,
             'rehber': self.rehber.to_dict() if self.rehber else None,
-            'vehicle': self.vehicle.to_dict() if self.vehicle else None
+            'vehicle': self.vehicle.to_dict() if self.vehicle else None,
+            'tur': self.tur.to_dict() if self.tur else None  # ✅ Added tur to the dictionary output
         }
 
 
@@ -80,3 +70,15 @@ class TurDestinasyon(db.Model):
 
     def __repr__(self):
         return f'<TurDestinasyon {self.id}>'
+        
+    def to_dict(self):
+        """Model verilerini JSON formatında döndürür"""
+        return {
+            'id': self.id,
+            'tur_paketi_id': self.tur_paketi_id,
+            'destinasyon_id': self.destinasyon_id,
+            'siralama': self.siralama,
+            'kalma_suresi': self.kalma_suresi,
+            'not_bilgisi': self.not_bilgisi,
+            'destinasyon': self.destinasyon.to_dict() if self.destinasyon else None
+        }
