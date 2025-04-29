@@ -840,10 +840,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="tourLocation">Location</label>
-                            <select id="tourLocation" name="konum" class="form-control" required>
-                                <option value="">Select Destination</option>
-                                <!-- Will be populated from API -->
-                            </select>
+                            <input type="text" id="tourLocation" name="konum" class="form-control" required>
                         </div>
                         <div class="form-group">
                             <label for="tourPrice">Price (₺)</label>
@@ -1623,11 +1620,11 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="resourceTourDestination">Destination</label>
-                            <select id="resourceTourDestination" name="konum" class="form-control" required>
-                                <option value="">Select Destination</option>
-                                <!-- Will be populated dynamically -->
-                            </select>
-                        </div>                        
+                                <select id="tourLocation" name="konum" class="form-control" required>
+                                    <option value="">Select Destination</option>
+                                    <!-- Will be populated from API -->
+                                </select>                            
+                        </div>
                         <div class="form-group">
                             <label for="resourceTourDuration">Duration</label>
                             <input type="text" id="resourceTourDuration" name="sure" class="form-control" required>
@@ -1820,7 +1817,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Load initial data
             loadDashboardData();
-            populateDestinations();
+            
             // Navigation handling
             const menuItems = document.querySelectorAll('.menu-item');
             const contentSections = document.querySelectorAll('.content-section');
@@ -3204,110 +3201,6 @@
             // Initial charts and data visualization setup
             // ... existing chart initialization functions ...
         });
-
-        // Function to load destinations data and populate dropdowns
-        async function loadDestinationsForDropdowns() {
-            try {
-                // Get destination selects
-                const tourLocationSelect = document.getElementById('tourLocation');
-                const resourceTourDestinationSelect = document.getElementById('resourceTourDestination');
-                
-                // Clear any existing options except the first default option
-                if (tourLocationSelect) {
-                    tourLocationSelect.innerHTML = '<option value="">Select Destination</option>';
-                }
-                
-                if (resourceTourDestinationSelect) {
-                    resourceTourDestinationSelect.innerHTML = '<option value="">Select Destination</option>';
-                }
-                
-                // Fetch destinations from API
-                const response = await fetch(`http://localhost:5000/api/destinasyonlar`);
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch destinations: ${response.status}`);
-                }
-                
-                const destinations = await response.json();
-                console.log("Loaded destinations:", destinations);
-                
-                if (destinations && destinations.length > 0) {
-                    // Populate both dropdowns
-                    destinations.forEach(destination => {
-                        // Only show active destinations
-                        if (destination.durum === 'active' || destination.durum === true) {
-                            if (tourLocationSelect) {
-                                const option = document.createElement('option');
-                                option.value = destination.id;
-                                option.textContent = destination.ad || destination.name;
-                                tourLocationSelect.appendChild(option);
-                            }
-                            
-                            if (resourceTourDestinationSelect) {
-                                const option = document.createElement('option');
-                                option.value = destination.id;
-                                option.textContent = destination.ad || destination.name;
-                                resourceTourDestinationSelect.appendChild(option);
-                            }
-                        }
-                    });
-                }
-            } catch (error) {
-                console.error('Failed to load destinations for dropdowns:', error);
-            }
-        }
-        
-        // Call the function when the page loads or when opening modals
-        document.addEventListener('DOMContentLoaded', loadDestinationsForDropdowns);
-        openAddTourModal.addEventListener('click', loadDestinationsForDropdowns);
-        
-        // Also call the function when opening the resource form for tours
-        document.getElementById('resourceType').addEventListener('change', function() {
-            if (this.value === 'tur') {
-                loadDestinationsForDropdowns();
-            }
-        });
-        document.addEventListener('DOMContentLoaded', function() {
-        async function populateDestinations() {
-            const destinationSelect1 = document.getElementById('tourLocation'); 
-            const destinationSelect2 = document.getElementById('resourceTourDestination'); 
-
-            // Clear old options first
-            [destinationSelect1, destinationSelect2].forEach(select => {
-                if (select) select.innerHTML = '<option value="">Select Destination</option>';
-            });
-
-            try {
-                const response = await fetch('/api/destinasyonlar');
-                if (!response.ok) throw new Error('Failed to fetch destinations');
-
-                const destinations = await response.json();
-                console.log("Loaded destinations:", destinations);
-
-                if (Array.isArray(destinations)) {
-                    destinations.forEach(dest => {
-                        if (dest && dest.id && dest.ad) {
-                            const option = document.createElement('option');
-                            option.value = dest.id;
-                            option.textContent = dest.ad;
-                            
-                            const option2 = document.createElement('option');
-                            option2.value = dest.id;
-                            option2.textContent = dest.ad;
-                            
-                            if (destinationSelect1) destinationSelect1.appendChild(option);
-                            if (destinationSelect2) destinationSelect2.appendChild(option2);
-                        }
-                    });
-                } else {
-                    console.error("API did not return an array:", destinations);
-                }
-            } catch (error) {
-                console.error('Error fetching destinations:', error);
-            }
-        }
-
-        populateDestinations();
-    });
     </script>
 </body>
 </html>

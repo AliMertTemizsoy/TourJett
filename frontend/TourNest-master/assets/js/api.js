@@ -3,11 +3,9 @@
  * Handles all interactions with the backend API
  */
 
-// Base API URL - updated to work with Docker container
-// Host adını dinamik olarak belirleyelim - localhost veya backend container
-const API_BASE_URL = window.location.hostname === 'localhost' ? 
-    'http://localhost:5000/api' : 
-    'http://backend:5000/api';
+// API ayarları
+const API_BASE_URL = 'http://localhost:5000/api';
+const MOCK_MODE = false; // Mock mod kapalı (gerçek API kullan)
 
 // API Error Handler
 const handleApiError = (error) => {
@@ -73,22 +71,21 @@ const apiCall = async (endpoint, method = 'GET', data = null) => {
 const ApiService = {
     // Authentication APIs
     auth: {
-        login: (email, password) => apiCall('/auth/login', 'POST', { email, password }),
-        signup: (userData) => apiCall('/auth/signup', 'POST', userData),
+        login: (username, password) => apiCall('/auth/login', 'POST', { username, password }),
         logout: () => apiCall('/auth/logout', 'POST'),
         getCurrentUser: () => apiCall('/auth/me'),
     },
     
     // Tour APIs
     tours: {
-        getAll: () => apiCall('/turlar'),
-        getById: (id) => apiCall(`/turlar/${id}`),
-        create: (tourData) => apiCall('/turlar', 'POST', tourData),
-        update: (id, tourData) => apiCall(`/turlar/${id}`, 'PUT', tourData),
-        delete: (id) => apiCall(`/turlar/${id}`, 'DELETE'),
+        getAll: () => apiCall('/tur'),
+        getById: (id) => apiCall(`/tur/${id}`),
+        create: (tourData) => apiCall('/tur', 'POST', tourData),
+        update: (id, tourData) => apiCall(`/tur/${id}`, 'PUT', tourData),
+        delete: (id) => apiCall(`/tur/${id}`, 'DELETE'),
     },
     
-    // Tour Package APIs - Yeni eklendi
+    // Tour Package APIs
     tourPackages: {
         getAll: () => apiCall('/turpaketleri'),
         getById: (id) => apiCall(`/turpaketleri/${id}`),
@@ -108,17 +105,11 @@ const ApiService = {
     
     // Customer APIs
     customers: {
-        getAll: () => apiCall('/musteriler'),
-        getById: (id) => apiCall(`/musteriler/${id}`),
-        create: (customerData) => apiCall('/musteriler', 'POST', customerData),
-        update: (id, customerData) => apiCall(`/musteriler/${id}`, 'PUT', customerData),
-        delete: (id) => apiCall(`/musteriler/${id}`, 'DELETE'),
-    },
-    
-    // Region APIs (now using destinasyon)
-    regions: {
-        getAll: () => apiCall('/destinasyonlar'),
-        getById: (id) => apiCall(`/destinasyonlar/${id}`),
+        getAll: () => apiCall('/musteri'),
+        getById: (id) => apiCall(`/musteri/${id}`),
+        create: (customerData) => apiCall('/musteri', 'POST', customerData),
+        update: (id, customerData) => apiCall(`/musteri/${id}`, 'PUT', customerData),
+        delete: (id) => apiCall(`/musteri/${id}`, 'DELETE'),
     },
     
     // Destination APIs
@@ -130,7 +121,7 @@ const ApiService = {
         delete: (id) => apiCall(`/destinasyonlar/${id}`, 'DELETE'),
     },
     
-    // Resource APIs
+    // Resources APIs
     resources: {
         // Guide APIs
         guides: {
@@ -150,7 +141,7 @@ const ApiService = {
             delete: (id) => apiCall(`/surucu/${id}`, 'DELETE'),
         },
         
-        // Vehicle APIs
+        // Vehicle APIs - Fixed path to match backend route
         vehicles: {
             getAll: () => apiCall('/vehicles'),
             getById: (id) => apiCall(`/vehicles/${id}`),
@@ -162,11 +153,12 @@ const ApiService = {
     
     // Review APIs
     reviews: {
-        getAll: () => apiCall('/degerlendirmeler'),
-        getById: (id) => apiCall(`/degerlendirmeler/${id}`),
-        create: (reviewData) => apiCall('/degerlendirmeler', 'POST', reviewData),
-        update: (id, reviewData) => apiCall(`/degerlendirmeler/${id}`, 'PUT', reviewData),
-        delete: (id) => apiCall(`/degerlendirmeler/${id}`, 'DELETE'),
+        getAll: () => apiCall('/degerlendirme'),
+        getById: (id) => apiCall(`/degerlendirme/${id}`),
+        create: (reviewData) => apiCall('/degerlendirme', 'POST', reviewData),
+        update: (id, reviewData) => apiCall(`/degerlendirme/${id}`, 'PUT', reviewData),
+        delete: (id) => apiCall(`/degerlendirme/${id}`, 'DELETE'),
+        getTourReviews: (tourId) => apiCall(`/degerlendirme?tur_paketi_id=${tourId}`),
     },
     
     // Dashboard Statistics APIs
@@ -178,128 +170,10 @@ const ApiService = {
     },
 };
 
-// Login User function - Used by login.js
-window.loginUser = async function(credentials) {
-    console.log('Login attempt with:', credentials);
-    try {
-        const response = await fetch(`${API_BASE_URL}/auth/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                email: credentials.email,
-                password: credentials.password
-            }),
-            credentials: 'include'
-        });
-        
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error(`Login error: HTTP ${response.status}`, errorText);
-            throw new Error('E-posta veya şifre hatalı. Lütfen tekrar deneyin.');
-        }
-        
-        const data = await response.json();
-        console.log('Login API response:', data);
-        return data;
-    } catch (error) {
-        console.error('Login error:', error);
-        throw new Error(error.message || 'E-posta veya şifre hatalı. Lütfen tekrar deneyin.');
-    }
-};
-
-// Signup User function - Used by login.js
-window.signupUser = async function(userData) {
-    console.log('Signup attempt with:', userData);
-    try {
-        const response = await fetch(`${API_BASE_URL}/auth/signup`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(userData),
-            credentials: 'include'
-        });
-        
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error(`Signup error: HTTP ${response.status}`, errorText);
-            throw new Error('Kayıt işlemi başarısız oldu. Lütfen tekrar deneyin.');
-        }
-        
-        const data = await response.json();
-        console.log('Signup API response:', data);
-        return data;
-    } catch (error) {
-        console.error('Signup error:', error);
-        throw new Error(error.message || 'Kayıt işlemi başarısız oldu. Lütfen tekrar deneyin.');
-    }
-};
-
-// Get Tour By ID function - Used by package-details.js and booking.js
-window.getTurById = async function(id) {
-    console.log('Getting tour details for ID:', id);
-    try {
-        // Önce Tur Paketi olarak dene
-        try {
-            const response = await fetch(`${API_BASE_URL}/turpaketleri/${id}`);
-            if (response.ok) {
-                const data = await response.json();
-                console.log("Tur paketi bulundu:", data);
-                return data;
-            }
-        } catch (error) {
-            console.log("Tur paketi bulunamadı, turlar endpoint'i deneniyor...");
-        }
-        
-        // Tur paketi bulunamazsa, Tur olarak dene
-        try {
-            const response = await fetch(`${API_BASE_URL}/turlar/${id}`);
-            if (response.ok) {
-                const data = await response.json();
-                console.log("Tur bulundu:", data);
-                return data;
-            } else {
-                throw new Error(`Tur bulunamadı: ${response.status}`);
-            }
-        } catch (error) {
-            console.error("Tur da bulunamadı:", error);
-            throw new Error(`Tur bulunamadı: ${error.message}`);
-        }
-    } catch (error) {
-        console.error("Tur verileri alınamadı:", error);
-        throw error;
-    }
-};
-
-// Create Rezervasyon function - Used by booking.js
-window.createRezervasyon = async function(reservationData) {
-    console.log('Creating reservation with data:', reservationData);
-    try {
-        const response = await fetch(`${API_BASE_URL}/rezervasyon`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(reservationData),
-            credentials: 'include'
-        });
-        
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error(`Reservation error: HTTP ${response.status}`, errorText);
-            throw new Error('Rezervasyon oluşturulamadı: ' + errorText);
-        }
-        
-        const data = await response.json();
-        console.log('Reservation API response:', data);
-        return data;
-    } catch (error) {
-        console.error('Reservation error:', error);
-        throw error;
-    }
-};
+// Backward compatibility for existing functions
+window.getDegerlendirmeler = (turId) => ApiService.reviews.getTourReviews(turId);
+window.createDegerlendirme = (data) => ApiService.reviews.create(data);
+window.getTurById = (id) => ApiService.tourPackages.getById(id);
 
 // Export the API Service
 // This will make it available to other JavaScript files
