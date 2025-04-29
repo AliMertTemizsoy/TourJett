@@ -78,11 +78,21 @@ const ApiService = {
     
     // Tour APIs
     tours: {
-        getAll: () => apiCall('/tur'),
-        getById: (id) => apiCall(`/tur/${id}`),
-        create: (tourData) => apiCall('/tur', 'POST', tourData),
-        update: (id, tourData) => apiCall(`/tur/${id}`, 'PUT', tourData),
-        delete: (id) => apiCall(`/tur/${id}`, 'DELETE'),
+        getAll: () => apiCall('/turlar'),        
+        getById: (id) => apiCall(`/turlar/${id}`),
+        create: (tourData) => {
+            const apiData = {
+                adi: tourData.ad,
+                sure: tourData.sure,
+                fiyat: parseFloat(tourData.fiyat),
+                destinasyon_id: parseInt(tourData.destinasyon_id),
+                aciklama: tourData.aciklama || "",
+                aktif: tourData.durum === 'active' ? true : false
+            };
+            return apiCall('/turlar', 'POST', apiData);
+        },
+        update: (id, tourData) => apiCall(`/turlar/${id}`, 'PUT', tourData),
+        delete: (id) => apiCall(`/turlar/${id}`, 'DELETE'),
     },
     
     // Tour Package APIs
@@ -156,6 +166,24 @@ const ApiService = {
             create: (destinationData) => apiCall('/destinasyonlar', 'POST', destinationData),
             update: (id, destinationData) => apiCall(`/destinasyonlar/${id}`, 'PUT', destinationData),
             delete: (id) => apiCall(`/destinasyonlar/${id}`, 'DELETE'),
+        },
+        
+        tours: {
+            getAll: () => apiCall('/turlar'),        
+            getById: (id) => apiCall(`/turlar/${id}`),
+            create: (tourData) => {
+                const apiData = {
+                    adi: tourData.ad,
+                    sure: tourData.sure,
+                    fiyat: parseFloat(tourData.fiyat),
+                    destinasyon_id: parseInt(tourData.destinasyon_id),
+                    aciklama: tourData.aciklama || "",
+                    aktif: tourData.durum === 'active' ? true : false
+                };
+                return apiCall('/turlar', 'POST', apiData);
+            },
+            update: (id, tourData) => apiCall(`/turlar/${id}`, 'PUT', tourData),
+            delete: (id) => apiCall(`/turlar/${id}`, 'DELETE'),
         },
     },
     
