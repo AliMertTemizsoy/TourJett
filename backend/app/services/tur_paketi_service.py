@@ -26,8 +26,6 @@ def create_tur_paketi(data):
         ad = data.get('ad') or (tur.adi if tur else None)
         aciklama = data.get('aciklama') or (tur.aciklama if tur else None)
         sure = data.get('sure') or (tur.sure if tur else None)
-        destinasyon_id = data.get('destinasyon_id') or (tur.destinasyon_id if tur else None)
-        destinasyon_detay = data.get('destinasyon_detay') or (tur.destinasyon.ad if tur and tur.destinasyon else None)
         resim_url = data.get('resim_url') or (tur.resim if tur else None)
         
         # Tarih dönüşümü
@@ -43,8 +41,6 @@ def create_tur_paketi(data):
             aciklama=aciklama,
             sure=sure,
             kapasite=int(data.get('kapasite', 20)),
-            destinasyon_id=destinasyon_id,
-            destinasyon_detay=destinasyon_detay,
             tur_tarihi=tur_tarihi,
             resim_url=resim_url,
             durum=data.get('durum', 'Aktif'),
@@ -76,10 +72,6 @@ def update_tur_paketi(tur_paketi_id, data):
         tur_paketi.sure = str(data['sure'])
     if 'kapasite' in data:
         tur_paketi.kapasite = int(data['kapasite'])
-    if 'destinasyon_id' in data:
-        tur_paketi.destinasyon_id = data['destinasyon_id']
-    if 'destinasyon_detay' in data:
-        tur_paketi.destinasyon_detay = data['destinasyon_detay']
     if 'durum' in data:
         tur_paketi.durum = data['durum']
     if 'surucu_id' in data:

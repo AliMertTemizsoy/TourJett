@@ -40,8 +40,14 @@ def create_tur_paketi():
         if not data.get('ad') and not data.get('tur_id'):
             return jsonify({'error': 'Tur paketi adı veya tur_id gereklidir'}), 400
         
+        if data.get('tur_id') is None:
+            return jsonify({'error': 'Tur (tur_id) gereklidir'}), 400
+
         if data.get('rehber_id') is None:
             return jsonify({'error': 'Rehber (rehber_id) gereklidir'}), 400
+
+        if data.get('surucu_id') is None:
+            return jsonify({'error': 'Sürücü (surucu_id) gereklidir'}), 400
 
         if data.get('vehicle_id') is None:
             return jsonify({'error': 'Vehicle (vehicle_id) gereklidir'}), 400
@@ -55,8 +61,6 @@ def create_tur_paketi():
         ad = data.get('ad') or (tur.adi if tur else None)
         sure = data.get('sure') or (tur.sure if tur else None)
         resim_url = data.get('resim_url') or (tur.resim if tur else None)
-        destinasyon_id = data.get('destinasyon_id') or (tur.destinasyon_id if tur else None)
-        destinasyon_detay = data.get('destinasyon_detay') or (tur.destinasyon.ad if tur and tur.destinasyon else None)
 
         kapasite = int(data.get('kapasite', 20))
         durum = data.get('durum', 'Aktif')
@@ -77,8 +81,6 @@ def create_tur_paketi():
             aciklama=data.get('aciklama', tur.aciklama if tur else None),
             sure=sure,
             kapasite=kapasite,
-            destinasyon_id=destinasyon_id,
-            destinasyon_detay=destinasyon_detay,
             tur_tarihi=tur_tarihi,
             resim_url=resim_url,
             durum=durum,
@@ -123,10 +125,6 @@ def update_tur_paketi(id):
             paket.sure = data['sure']
         if 'kapasite' in data:
             paket.kapasite = int(data['kapasite'])
-        if 'destinasyon_id' in data:
-            paket.destinasyon_id = data['destinasyon_id']
-        if 'destinasyon_detay' in data:
-            paket.destinasyon_detay = data['destinasyon_detay']
         if 'durum' in data:
             paket.durum = data['durum']
         if 'surucu_id' in data:
