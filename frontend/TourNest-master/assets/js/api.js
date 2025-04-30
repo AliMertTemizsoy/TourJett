@@ -220,13 +220,15 @@ const ApiService = {
 window.loadTourPackages = () => ApiService.tourPackages.getAll();
 window.getTourPackageById = (id) => ApiService.tourPackages.getById(id);
 
-// Add helper function to load destination data for dropdowns
+// Enhanced helper function to load destination data for dropdowns
 window.loadDestinationOptions = async (selectElementId) => {
     try {
+        console.log(`Loading destinations for dropdown: ${selectElementId}`);
         const destinations = await ApiService.destinations.getAll();
         const selectElement = document.getElementById(selectElementId);
         
         if (selectElement && destinations && destinations.length > 0) {
+            console.log(`Found ${destinations.length} destinations, populating dropdown ${selectElementId}`);
             selectElement.innerHTML = '<option value="">Select Destination</option>';
             destinations.forEach(destination => {
                 const option = document.createElement('option');
@@ -235,12 +237,122 @@ window.loadDestinationOptions = async (selectElementId) => {
                 selectElement.appendChild(option);
             });
             return true;
+        } else {
+            console.warn(`Failed to populate destination dropdown: ${selectElementId}`);
+            if (!selectElement) console.warn('Select element not found');
+            if (!destinations || destinations.length === 0) console.warn('No destinations data received');
+            return false;
         }
-        return false;
     } catch (error) {
         console.error('Failed to load destinations:', error);
         return false;
     }
+};
+
+// Helper function to load guides data for dropdowns
+window.loadGuideOptions = async (selectElementId) => {
+    try {
+        const guides = await ApiService.resources.guides.getAll();
+        const selectElement = document.getElementById(selectElementId);
+        
+        if (selectElement && guides && guides.length > 0) {
+            selectElement.innerHTML = '<option value="">Select Guide</option>';
+            guides.forEach(guide => {
+                const option = document.createElement('option');
+                option.value = guide.id;
+                option.textContent = guide.ad || guide.name;
+                selectElement.appendChild(option);
+            });
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error('Failed to load guides:', error);
+        return false;
+    }
+};
+
+// Helper function to load drivers data for dropdowns
+window.loadDriverOptions = async (selectElementId) => {
+    try {
+        const drivers = await ApiService.resources.drivers.getAll();
+        const selectElement = document.getElementById(selectElementId);
+        
+        if (selectElement && drivers && drivers.length > 0) {
+            selectElement.innerHTML = '<option value="">Select Driver</option>';
+            drivers.forEach(driver => {
+                const option = document.createElement('option');
+                option.value = driver.id;
+                option.textContent = driver.ad || driver.name;
+                selectElement.appendChild(option);
+            });
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error('Failed to load drivers:', error);
+        return false;
+    }
+};
+
+// Helper function to load vehicles data for dropdowns
+window.loadVehicleOptions = async (selectElementId) => {
+    try {
+        const vehicles = await ApiService.resources.vehicles.getAll();
+        const selectElement = document.getElementById(selectElementId);
+        
+        if (selectElement && vehicles && vehicles.length > 0) {
+            selectElement.innerHTML = '<option value="">Select Vehicle</option>';
+            vehicles.forEach(vehicle => {
+                const option = document.createElement('option');
+                option.value = vehicle.id;
+                option.textContent = vehicle.ad || vehicle.name || `${vehicle.tip || vehicle.type} - ${vehicle.plaka || vehicle.licensePlate}`;
+                selectElement.appendChild(option);
+            });
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error('Failed to load vehicles:', error);
+        return false;
+    }
+};
+
+// Helper function to load tour references data for dropdowns
+window.loadTourOptions = async (selectElementId) => {
+    try {
+        const tours = await ApiService.tours.getAll();
+        const selectElement = document.getElementById(selectElementId);
+        
+        if (selectElement && tours && tours.length > 0) {
+            selectElement.innerHTML = '<option value="">Select Tour</option>';
+            tours.forEach(tour => {
+                const option = document.createElement('option');
+                option.value = tour.id;
+                option.textContent = tour.adi || tour.ad || tour.name;
+                selectElement.appendChild(option);
+            });
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error('Failed to load tours:', error);
+        return false;
+    }
+};
+
+// Convenience function to load all tour form dropdowns at once
+window.loadAllTourFormDropdowns = async () => {
+    console.log('Loading all dropdown data for tour form');
+    const results = await Promise.all([
+        window.loadDestinationOptions('tourLocation'),
+        window.loadGuideOptions('tourGuide'),
+        window.loadDriverOptions('tourDriver'),
+        window.loadVehicleOptions('tourVehicle'),
+        window.loadTourOptions('tourReference')
+    ]);
+    
+    return results.every(result => result === true);
 };
 
 // Backward compatibility for existing functions

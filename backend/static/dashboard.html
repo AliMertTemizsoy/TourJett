@@ -826,25 +826,22 @@
         <div class="modal" id="tourModal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3 id="modalTitle">Add New Tour</h3>
+                    <h3 id="modalTitle">Add New Tour Package</h3>
                     <button class="close-modal">&times;</button>
                 </div>
                 <form id="tourForm">
                     <input type="hidden" id="tourId" name="id">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="tourName">Tour Name</label>
+                            <label for="tourName">Tour Package Name</label>
                             <input type="text" id="tourName" name="ad" class="form-control" required>
                         </div>
-                    </div>
-                    <div class="form-row">
                         <div class="form-group">
-                            <label for="tourLocation">Location</label>
-                            <input type="text" id="tourLocation" name="konum" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="tourPrice">Price (₺)</label>
-                            <input type="number" id="tourPrice" name="fiyat" class="form-control" required>
+                            <label for="tourDestination">Tour</label>
+                            <select id="tourDestination" name="tour_id" class="form-control" required>
+                                <option value="">Select Tour</option>
+                                <!-- Will be populated from API -->
+                            </select>
                         </div>
                     </div>
                     <div class="form-row">
@@ -898,7 +895,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="tourDescription">Description</label>
-                            <textarea id="tourDescription" name="aciklama" class="form-control" rows="3" required></textarea>
+                            <textarea id="tourDescription" name="aciklama" class="form-control" rows="1" required></textarea>
                         </div>
                     </div>
                     <div class="form-row">
