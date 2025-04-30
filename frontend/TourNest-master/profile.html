@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | Tour Website</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --danger-color: #e74c3c;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+        }
+        
+        .header {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            font-size: 1.6rem;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-menu span {
+            margin-right: 15px;
+        }
+        
+        .main-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .page-title {
+            margin-bottom: 30px;
+            color: var(--dark-color);
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 30px;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            border-bottom-color: var(--secondary-color);
+            color: var(--secondary-color);
+        }
+        
+        /* Sections */
+        .section {
+            display: none;
+            margin-bottom: 40px;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        /* Reservations */
+        .reservation-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .reservation-details h3 {
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+        
+        .reservation-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 12px;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .meta-item i {
+            margin-right: 5px;
+            color: var(--secondary-color);
+        }
+        
+        .reservation-description {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .reservation-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            background-color: #f8f9fa;
+        }
+        
+        .status-confirmed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        /* Profile Form */
+        .profile-form {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .reservation-meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <h1>Tour Explorer</h1>
+            </div>
+            <div class="user-menu">
+                <span>Welcome, Ahmet</span>
+                <a href="#" class="btn">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <h1 class="page-title">My Profile</h1>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('reservations')">My Reservations</div>
+            <div class="tab" onclick="switchTab('details')">Personal Details</div>
+        </div>
+        
+        <!-- Reservations Section -->
+        <div class="section active" id="reservations">
+            <div class="reservation-card">
+                <div class="reservation-details">
+                    <h3>Cappadocia Hot Air Balloon Tour</h3>
+                    <div class="reservation-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>May 15, 2025</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>Duration: 3 hours</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-tag"></i>
+                            <span>₺2,500</span>
+                        </div>
+                    </div>
+                    <p class="reservation-description">
+                        Experience the magical landscapes of Cappadocia from above with our sunrise hot air balloon tour. Floating over fairy chimneys, valleys, and ancient cave dwellings.
+                    </p>
+                    <div class="reservation-status status-confirmed">Confirmed</div>
+                </div>
+            </div>
+            
+            <div class="reservation-card">
+                <div class="reservation-details">
+                    <h3>Istanbul Bosphorus Cruise</h3>
+                    <div class="reservation-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>June 2, 2025</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>Duration: 4 hours</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-tag"></i>
+                            <span>₺1,800</span>
+                        </div>
+                    </div>
+                    <p class="reservation-description">
+                        Cruise between two continents on this relaxing Bosphorus tour. See Ottoman palaces, ancient fortresses and other Istanbul landmarks from the water.
+                    </p>
+                    <div class="reservation-status status-pending">Pending</div>
+                </div>
+            </div>
+            
+            <div class="reservation-card">
+                <div class="reservation-details">
+                    <h3>Pamukkale & Hierapolis Day Tour</h3>
+                    <div class="reservation-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>July 10, 2025</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>Duration: Full day (10 hours)</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-tag"></i>
+                            <span>₺3,200</span>
+                        </div>
+                    </div>
+                    <p class="reservation-description">
+                        Visit the "Cotton Castle" thermal pools and the ancient city of Hierapolis. Swim in the famous Cleopatra's Pool and explore this UNESCO World Heritage site.
+                    </p>
+                    <div class="reservation-status status-confirmed">Confirmed</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- User Details Section -->
+        <div class="section" id="details">
+            <div class="profile-form">
+                <form>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="fullName">Full Name</label>
+                            <input type="text" id="fullName" class="form-control" value="Ahmet Yılmaz">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" class="form-control" value="ahmet.yilmaz@example.com">
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="phone">Cell Number</label>
+                            <input type="tel" id="phone" class="form-control" value="+90 555 123 4567">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="tcKimlik">TC Kimlik No</label>
+                            <input type="text" id="tcKimlik" class="form-control" value="12345678901">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <textarea id="address" class="form-control" rows="3">Atatürk Mah. İstiklal Cad. No:42 D:5
+Kadıköy / İstanbul</textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(tabId).classList.add('active');
+            
+            // Set active tab
+            event.currentTarget.classList.add('active');
+        }
+    </script>
+</body>
+</html>
