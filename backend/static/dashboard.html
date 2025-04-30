@@ -837,8 +837,8 @@
                             <input type="text" id="tourName" name="ad" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label for="tourDestination">Tour</label>
-                            <select id="tourDestination" name="tour_id" class="form-control" required>
+                            <label for="tourItself">Tour</label>
+                            <select id="tourItself" name="tour_id" class="form-control" required>
                                 <option value="">Select Tour</option>
                                 <!-- Will be populated from API -->
                             </select>
@@ -1814,7 +1814,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Load initial data
             loadDashboardData();
-            
             // Navigation handling
             const menuItems = document.querySelectorAll('.menu-item');
             const contentSections = document.querySelectorAll('.content-section');
@@ -2289,6 +2288,9 @@
                 document.getElementById('tourForm').reset();
                 document.getElementById('tourId').value = '';
                 document.getElementById('modalTitle').textContent = 'Add New Tour';
+
+                // Populate the tour select
+                populateTourSelect();
                 
                 // Show modal
                 tourModal.style.display = 'flex';
@@ -3288,6 +3290,24 @@
                 }
             });
         });
+
+        async function populateTourSelect() {
+            try {
+                const tours = await ApiService.tourPackages.getAll();  // ✅ uses your existing service
+                const tourSelect = document.getElementById('tourItself');
+                tourSelect.innerHTML = '<option value="">Select Tour</option>';
+
+                tours.forEach(tour => {
+                    const option = document.createElement('option');
+                    option.value = tour.id;
+                    option.textContent = tour.ad || tour.name;  // depending on your API
+                    tourSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Failed to populate tour select:', error);
+            }
+        }
+
     </script>
 </body>
 </html>
