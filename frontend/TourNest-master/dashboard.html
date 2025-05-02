@@ -1638,8 +1638,8 @@
                         <div class="form-group">
                             <label for="resourceTourStatus">Status</label>
                             <select id="resourceTourStatus" name="aktif" class="form-control" required>
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
+                                <option value=true>Active</option>
+                                <option value=false>Inactive</option>
                             </select>
                         </div>
                     </div>
@@ -3250,7 +3250,13 @@
                 const tourData = {};
                 
                 formData.forEach((value, key) => {
-                    tourData[key] = value;
+                    if (key === 'ad') {
+                        tourData['adi'] = value;
+                    } else if (key === 'durum') {
+                        tourData['aktif'] = value === true;
+                    } else {
+                        tourData[key] = value;
+                    }
                 });
                 
                 try {
@@ -3259,14 +3265,40 @@
                     loadingBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
                     loadingBtn.disabled = true;
                     
-                    console.log('Sending tour data:', tourData);
+                    console.log('Sending tour data to /api/turlar:', tourData);
                     
+                    // Burada API çağrısını turpaketleri yerine turlar API'sine yapıyoruz
                     if (tourData.id) {
-                        // Update existing tour
-                        await ApiService.tourPackages.update(tourData.id, tourData);
+                        // Update existing tour - doğru endpoint kullanımı
+                        const response = await fetch(`/api/turlar/${tourData.id}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(tourData)
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        
+                        await response.json();
                     } else {
-                        // Create new tour
-                        await ApiService.tourPackages.create(tourData);
+                        // Create new tour - doğru endpoint kullanımı
+                        const response = await fetch('/api/turlar', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(tourData)
+                        });
+                        
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            throw new Error(`Failed to save tour. Please try again. Error: ${errorText}`);
+                        }
+                        
+                        await response.json();
                     }
                     
                     // Hide modal
