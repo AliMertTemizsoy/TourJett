@@ -826,25 +826,22 @@
         <div class="modal" id="tourModal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3 id="modalTitle">Add New Tour</h3>
+                    <h3 id="modalTitle">Add New Tour Package</h3>
                     <button class="close-modal">&times;</button>
                 </div>
                 <form id="tourForm">
                     <input type="hidden" id="tourId" name="id">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="tourName">Tour Name</label>
+                            <label for="tourName">Tour Package Name</label>
                             <input type="text" id="tourName" name="ad" class="form-control" required>
                         </div>
-                    </div>
-                    <div class="form-row">
                         <div class="form-group">
-                            <label for="tourLocation">Location</label>
-                            <input type="text" id="tourLocation" name="konum" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="tourPrice">Price (₺)</label>
-                            <input type="number" id="tourPrice" name="fiyat" class="form-control" required>
+                            <label for="tourItself">Tour</label>
+                            <select id="tourItself" name="tour_id" class="form-control" required>
+                                <option value="">Select Tour</option>
+                                <!-- Will be populated from API -->
+                            </select>
                         </div>
                     </div>
                     <div class="form-row">
@@ -898,7 +895,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="tourDescription">Description</label>
-                            <textarea id="tourDescription" name="aciklama" class="form-control" rows="3" required></textarea>
+                            <textarea id="tourDescription" name="aciklama" class="form-control" rows="1" required></textarea>
                         </div>
                     </div>
                     <div class="form-row">
@@ -1817,7 +1814,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Load initial data
             loadDashboardData();
-            
             // Navigation handling
             const menuItems = document.querySelectorAll('.menu-item');
             const contentSections = document.querySelectorAll('.content-section');
@@ -2292,6 +2288,9 @@
                 document.getElementById('tourForm').reset();
                 document.getElementById('tourId').value = '';
                 document.getElementById('modalTitle').textContent = 'Add New Tour';
+
+                // Populate the tour select
+                populateTourSelect();
                 
                 // Show modal
                 tourModal.style.display = 'flex';
@@ -3291,6 +3290,24 @@
                 }
             });
         });
+
+        async function populateTourSelect() {
+            try {
+                const tours = await ApiService.tourPackages.getAll();  // ✅ uses your existing service
+                const tourSelect = document.getElementById('tourItself');
+                tourSelect.innerHTML = '<option value="">Select Tour</option>';
+
+                tours.forEach(tour => {
+                    const option = document.createElement('option');
+                    option.value = tour.id;
+                    option.textContent = tour.ad || tour.name;  // depending on your API
+                    tourSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Failed to populate tour select:', error);
+            }
+        }
+
     </script>
 </body>
 </html>
