@@ -3,8 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile | Tour Website</title>
+    <title>My Profile | Tour Jett</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    
+    <!-- Required early auth check -->
+    <script>
+        // Simple check - must have user data in session to view this page
+        (function() {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            if (!currentUser || !currentUser.id) {
+                console.log('No authenticated user found, redirecting to login page');
+                window.location.href = 'login.html';
+            } else {
+                console.log('Authenticated user:', currentUser.name);
+            }
+        })();
+    </script>
+    
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -45,6 +60,11 @@
         
         .logo h1 {
             font-size: 1.6rem;
+        }
+        
+        .logo a {
+            color: white;
+            text-decoration: none;
         }
         
         .user-menu {
@@ -152,6 +172,17 @@
             color: #856404;
         }
         
+        .status-cancelled {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .no-reservations {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+        
         /* Profile Form */
         .profile-form {
             background: white;
@@ -206,6 +237,58 @@
             background-color: #2980b9;
         }
         
+        .btn-outline {
+            background-color: transparent;
+            color: var(--secondary-color);
+            border: 1px solid var(--secondary-color);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .alert {
+            padding: 12px 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        /* Loading indicator */
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: var(--secondary-color);
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
         /* Responsive */
         @media (max-width: 768px) {
             .form-grid {
@@ -224,11 +307,13 @@
     <header class="header">
         <div class="header-container">
             <div class="logo">
-                <h1>Tour Explorer</h1>
+                <a href="index_loggedinuser.html">
+                    <h1>Tour Jett</h1>
+                </a>
             </div>
             <div class="user-menu">
-                <span>Welcome, Ahmet</span>
-                <a href="#" class="btn">Logout</a>
+                <span id="user-greeting">Welcome!</span>
+                <a href="#" class="btn" id="logout-button">Logout</a>
             </div>
         </div>
     </header>
@@ -244,120 +329,108 @@
         
         <!-- Reservations Section -->
         <div class="section active" id="reservations">
-            <div class="reservation-card">
-                <div class="reservation-details">
-                    <h3>Cappadocia Hot Air Balloon Tour</h3>
-                    <div class="reservation-meta">
-                        <div class="meta-item">
-                            <i class="fas fa-calendar"></i>
-                            <span>May 15, 2025</span>
-                        </div>
-                        <div class="meta-item">
-                            <i class="fas fa-clock"></i>
-                            <span>Duration: 3 hours</span>
-                        </div>
-                        <div class="meta-item">
-                            <i class="fas fa-tag"></i>
-                            <span>₺2,500</span>
-                        </div>
-                    </div>
-                    <p class="reservation-description">
-                        Experience the magical landscapes of Cappadocia from above with our sunrise hot air balloon tour. Floating over fairy chimneys, valleys, and ancient cave dwellings.
-                    </p>
-                    <div class="reservation-status status-confirmed">Confirmed</div>
-                </div>
+            <div id="reservations-loading" class="loading">
+                <div class="spinner"></div>
+                <p>Loading your reservations...</p>
             </div>
             
-            <div class="reservation-card">
-                <div class="reservation-details">
-                    <h3>Istanbul Bosphorus Cruise</h3>
-                    <div class="reservation-meta">
-                        <div class="meta-item">
-                            <i class="fas fa-calendar"></i>
-                            <span>June 2, 2025</span>
-                        </div>
-                        <div class="meta-item">
-                            <i class="fas fa-clock"></i>
-                            <span>Duration: 4 hours</span>
-                        </div>
-                        <div class="meta-item">
-                            <i class="fas fa-tag"></i>
-                            <span>₺1,800</span>
-                        </div>
-                    </div>
-                    <p class="reservation-description">
-                        Cruise between two continents on this relaxing Bosphorus tour. See Ottoman palaces, ancient fortresses and other Istanbul landmarks from the water.
-                    </p>
-                    <div class="reservation-status status-pending">Pending</div>
-                </div>
-            </div>
-            
-            <div class="reservation-card">
-                <div class="reservation-details">
-                    <h3>Pamukkale & Hierapolis Day Tour</h3>
-                    <div class="reservation-meta">
-                        <div class="meta-item">
-                            <i class="fas fa-calendar"></i>
-                            <span>July 10, 2025</span>
-                        </div>
-                        <div class="meta-item">
-                            <i class="fas fa-clock"></i>
-                            <span>Duration: Full day (10 hours)</span>
-                        </div>
-                        <div class="meta-item">
-                            <i class="fas fa-tag"></i>
-                            <span>₺3,200</span>
-                        </div>
-                    </div>
-                    <p class="reservation-description">
-                        Visit the "Cotton Castle" thermal pools and the ancient city of Hierapolis. Swim in the famous Cleopatra's Pool and explore this UNESCO World Heritage site.
-                    </p>
-                    <div class="reservation-status status-confirmed">Confirmed</div>
-                </div>
+            <div id="reservations-container">
+                <!-- Reservations will be loaded here dynamically -->
             </div>
         </div>
         
         <!-- User Details Section -->
         <div class="section" id="details">
+            <div id="profile-loading" class="loading">
+                <div class="spinner"></div>
+                <p>Loading your profile information...</p>
+            </div>
+            
+            <div class="alert alert-success" id="profile-success">Profile updated successfully!</div>
+            <div class="alert alert-danger" id="profile-error"></div>
+            
             <div class="profile-form">
-                <form>
+                <form id="profile-form">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="fullName">Full Name</label>
-                            <input type="text" id="fullName" class="form-control" value="Ahmet Yılmaz">
+                            <label for="firstName">First Name</label>
+                            <input type="text" id="firstName" name="ad" class="form-control" required>
                         </div>
                         
                         <div class="form-group">
-                            <label for="email">Email Address</label>
-                            <input type="email" id="email" class="form-control" value="ahmet.yilmaz@example.com">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" id="lastName" name="soyad" class="form-control" required>
                         </div>
                     </div>
                     
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="phone">Cell Number</label>
-                            <input type="tel" id="phone" class="form-control" value="+90 555 123 4567">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" class="form-control" required>
                         </div>
                         
                         <div class="form-group">
+                            <label for="phone">Cell Number</label>
+                            <input type="tel" id="phone" name="telefon" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
                             <label for="tcKimlik">TC Kimlik No</label>
-                            <input type="text" id="tcKimlik" class="form-control" value="12345678901">
+                            <input type="text" id="tcKimlik" name="tc_kimlik" class="form-control" maxlength="11">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="birthDate">Birth Date</label>
+                            <input type="date" id="birthDate" name="dogum_tarihi" class="form-control">
                         </div>
                     </div>
                     
                     <div class="form-group">
                         <label for="address">Address</label>
-                        <textarea id="address" class="form-control" rows="3">Atatürk Mah. İstiklal Cad. No:42 D:5
-Kadıköy / İstanbul</textarea>
+                        <textarea id="address" name="adres" class="form-control" rows="3"></textarea>
                     </div>
                     
-                    <button type="submit" class="btn">Save Changes</button>
+                    <div class="form-group" style="display: none;">
+                        <label for="password">Password (leave blank to keep current)</label>
+                        <input type="password" id="password" name="password" class="form-control">
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" class="btn">Save Changes</button>
+                        <button type="button" class="btn btn-outline" id="cancel-btn">Cancel</button>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
 
+    <!-- Scripts -->
+    <script src="assets/js/jquery.js"></script>
+    <script src="assets/js/api.js"></script>
+    
     <script>
+        // Global variables
+        let currentUser = null;
+        let userReservations = [];
+        
+        // Helper function to show messages
+        function showAlert(elementId, message, isVisible = true) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.textContent = message;
+                element.style.display = isVisible ? 'block' : 'none';
+                
+                if (isVisible) {
+                    setTimeout(() => {
+                        element.style.display = 'none';
+                    }, 5000);
+                }
+            }
+        }
+        
+        // Tab switching functionality
         function switchTab(tabId) {
             // Hide all sections
             document.querySelectorAll('.section').forEach(section => {
@@ -375,6 +448,385 @@ Kadıköy / İstanbul</textarea>
             // Set active tab
             event.currentTarget.classList.add('active');
         }
+        
+        // Load user profile data
+        async function loadUserProfile() {
+            try {
+                document.getElementById('profile-loading').style.display = 'block';
+                document.getElementById('profile-form').style.display = 'none';
+                
+                // First try to get user from session storage
+                const sessionUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+                
+                if (sessionUser && sessionUser.id) {
+                    console.log('Using user data from session storage');
+                    currentUser = sessionUser;
+                    
+                    // Try to get additional user data from API for completeness
+                    try {
+                        let userData = null;
+                        if (typeof window.ApiService !== 'undefined' && window.ApiService.customers) {
+                            userData = await window.ApiService.customers.getById(sessionUser.id);
+                        } else {
+                            // Fallback to direct API call
+                            const response = await fetch('/api/musteri/' + sessionUser.id);
+                            if (response.ok) {
+                                userData = await response.json();
+                            }
+                        }
+                        
+                        // Merge API data with session data if available
+                        if (userData) {
+                            console.log('Additional user data loaded from API');
+                            currentUser = { ...currentUser, ...userData };
+                            
+                            // Update session storage with more complete data
+                            sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+                        }
+                    } catch (apiError) {
+                        console.warn('Could not fetch additional user data:', apiError);
+                        // Continue with session data
+                    }
+                } else {
+                    console.log('No user data in session, trying API profile endpoint');
+                    // Try profile API endpoint
+                    let profileData = null;
+                    
+                    if (typeof window.getUserProfile === 'function') {
+                        profileData = await window.getUserProfile();
+                    } else {
+                        // Fallback to direct API call
+                        const response = await fetch('/api/auth/profile');
+                        if (response.ok) {
+                            profileData = await response.json();
+                        } else {
+                            throw new Error('Not authenticated');
+                        }
+                    }
+                    
+                    if (profileData && profileData.id) {
+                        currentUser = profileData;
+                        
+                        // Save to session storage
+                        sessionStorage.setItem('currentUser', JSON.stringify({
+                            id: profileData.id,
+                            name: profileData.ad,
+                            surname: profileData.soyad,
+                            email: profileData.email,
+                            phone: profileData.telefon,
+                            nationalId: profileData.tc_kimlik
+                        }));
+                    } else {
+                        throw new Error('Could not load user profile');
+                    }
+                }
+                
+                // Populate form fields
+                document.getElementById('firstName').value = currentUser.name || currentUser.ad || '';
+                document.getElementById('lastName').value = currentUser.surname || currentUser.soyad || '';
+                document.getElementById('email').value = currentUser.email || '';
+                document.getElementById('phone').value = currentUser.phone || currentUser.telefon || '';
+                document.getElementById('tcKimlik').value = currentUser.nationalId || currentUser.tc_kimlik || '';
+                document.getElementById('address').value = currentUser.address || currentUser.adres || '';
+                
+                if (currentUser.dogum_tarihi) {
+                    // Format date to YYYY-MM-DD for input field
+                    let birthDate = currentUser.dogum_tarihi;
+                    if (typeof birthDate === 'string' && birthDate.includes('T')) {
+                        birthDate = birthDate.split('T')[0];
+                    }
+                    document.getElementById('birthDate').value = birthDate;
+                }
+                
+                // Update user greeting
+                const greetingElement = document.getElementById('user-greeting');
+                const userName = currentUser.name || currentUser.ad || 'User';
+                greetingElement.textContent = `Welcome, ${userName}`;
+                
+                // Hide loading, show form
+                document.getElementById('profile-loading').style.display = 'none';
+                document.getElementById('profile-form').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                document.getElementById('profile-loading').style.display = 'none';
+                showAlert('profile-error', 'Could not load your profile. Please try logging in again.');
+                
+                // Redirect to login after delay
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 3000);
+            }
+        }
+        
+        // Load user reservations
+        async function loadReservations() {
+            try {
+                document.getElementById('reservations-loading').style.display = 'block';
+                document.getElementById('reservations-container').innerHTML = '';
+                
+                // Ensure user is loaded
+                if (!currentUser || !currentUser.id) {
+                    await loadUserProfile();
+                }
+                
+                let reservations = [];
+                
+                if (typeof window.ApiService !== 'undefined' && window.ApiService.reservations) {
+                    // Try to get reservations by user ID
+                    reservations = await window.ApiService.reservations.getAll();
+                    // Filter for current user if API doesn't do that already
+                    reservations = reservations.filter(res => 
+                        res.musteri_id === currentUser.id || 
+                        res.customer_id === currentUser.id
+                    );
+                } else {
+                    // Fallback to direct API call
+                    const response = await fetch('/api/rezervasyon?musteri_id=' + currentUser.id);
+                    if (response.ok) {
+                        reservations = await response.json();
+                    } else {
+                        throw new Error('Failed to fetch reservations');
+                    }
+                }
+                
+                userReservations = reservations;
+                
+                // Hide loading
+                document.getElementById('reservations-loading').style.display = 'none';
+                
+                // Render reservations
+                const container = document.getElementById('reservations-container');
+                
+                if (reservations.length === 0) {
+                    container.innerHTML = `
+                        <div class="no-reservations">
+                            <h3>No reservations found</h3>
+                            <p>You haven't made any bookings yet.</p>
+                            <p><a href="index_loggedinuser.html#pack" class="btn">Browse Tour Packages</a></p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Get tour package details for each reservation for complete information
+                for (const reservation of reservations) {
+                    let tourPackage = null;
+                    
+                    try {
+                        if (typeof window.ApiService !== 'undefined') {
+                            // Try both IDs that might exist in the data
+                            const packageId = reservation.tur_paketi_id || reservation.tour_package_id;
+                            if (packageId) {
+                                tourPackage = await window.ApiService.tourPackages.getById(packageId);
+                            }
+                        }
+                    } catch (error) {
+                        console.warn(`Could not load details for tour package ${reservation.tur_paketi_id}`);
+                    }
+                    
+                    // Render reservation card with available information
+                    const reservationCard = document.createElement('div');
+                    reservationCard.className = 'reservation-card';
+                    
+                    // Determine reservation status class
+                    let statusClass = 'status-pending';
+                    let statusText = 'Pending';
+                    
+                    if (reservation.durum) {
+                        const status = reservation.durum.toLowerCase();
+                        if (status === 'onaylandi' || status === 'confirmed') {
+                            statusClass = 'status-confirmed';
+                            statusText = 'Confirmed';
+                        } else if (status === 'iptal' || status === 'cancelled') {
+                            statusClass = 'status-cancelled';
+                            statusText = 'Cancelled';
+                        }
+                    }
+                    
+                    // Format reservation date if available
+                    let reservationDate = '';
+                    if (reservation.tarih) {
+                        const date = new Date(reservation.tarih);
+                        reservationDate = date.toLocaleDateString();
+                    }
+                    
+                    // Tour name from either reservation or tour package
+                    const tourName = (tourPackage && (tourPackage.adi || tourPackage.name)) || 
+                                    reservation.tur_adi || 
+                                    'Tour Package';
+                    
+                    // Price from either reservation or tour package
+                    const price = reservation.fiyat || 
+                                (tourPackage && tourPackage.fiyat ? 
+                                `₺${tourPackage.fiyat}` : '');
+                    
+                    reservationCard.innerHTML = `
+                        <div class="reservation-details">
+                            <h3>${tourName}</h3>
+                            <div class="reservation-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>${reservationDate || 'Date not specified'}</span>
+                                </div>
+                                ${reservation.kisi_sayisi ? `
+                                <div class="meta-item">
+                                    <i class="fas fa-users"></i>
+                                    <span>${reservation.kisi_sayisi} ${reservation.kisi_sayisi > 1 ? 'People' : 'Person'}</span>
+                                </div>` : ''}
+                                ${price ? `
+                                <div class="meta-item">
+                                    <i class="fas fa-tag"></i>
+                                    <span>${price}</span>
+                                </div>` : ''}
+                            </div>
+                            ${tourPackage && tourPackage.aciklama ? `
+                            <p class="reservation-description">${tourPackage.aciklama}</p>` : ''}
+                            <div class="reservation-status ${statusClass}">${statusText}</div>
+                        </div>
+                    `;
+                    
+                    container.appendChild(reservationCard);
+                }
+                
+            } catch (error) {
+                console.error('Error loading reservations:', error);
+                document.getElementById('reservations-loading').style.display = 'none';
+                
+                const container = document.getElementById('reservations-container');
+                container.innerHTML = `
+                    <div class="alert alert-danger" style="display: block;">
+                        Could not load your reservations. Please try again later.
+                    </div>
+                `;
+            }
+        }
+        
+        // Save user profile changes
+        async function saveProfile(event) {
+            event.preventDefault();
+            
+            try {
+                // Hide any previous messages
+                showAlert('profile-success', '', false);
+                showAlert('profile-error', '', false);
+                
+                // Get form data
+                const form = document.getElementById('profile-form');
+                const formData = new FormData(form);
+                const userData = Object.fromEntries(formData.entries());
+                
+                // Remove empty password
+                if (!userData.password) {
+                    delete userData.password;
+                }
+                
+                // Update profile via API
+                let updateSuccessful = false;
+                
+                if (typeof window.ApiService !== 'undefined' && window.ApiService.customers) {
+                    await window.ApiService.customers.update(currentUser.id, userData);
+                    updateSuccessful = true;
+                } else {
+                    // Fallback to direct API call
+                    const response = await fetch(`/api/musteri/${currentUser.id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(userData)
+                    });
+                    
+                    if (response.ok) {
+                        updateSuccessful = true;
+                    } else {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Failed to update profile');
+                    }
+                }
+                
+                if (updateSuccessful) {
+                    // Update session storage
+                    const updatedUser = { 
+                        ...currentUser,
+                        name: userData.ad,
+                        surname: userData.soyad,
+                        ad: userData.ad,
+                        soyad: userData.soyad,
+                        email: userData.email,
+                        phone: userData.telefon,
+                        telefon: userData.telefon,
+                        nationalId: userData.tc_kimlik,
+                        tc_kimlik: userData.tc_kimlik,
+                        adres: userData.adres,
+                        address: userData.adres,
+                        dogum_tarihi: userData.dogum_tarihi
+                    };
+                    
+                    sessionStorage.setItem('currentUser', JSON.stringify(updatedUser));
+                    currentUser = updatedUser;
+                    
+                    // Update greeting
+                    const greetingElement = document.getElementById('user-greeting');
+                    greetingElement.textContent = `Welcome, ${userData.ad}`;
+                    
+                    // Show success message
+                    showAlert('profile-success', 'Profile updated successfully!');
+                }
+                
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                showAlert('profile-error', error.message || 'Failed to update profile. Please try again.');
+            }
+        }
+        
+        // Document ready function
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load initial data
+            loadUserProfile()
+                .then(() => loadReservations())
+                .catch(err => console.error('Failed to initialize profile page:', err));
+            
+            // Setup form submission
+            document.getElementById('profile-form').addEventListener('submit', saveProfile);
+            
+            // Setup cancel button
+            document.getElementById('cancel-btn').addEventListener('click', function() {
+                loadUserProfile(); // Reset form to original values
+            });
+            
+            // Setup logout button
+            document.getElementById('logout-button').addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Clear session storage
+                sessionStorage.removeItem('currentUser');
+                localStorage.removeItem('currentUser');
+                
+                // Try API logout if available
+                try {
+                    if (typeof window.logoutUserApi === 'function') {
+                        window.logoutUserApi()
+                            .finally(() => {
+                                window.location.href = 'login.html?logout=true';
+                            });
+                    } else {
+                        // Direct logout attempt
+                        fetch('/api/auth/logout', { 
+                            method: 'POST',
+                            credentials: 'include'
+                        })
+                        .finally(() => {
+                            window.location.href = 'login.html?logout=true';
+                        });
+                    }
+                } catch (err) {
+                    console.log('API logout error:', err);
+                    // Always redirect to login even if logout fails
+                    window.location.href = 'login.html?logout=true';
+                }
+            });
+        });
     </script>
 </body>
 </html>

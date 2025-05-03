@@ -76,6 +76,13 @@ const ApiService = {
         getCurrentUser: () => apiCall('/auth/me'),
     },
     
+    // User authentication APIs
+    users: {
+        login: (email, password) => apiCall('/users/login', 'POST', { email, password }),
+        signup: (userData) => apiCall('/users/signup', 'POST', userData),
+        getCurrentUser: () => apiCall('/users/me'),
+    },
+    
     // Tour APIs
     tours: {
         getAll: () => apiCall('/turlar'),        
@@ -353,6 +360,34 @@ window.loadAllTourFormDropdowns = async () => {
     ]);
     
     return results.every(result => result === true);
+};
+
+// User Authentication Functions - These functions were missing
+window.loginUser = async (userData) => {
+    try {
+        console.log('Attempting to log in user:', userData.email);
+        const response = await apiCall('/users/login', 'POST', {
+            email: userData.email,
+            password: userData.password
+        });
+        console.log('Login response:', response);
+        return response;
+    } catch (error) {
+        console.error('Login failed:', error);
+        throw new Error('Login failed: ' + (error.message || 'Unknown error'));
+    }
+};
+
+window.signupUser = async (userData) => {
+    try {
+        console.log('Attempting to register new user:', userData);
+        const response = await apiCall('/users/signup', 'POST', userData);
+        console.log('Signup response:', response);
+        return response;
+    } catch (error) {
+        console.error('Signup failed:', error);
+        throw new Error('Signup failed: ' + (error.message || 'Unknown error'));
+    }
 };
 
 // Backward compatibility for existing functions

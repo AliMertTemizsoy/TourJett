@@ -76,6 +76,13 @@ const ApiService = {
         getCurrentUser: () => apiCall('/auth/me'),
     },
     
+    // User authentication APIs
+    users: {
+        login: (email, password) => apiCall('/users/login', 'POST', { email, password }),
+        signup: (userData) => apiCall('/users/signup', 'POST', userData),
+        getCurrentUser: () => apiCall('/users/me'),
+    },
+    
     // Tour APIs
     tours: {
         getAll: () => apiCall('/turlar'),        
@@ -353,6 +360,98 @@ window.loadAllTourFormDropdowns = async () => {
     ]);
     
     return results.every(result => result === true);
+};
+
+// User Authentication Functions - These functions were missing
+window.loginUser = async (userData) => {
+    try {
+        console.log('Attempting to log in user:', userData.email);
+        const response = await apiCall('/auth/login', 'POST', {
+            email: userData.email,
+            password: userData.password
+        });
+        console.log('Login response:', response);
+        return response;
+    } catch (error) {
+        console.error('Login failed:', error);
+        throw new Error('Login failed: ' + (error.message || 'Unknown error'));
+    }
+};
+
+window.signupUser = async (userData) => {
+    try {
+        console.log('Attempting to register new user:', userData);
+        const response = await apiCall('/auth/signup', 'POST', userData);
+        console.log('Signup response:', response);
+        return response;
+    } catch (error) {
+        console.error('Signup failed:', error);
+        throw new Error('Signup failed: ' + (error.message || 'Unknown error'));
+    }
+};
+
+// Function to get the current user's profile
+window.getUserProfile = async () => {
+    try {
+        console.log('Fetching user profile');
+        // First try the auth/profile endpoint
+        try {
+            const response = await apiCall('/auth/profile');
+            console.log('Profile response from auth endpoint:', response);
+            return response;
+        } catch (authError) {
+            console.warn('Could not fetch profile from auth endpoint:', authError);
+            
+            // Try the users/me endpoint as fallback
+            try {
+                const response = await apiCall('/users/me');
+                console.log('Profile response from users endpoint:', response);
+                return response;
+            } catch (usersError) {
+                console.warn('Could not fetch profile from users endpoint:', usersError);
+                
+                // Try to get from session storage as last resort
+                const sessionUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+                if (sessionUser && sessionUser.id) {
+                    console.log('Using profile from session storage');
+                    return sessionUser;
+                }
+                
+                throw new Error('Failed to retrieve user profile');
+            }
+        }
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
+        throw error;
+    }
+};
+
+// Function to log out the current user
+window.logoutUserApi = async () => {
+    try {
+        console.log('Logging out user');
+        // Try auth/logout endpoint
+        try {
+            const response = await apiCall('/auth/logout', 'POST');
+            console.log('Logout response:', response);
+            return response;
+        } catch (authError) {
+            console.warn('Could not logout from auth endpoint:', authError);
+            
+            // Try users/logout as fallback
+            try {
+                const response = await apiCall('/users/logout', 'POST');
+                console.log('Logout response from users endpoint:', response);
+                return response;
+            } catch (usersError) {
+                console.warn('Could not logout from users endpoint:', usersError);
+                throw new Error('Failed to logout');
+            }
+        }
+    } catch (error) {
+        console.error('Error during logout:', error);
+        throw error;
+    }
 };
 
 // Backward compatibility for existing functions
