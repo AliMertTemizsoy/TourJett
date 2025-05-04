@@ -1,7 +1,9 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, current_app
 from app import db
 from app.models import Rezervasyon, Musteri, Tur, TurPaketi
 from datetime import datetime
+from app.services.email_service import send_reservation_notification_to_driver, send_reservation_notification_to_guide
+import logging
 
 rezervasyon_bp = Blueprint('rezervasyon', __name__, url_prefix='/api')
 
@@ -154,6 +156,24 @@ def create_rezervasyon():
         db.session.commit()
         
         print("REZERVASYON OLUŞTURULDU. ID:", rezervasyon.id)  # Debug log
+        
+        # Email notifications to driver and guide
+        #try:
+            #if current_app.config.get('MAIL_ENABLE', False):
+                # Send email to driver if applicable
+                #if rezervasyon.tur_paketi_id:
+                    #driver_notified = send_reservation_notification_to_driver(rezervasyon)
+                    #if driver_notified:
+                        #logging.info(f"Driver notification sent for reservation ID: {rezervasyon.id}")
+                    
+                    #guide_notified = send_reservation_notification_to_guide(rezervasyon)
+                    #if guide_notified:
+                        #logging.info(f"Guide notification sent for reservation ID: {rezervasyon.id}")
+            #else:
+                #logging.info("Email notifications are disabled by configuration")
+        #except Exception as email_error:
+            # Don't fail the API call if email sending fails
+            #logging.error(f"Failed to send notification emails: {str(email_error)}")
         
         return jsonify({
             'success': True,

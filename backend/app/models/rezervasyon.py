@@ -8,7 +8,6 @@ class Rezervasyon(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     tur_id = db.Column(db.Integer, db.ForeignKey('tur.id'), nullable=False)  # Changed to nullable=False
     tur_paketi_id = db.Column(db.Integer, db.ForeignKey('tur_paketleri.id'), nullable=True)
-    # Removed tur_sefer_id field
     musteri_id = db.Column(db.Integer, db.ForeignKey('musteriler.id'), nullable=True)
     ad = db.Column(db.String(100), nullable=False)
     soyad = db.Column(db.String(100), nullable=False)

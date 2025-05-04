@@ -183,7 +183,7 @@
         }
 
         .widget-header h3 {
-            color: var (--dark);
+            color: var(--dark);
             font-size: 1.2rem;
         }
 
@@ -1931,28 +1931,80 @@
             
             // Revenue Breakdown Chart
             function initializeRevenueBreakdownChart() {
+                console.log('Initializing revenue breakdown chart');
                 if (document.getElementById('revenueBreakdownChart')) {
                     const ctx = document.getElementById('revenueBreakdownChart').getContext('2d');
                     if (Chart.getChart('revenueBreakdownChart')) {
                         Chart.getChart('revenueBreakdownChart').destroy();
+                        console.log('Destroyed existing chart');
                     }
-                    new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                            datasets: [{
-                                label: 'Revenue (₺)',
-                                data: [15000, 19000, 16000, 22000, 18000, 25000],
-                                backgroundColor: 'rgba(46, 204, 113, 0.6)',
-                                borderColor: '#2ecc71',
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false
-                        }
-                    });
+
+                    // Fetch revenue data from API
+                    console.log('Fetching revenue data from API');
+                    ApiService.dashboard.getRevenueData()
+                        .then(data => {
+                            console.log('Revenue data received:', data);
+                            // Use API data if available
+                            const labels = data?.labels || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+                            const revenueData = data?.revenue || [15000, 19000, 16000, 22000, 18000, 25000];
+                            const profitData = data?.profit || [4500, 5700, 4800, 6600, 5400, 7500];
+                            
+                            console.log('Creating chart with labels:', labels);
+                            console.log('Revenue data:', revenueData);
+                            console.log('Profit data:', profitData);
+                            
+                            new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: labels,
+                                    datasets: [
+                                        {
+                                            label: 'Revenue (₺)',
+                                            data: revenueData,
+                                            backgroundColor: 'rgba(46, 204, 113, 0.6)',
+                                            borderColor: '#2ecc71',
+                                            borderWidth: 1
+                                        },
+                                        {
+                                            label: 'Profit (₺)',
+                                            data: profitData,
+                                            backgroundColor: 'rgba(52, 152, 219, 0.6)',
+                                            borderColor: '#3498db',
+                                            borderWidth: 1
+                                        }
+                                    ]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false
+                                }
+                            });
+                            console.log('Chart created successfully');
+                        })
+                        .catch(error => {
+                            console.error('Failed to load revenue data:', error);
+                            // Fallback to dummy data if API fails
+                            console.log('Using fallback data for chart');
+                            new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                                    datasets: [{
+                                        label: 'Revenue (₺)',
+                                        data: [15000, 19000, 16000, 22000, 18000, 25000],
+                                        backgroundColor: 'rgba(46, 204, 113, 0.6)',
+                                        borderColor: '#2ecc71',
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false
+                                }
+                            });
+                        });
+                } else {
+                    console.error('revenueBreakdownChart element not found in the DOM');
                 }
             }
             
