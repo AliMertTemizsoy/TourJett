@@ -11,6 +11,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     const tourDetails = document.querySelector('.tour-details');
     const cardNumberInput = document.getElementById('cardNumber');
     const expiryInput = document.getElementById('expiry');
+    
+    // API URL'sini tanımla
+    const API_BASE_URL = 'http://localhost:5000/api';
 
     // Kart numarası formatlamayı ekle - her 4 rakamdan sonra boşluk
     cardNumberInput.addEventListener('input', function(e) {
@@ -52,12 +55,13 @@ document.addEventListener('DOMContentLoaded', async function() {
         e.target.value = value;
     });
 
-    // URL'den tur_id parametresini al
+    // URL'den sadece tur_paketi_id parametresini al
     const urlParams = new URLSearchParams(window.location.search);
-    const turId = urlParams.get('tur_id');
+    const turPaketiId = urlParams.get('tur_paketi_id');
     
-    // Tur seferi ID'si için bir değişken tanımla
-    let turSeferiId = null;
+    console.log(`URL'den alınan tur paketi ID değeri: ${turPaketiId}`);
+    
+    // Eski tur seferi ID'si değişkenini kaldırdık çünkü artık kullanılmıyor
     
     // Base price default value (will be updated from API if available)
     window.basePrice = 1950;
@@ -97,43 +101,45 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     // Tur bilgilerini dinamik olarak yükle
-    if (turId) {
+    if (turPaketiId) {
+        console.log(`Tur bilgileri için API çağrısı yapılacak, ID: ${turPaketiId}`);
         try {
-            const tur = await getTurById(turId);
-            if (tur) {
+            // Doğrudan API'ye istek yap
+            const response = await fetch(`${API_BASE_URL}/turpaketleri/${turPaketiId}`);
+            console.log('API yanıt durumu:', response.status);
+            
+            if (!response.ok) {
+                throw new Error(`API yanıt hatası: ${response.status}`);
+            }
+            
+            const tur = await response.json();
+            console.log(`Tur bilgisi API yanıtı:`, tur);
+            
+            if (tur && !tur.error) {
                 console.log("Yüklenen tur bilgisi:", tur);
                 
-                // Tur seferi ID varsa onu al (API dönüşümü farklı olabilir)
-                if (tur.sefer_id) {
-                    turSeferiId = tur.sefer_id;
-                    console.log("Tur seferi ID bulundu:", turSeferiId);
-                }
-                
-                // Eğer API tur_seferleri diye bir dizi dönüyorsa, ilk aktif seferi al
-                if (tur.tur_seferleri && tur.tur_seferleri.length > 0) {
-                    const aktifSefer = tur.tur_seferleri.find(sefer => sefer.durum === 'aktif');
-                    if (aktifSefer) {
-                        turSeferiId = aktifSefer.id;
-                        console.log("Aktif tur seferi ID bulundu:", turSeferiId);
-                    }
-                }
-                
+                // Tur bilgilerini göster
                 tourDetails.innerHTML = `
-                    <h2>${tur.ad || tur.adi}</h2>
-                    <p><strong>Duration:</strong> ${tur.sure}</p>
-                    <p><strong>Starting Point:</strong> ${tur.baslangic_bolge || 'Belirlenmedi'}</p>
-                    <p><strong>Price:</strong> ${tur.fiyat}₺ per person</p>
+                    <h2>${tur.ad || tur.adi || "Tur Adı"}</h2>
+                    <p><strong>ID:</strong> ${tur.id} (${typeof tur.id})</p> 
+                    <p><strong>Duration:</strong> ${tur.sure || "Belirtilmedi"}</p>
+                    <p><strong>Starting Point:</strong> ${tur.baslangic_bolge || "Belirtilmedi"}</p>
+                    <p><strong>Price:</strong> ${tur.fiyat || 0}₺ per person</p>
                 `;
                 // Fiyatı güncellemek için basePrice'ı backend'den gelen fiyatla değiştir
                 window.basePrice = parseFloat(tur.fiyat) || 1950;
                 calculateTotal();
             } else {
-                tourDetails.innerHTML = '<p>Tur bilgileri yüklenirken bir hata oluştu.</p>';
+                console.error("Tur bilgisi alınamadı veya hatalı:", tur);
+                tourDetails.innerHTML = '<p>Tur bilgileri yüklenirken bir hata oluştu. Yanlış ID veya erişilemez veri.</p>';
             }
         } catch (error) {
             console.error("Tur bilgilerini getirirken hata:", error);
             tourDetails.innerHTML = `<p>Tur bilgileri yüklenirken bir hata oluştu: ${error.message}</p>`;
         }
+    } else {
+        console.error("URL'den tur paketi ID'si alınamadı!");
+        tourDetails.innerHTML = '<p>Tur ID bulunamadı!</p>';
     }
 
     // Price calculation function
@@ -215,21 +221,22 @@ document.addEventListener('DOMContentLoaded', async function() {
         try {
             // Rezervasyon verilerini hazırla
             const reservationData = {
-            // Backend kodu "musteri_id" değil "musteri_id" beklediği için düzeltme yapıyoruz
-            musteri_id: currentUser?.id,
-            // tur_id yerine tur_paketi_id olarak gönderiyoruz
-            tur_paketi_id: parseInt(turId),
-            tur_sefer_id: turSeferiId,
-            // musteri_adi ve musteri_soyadi yerine backend'in beklediği şekilde ad ve soyad kullan
-            ad: document.getElementById('firstName').value,
-            soyad: document.getElementById('lastName').value,
-            email: document.getElementById('email').value,
-            telefon: document.getElementById('phone').value,
-            tc_kimlik: document.getElementById('tc_kimlik').value,
-            adres: document.getElementById('adres').value,
-            kisi_sayisi: parseInt(document.getElementById('participants').value),
-            oda_tipi: document.getElementById('roomType').value,
-            ozel_istekler: document.getElementById('additionalRequests').value || ''
+                // Backend kodu "musteri_id" bekliyor
+                musteri_id: currentUser?.id,
+                // Sadece tur_paketi_id kullanıyoruz, tur_id'yi kaldırıyoruz
+                tur_paketi_id: parseInt(turPaketiId),
+                // tarih alanını ekliyoruz (şimdiki tarih)
+                tarih: new Date().toISOString().split('T')[0],
+                // Diğer alanlar normal şekilde gönderilecek
+                ad: document.getElementById('firstName').value,
+                soyad: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                telefon: document.getElementById('phone').value,
+                tc_kimlik: document.getElementById('tc_kimlik').value,
+                adres: document.getElementById('adres').value,
+                kisi_sayisi: parseInt(document.getElementById('participants').value),
+                oda_tipi: document.getElementById('roomType').value,
+                ozel_istekler: document.getElementById('additionalRequests').value || ''
             };
 
             console.log('Rezervasyon verileri:', reservationData);

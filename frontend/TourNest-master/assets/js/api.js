@@ -454,6 +454,74 @@ window.logoutUserApi = async () => {
     }
 };
 
+// Rezervasyon için yardımcı fonksiyon
+window.createRezervasyon = async (formData) => {
+    if (MOCK_MODE) {
+        console.log('Mock rezervasyon oluşturuldu:', formData);
+        return { id: Math.floor(Math.random() * 10000), success: true };
+    } else {
+        try {
+            console.log('API isteği gönderiliyor:', formData);
+            
+            // Sadece tur_paketi_id kullan
+            const turPaketiId = parseInt(formData.tur_paketi_id, 10);
+            
+            if (isNaN(turPaketiId)) {
+                throw new Error('Geçerli bir tur paketi ID değeri bulunamadı');
+            }
+            
+            console.log(`Tur Paketi ID değeri: ${turPaketiId}, türü: ${typeof turPaketiId}`);
+            
+            // Doğrudan formData'dan gelen ve parseInt ile dönüştürülen ID'yi kullan
+            const apiData = {
+                // Sadece tur_paketi_id'yi zorunlu kılıyoruz
+                tur_paketi_id: turPaketiId,
+                
+                // tur_id opsiyonel olsun
+                ...(formData.tur_id && !isNaN(parseInt(formData.tur_id, 10)) ? { tur_id: parseInt(formData.tur_id, 10) } : {}),
+                
+                ad: formData.ad || formData.firstName,
+                soyad: formData.soyad || formData.lastName,
+                email: formData.email,
+                telefon: formData.telefon || formData.phone,
+                tc_kimlik: formData.tc_kimlik || formData.nationalId || '',
+                adres: formData.adres || formData.address || '',
+                kisi_sayisi: parseInt(formData.kisi_sayisi) || 1,
+                oda_tipi: formData.oda_tipi || formData.roomType || 'standard',
+                tarih: formData.tarih || new Date().toISOString().split('T')[0],
+                ozel_istekler: formData.ozel_istekler || formData.notlar || formData.notes || ''
+            };
+            
+            // Müşteri ID'si varsa ekle
+            if (formData.musteri_id) {
+                apiData.musteri_id = formData.musteri_id;
+            }
+            
+            console.log('Düzenlenmiş API verisi:', apiData);
+            
+            const response = await fetch(`${API_BASE_URL}/rezervasyonlar`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(apiData)
+            });
+            
+            const data = await response.json();
+            console.log('API yanıtı:', data);
+            
+            if (!response.ok) {
+                throw new Error(data.error || 'Rezervasyon oluşturulamadı');
+            }
+            
+            return data;
+        } catch (error) {
+            console.error('Rezervasyon oluşturma hatası:', error);
+            throw error;
+        }
+    }
+};
+
 // Backward compatibility for existing functions
 window.getDegerlendirmeler = (turId) => ApiService.reviews.getTourReviews(turId);
 window.createDegerlendirme = (data) => ApiService.reviews.create(data);

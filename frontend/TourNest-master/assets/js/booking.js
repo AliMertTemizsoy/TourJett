@@ -52,9 +52,25 @@ document.addEventListener('DOMContentLoaded', async function() {
         e.target.value = value;
     });
 
-    // URL'den tur_id parametresini al
+    // URL'den parametreleri al - hem tur_id hem de tur_paketi_id kontrolü yap
     const urlParams = new URLSearchParams(window.location.search);
-    const turId = urlParams.get('tur_id');
+    let turPaketiId = urlParams.get('tur_paketi_id');
+    
+    // Eğer tur_paketi_id yoksa, tur_id parametresine bak
+    if (!turPaketiId) {
+        turPaketiId = urlParams.get('tur_id');
+        console.log('tur_paketi_id bulunamadı, tur_id parametresi kullanılıyor:', turPaketiId);
+    }
+    
+    // Sayısal değere dönüştür
+    turPaketiId = parseInt(turPaketiId, 10);
+    
+    console.log(`URL'den alınan tur paketi ID değeri: ${turPaketiId}, türü: ${typeof turPaketiId}`);
+    
+    // ID değeri geçerli bir sayı değilse uyarı ver
+    if (isNaN(turPaketiId)) {
+        console.error('HATA: Geçerli bir tur paketi ID değeri alınamadı!');
+    }
     
     // Tur seferi ID'si için bir değişken tanımla
     let turSeferiId = null;
@@ -97,9 +113,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     // Tur bilgilerini dinamik olarak yükle
-    if (turId) {
+    if (turPaketiId) {
         try {
-            const tur = await getTurById(turId);
+            const tur = await getTurById(turPaketiId);
             if (tur) {
                 console.log("Yüklenen tur bilgisi:", tur);
                 
@@ -215,21 +231,22 @@ document.addEventListener('DOMContentLoaded', async function() {
         try {
             // Rezervasyon verilerini hazırla
             const reservationData = {
-            // Backend kodu "musteri_id" değil "musteri_id" beklediği için düzeltme yapıyoruz
-            musteri_id: currentUser?.id,
-            // tur_id yerine tur_paketi_id olarak gönderiyoruz
-            tur_paketi_id: parseInt(turId),
-            tur_sefer_id: turSeferiId,
-            // musteri_adi ve musteri_soyadi yerine backend'in beklediği şekilde ad ve soyad kullan
-            ad: document.getElementById('firstName').value,
-            soyad: document.getElementById('lastName').value,
-            email: document.getElementById('email').value,
-            telefon: document.getElementById('phone').value,
-            tc_kimlik: document.getElementById('tc_kimlik').value,
-            adres: document.getElementById('adres').value,
-            kisi_sayisi: parseInt(document.getElementById('participants').value),
-            oda_tipi: document.getElementById('roomType').value,
-            ozel_istekler: document.getElementById('additionalRequests').value || ''
+                // Backend kodu "musteri_id" bekliyor
+                musteri_id: currentUser?.id,
+                // Sadece tur_paketi_id kullanıyoruz, tur_id'yi kaldırıyoruz
+                tur_paketi_id: parseInt(turPaketiId),
+                // tarih alanını ekliyoruz (şimdiki tarih)
+                tarih: new Date().toISOString().split('T')[0],
+                // Diğer alanlar normal şekilde gönderilecek
+                ad: document.getElementById('firstName').value,
+                soyad: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                telefon: document.getElementById('phone').value,
+                tc_kimlik: document.getElementById('tc_kimlik').value,
+                adres: document.getElementById('adres').value,
+                kisi_sayisi: parseInt(document.getElementById('participants').value),
+                oda_tipi: document.getElementById('roomType').value,
+                ozel_istekler: document.getElementById('additionalRequests').value || ''
             };
 
             console.log('Rezervasyon verileri:', reservationData);

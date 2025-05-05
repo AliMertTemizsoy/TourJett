@@ -64,19 +64,14 @@ def create_rezervasyon():
         tur_paketi_id = data.get('tur_paketi_id')
         tur_id = data.get('tur_id')
         
-        # Ya tur_id ya da tur_paketi_id gerekli
-        if not tur_id and not tur_paketi_id:
-            return jsonify({'error': 'Tur ID veya Tur Paketi ID alanı gerekli'}), 400
+        # Sadece tur_paketi_id yeterli
+        if not tur_paketi_id:
+            return jsonify({'error': 'Tur Paketi ID alanı gerekli'}), 400
             
-        # Tur veya Tur Paketi kontrolü
-        if tur_paketi_id:
-            tur_paketi = TurPaketi.query.get(tur_paketi_id)
-            if not tur_paketi:
-                return jsonify({'error': 'Tur paketi bulunamadı'}), 404
-        elif tur_id:
-            tur = Tur.query.get(tur_id)
-            if not tur:
-                return jsonify({'error': 'Tur bulunamadı'}), 404
+        # Tur Paketi kontrolü
+        tur_paketi = TurPaketi.query.get(tur_paketi_id)
+        if not tur_paketi:
+            return jsonify({'error': 'Tur paketi bulunamadı'}), 404
             
         # ÖNEMLİ: Önce müşteriyi kontrol et, yoksa oluştur
         email = data.get('email', '')
@@ -97,7 +92,6 @@ def create_rezervasyon():
                 soyad=data.get('soyad', 'Müşteri'),
                 email=email or 'otomatic@example.com',
                 telefon=telefon or '5550000000',
-                # Diğer müşteri alanlarını ekleyin
                 tc_kimlik=data.get('tc_kimlik', '00000000000'),
                 adres=data.get('adres', 'Otomatik oluşturuldu'),
                 dogum_tarihi=datetime(1990, 1, 1)  # Varsayılan doğum tarihi
@@ -115,20 +109,8 @@ def create_rezervasyon():
         except ValueError:
             tarih = datetime.now().date()
         
-        # Tur ID yoksa ve tur_paketi_id varsa, paketin ilk turunu al
-        if not tur_id and tur_paketi_id:
-            # Burada gelecekte tur_paketleri ile turlar arasında bir ilişki varsa
-            # ilk turu almak için bir sorgu ekleyebilirsiniz
-            # Şimdilik varsayılan bir tur arıyoruz
-            default_tur = Tur.query.first()
-            if default_tur:
-                tur_id = default_tur.id
-            else:
-                return jsonify({'error': 'Tur ID belirtilmedi ve sistemde hiç tur yok'}), 400
-        
-        # Rezervasyon oluştur - artık tur_sefer_id alanı olmadan!
+        # Rezervasyon oluştur - artık tur_id olmadan sadece tur_paketi_id ile
         rezervasyon = Rezervasyon(
-            tur_id=tur_id,
             tur_paketi_id=tur_paketi_id,
             musteri_id=musteri.id,
             ad=data.get('ad', 'İsimsiz'),
@@ -141,8 +123,11 @@ def create_rezervasyon():
             ozel_istekler=data.get('ozel_istekler') or data.get('notlar', '')
         )
         
+        # Eğer tur_id yoksa null olarak ayarla
+        if tur_id:
+            rezervasyon.tur_id = tur_id
+        
         print("REZERVASYON OLUŞTURULACAK:", {
-            'tur_id': rezervasyon.tur_id,
             'tur_paketi_id': rezervasyon.tur_paketi_id,
             'ad': rezervasyon.ad,
             'soyad': rezervasyon.soyad,
@@ -156,24 +141,6 @@ def create_rezervasyon():
         db.session.commit()
         
         print("REZERVASYON OLUŞTURULDU. ID:", rezervasyon.id)  # Debug log
-        
-        # Email notifications to driver and guide
-        #try:
-            #if current_app.config.get('MAIL_ENABLE', False):
-                # Send email to driver if applicable
-                #if rezervasyon.tur_paketi_id:
-                    #driver_notified = send_reservation_notification_to_driver(rezervasyon)
-                    #if driver_notified:
-                        #logging.info(f"Driver notification sent for reservation ID: {rezervasyon.id}")
-                    
-                    #guide_notified = send_reservation_notification_to_guide(rezervasyon)
-                    #if guide_notified:
-                        #logging.info(f"Guide notification sent for reservation ID: {rezervasyon.id}")
-            #else:
-                #logging.info("Email notifications are disabled by configuration")
-        #except Exception as email_error:
-            # Don't fail the API call if email sending fails
-            #logging.error(f"Failed to send notification emails: {str(email_error)}")
         
         return jsonify({
             'success': True,
