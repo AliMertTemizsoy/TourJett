@@ -95,9 +95,16 @@ def create_rezervasyon(data):
     
     # Tur paketi kontrolü - artık tur seferi yerine tur paketi kullanıyoruz
     from app.models.tur_paketi import TurPaketi
+    from app.models.tur import Tur
+    
     tur_paketi = TurPaketi.query.get(tur_paketi_id)
     if not tur_paketi:
         return {'error': 'Tur paketi bulunamadı'}
+    
+    # İlgili turu al - tur paketinin fiyatı yoksa onun bağlı olduğu turun fiyatını kullanacağız
+    tur = Tur.query.get(tur_paketi.tur_id)
+    if not tur:
+        return {'error': 'Tur bulunamadı'}
     
     # Kapasite kontrolü
     kisi_sayisi = data.get('kisi_sayisi', 1)
@@ -109,18 +116,21 @@ def create_rezervasyon(data):
     if (toplam_kisi + kisi_sayisi) > tur_paketi.kapasite:
         return {'error': 'Tur paketi kapasitesi dolu'}
     
-    # Toplam fiyatı hesapla
-    tur_fiyati = tur_paketi.fiyat or 0
-    toplam_fiyat = tur_fiyati * kisi_sayisi
-    
     # Yeni rezervasyon - tur_seferi_id olmadan, sadece tur_paketi_id ile
+    # toplam_fiyat parametresi rezervasyon modelinde olmadığı için kaldırıldı
     yeni_rezervasyon = Rezervasyon(
         musteri_id=musteri_id,
         tur_paketi_id=tur_paketi_id,
+        tur_id=tur.id,  # Turun ID'sini de kaydedelim
         kisi_sayisi=kisi_sayisi,
-        toplam_fiyat=toplam_fiyat,
-        durum=data.get('durum', 'Onaylandı'),
-        odeme_durumu=data.get('odeme_durumu', 'Beklemede')
+        ad=data.get('ad', 'İsimsiz'),
+        soyad=data.get('soyad', 'Müşteri'),
+        email=data.get('email', 'otomatic@example.com'),
+        telefon=data.get('telefon', '5550000000'),
+        tarih=datetime.now().date(),
+        oda_tipi=data.get('oda_tipi', 'standard'),
+        ozel_istekler=data.get('ozel_istekler', ''),
+        durum=data.get('durum', 'Onaylandı')
     )
     
     db.session.add(yeni_rezervasyon)
@@ -136,6 +146,8 @@ def update_rezervasyon(rezervasyon_id, data):
     if 'kisi_sayisi' in data and data['kisi_sayisi'] != rezervasyon.kisi_sayisi:
         # Tur paketi ile kontrol - artık tur_seferi yerine tur_paketi kullanıyoruz
         from app.models.tur_paketi import TurPaketi
+        from app.models.tur import Tur
+        
         tur_paketi = TurPaketi.query.get(rezervasyon.tur_paketi_id)
         if tur_paketi:
             mevcut_rezervasyonlar = Rezervasyon.query.filter_by(tur_paketi_id=rezervasyon.tur_paketi_id).all()
@@ -143,15 +155,10 @@ def update_rezervasyon(rezervasyon_id, data):
             
             if (toplam_kisi + data['kisi_sayisi']) > tur_paketi.kapasite:
                 return {'error': 'Tur paketi kapasitesi dolu'}
-                
-            # Toplam fiyatı güncelle
-            tur_fiyati = tur_paketi.fiyat
-            rezervasyon.toplam_fiyat = tur_fiyati * data['kisi_sayisi']
             
         rezervasyon.kisi_sayisi = data['kisi_sayisi']
     
     rezervasyon.durum = data.get('durum', rezervasyon.durum)
-    rezervasyon.odeme_durumu = data.get('odeme_durumu', rezervasyon.odeme_durumu)
     
     db.session.commit()
     return {'message': 'Rezervasyon güncellendi'}

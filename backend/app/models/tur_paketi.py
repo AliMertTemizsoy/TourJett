@@ -37,6 +37,7 @@ class TurPaketi(db.Model):
             'aciklama': self.aciklama,
             'sure': self.sure,
             'kapasite': self.kapasite,
+            'fiyat': self.tur.fiyat if self.tur else None,  # Bağlı olduğu turun fiyatını kullan
             'tur_tarihi': self.tur_tarihi.strftime('%Y-%m-%d') if self.tur_tarihi else None,
             'resim_url': self.resim_url,
             'durum': self.durum,
