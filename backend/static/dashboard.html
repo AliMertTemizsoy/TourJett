@@ -1635,9 +1635,15 @@
                         <div class="form-group">
                             <label for="resourceTourStatus">Status</label>
                             <select id="resourceTourStatus" name="aktif" class="form-control" required>
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
+                                <option value="true">Active</option>
+                                <option value="false">Inactive</option>
                             </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="resourceTourDescription">Description</label>
+                            <textarea id="resourceTourDescription" name="aciklama" class="form-control" rows="3"></textarea>
                         </div>
                     </div>
                     <div class="form-row">
@@ -3022,6 +3028,8 @@
                     
                     if (tab === 'destinations') {
                         loadDestinationsData();
+                    } else if (tab === 'turs') {
+                        loadToursData(); // ✅ Tur sekmesine tıklandığında turları yükle
                     } else if (tab === 'guides' || tab === 'drivers' || tab === 'vehicles') {
                         loadResourceData();
                     }
@@ -3183,12 +3191,6 @@
                     // Hide modal
                     document.getElementById('resourceModal').style.display = 'none';
                     
-                    // Reset button state
-                    loadingBtn.textContent = originalText;
-                    loadingBtn.disabled = false;
-                    
-                    // Reload driver list
-                    loadResourceData();
                     
                     // Show success message
                     alert('Driver saved successfully!');
@@ -3293,6 +3295,7 @@
             });
 
             // Tour Resource Form
+            // Tour Resource Form
             document.getElementById('tourResourceForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
@@ -3312,12 +3315,13 @@
                     
                     console.log('Sending tour data:', tourData);
                     
+                    // API'yi düzgün şekilde çağır - tourPackages değil tours
                     if (tourData.id) {
                         // Update existing tour
-                        await ApiService.tourPackages.update(tourData.id, tourData);
+                        await ApiService.tours.update(tourData.id, tourData);
                     } else {
                         // Create new tour
-                        await ApiService.tourPackages.create(tourData);
+                        await ApiService.tours.create(tourData);
                     }
                     
                     // Hide modal
@@ -3328,7 +3332,7 @@
                     loadingBtn.disabled = false;
                     
                     // Reload tour list
-                    loadDestinationsData();
+                    loadToursData();
                     
                     // Show success message
                     alert('Tour saved successfully!');
@@ -3341,6 +3345,136 @@
                     loadingBtn.disabled = false;
                 }
             });
+
+            // Function to load tours data for resource management section
+            async function loadToursData() {
+                try {
+                    // Show loading indicator
+                    document.getElementById('tourResourceTableBody').innerHTML = `
+                        <tr>
+                            <td colspan="7" class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading tours...</td>
+                        </tr>
+                    `;
+                    
+                    console.log("Fetching tours data from API...");
+                    // Doğru API endpointi kullanıyoruz: /turlar
+                    const tours = await ApiService.tours.getAll();
+                    console.log("Tours data received:", tours);
+                    
+                    if (tours && tours.length > 0) {
+                        // Clear loading indicator
+                        document.getElementById('tourResourceTableBody').innerHTML = '';
+                        
+                        // Set table headers if not already set
+                        const tableHeaders = document.querySelector('#turs .data-table thead');
+                        if (!tableHeaders.innerHTML.trim()) {
+                            tableHeaders.innerHTML = `
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tour Name</th>
+                                    <th>Destination</th>
+                                    <th>Duration</th>
+                                    <th>Price</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            `;
+                        }
+                        
+                        // Populate table with tour data
+                        tours.forEach(tour => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${tour.id || ''}</td>
+                                <td>${tour.adi || ''}</td>
+                                <td>${tour.destinasyon_adi || ''}</td>
+                                <td>${tour.sure || ''}</td>
+                                <td>₺${tour.fiyat || '0'}</td>
+                                <td><span class="status-badge status-${tour.aktif ? 'confirmed' : 'pending'}">${tour.aktif ? 'Active' : 'Inactive'}</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="action-btn edit" title="Edit"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn delete" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                                    </div>
+                                </td>
+                            `;
+                            
+                            // Add event listeners for edit and delete buttons
+                            row.querySelector('.action-btn.edit').addEventListener('click', function() {
+                                editResourceTour(tour.id);
+                            });
+                            
+                            row.querySelector('.action-btn.delete').addEventListener('click', function() {
+                                if (confirm(`Are you sure you want to delete tour ${tour.adi}?`)) {
+                                    deleteResourceTour(tour.id);
+                                }
+                            });
+                            
+                            document.getElementById('tourResourceTableBody').appendChild(row);
+                        });
+                    } else {
+                        document.getElementById('tourResourceTableBody').innerHTML = `
+                            <tr>
+                                <td colspan="7" class="text-center">No tours found.</td>
+                            </tr>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Failed to load tours data:', error);
+                    document.getElementById('tourResourceTableBody').innerHTML = `
+                        <tr>
+                            <td colspan="7" class="text-center">Error loading tours. Please try again.</td>
+                        </tr>
+                    `;
+                }
+            }
+            
+            // Functions for editing and deleting resource tours
+            async function editResourceTour(id) {
+                try {
+                    const tour = await ApiService.tours.getById(id);
+                    if (tour) {
+                        document.getElementById('resourceTourId').value = tour.id;
+                        document.getElementById('resourceTourName').value = tour.adi || tour.ad || '';
+                        document.getElementById('resourceTourDuration').value = tour.sure || '';
+                        document.getElementById('resourceTourPrice').value = tour.fiyat || '';
+                        document.getElementById('tourDestination').value = tour.destinasyon_id || '';
+                        document.getElementById('resourceTourStatus').value = tour.aktif || tour.durum === 'active' ? 'active' : 'inactive';
+                        
+                        // Update modal title
+                        document.getElementById('resourceModalTitle').textContent = 'Edit Tour';
+                        
+                        // Hide resource type selection
+                        document.getElementById('resourceTypeSelection').style.display = 'none';
+                        
+                        // Show tour form
+                        document.getElementById('destinationForm').style.display = 'none';
+                        document.getElementById('guideForm').style.display = 'none';
+                        document.getElementById('driverForm').style.display = 'none';
+                        document.getElementById('vehicleForm').style.display = 'none';
+                        document.getElementById('tourResourceForm').style.display = 'block';
+                        
+                        // Show modal
+                        document.getElementById('resourceModal').style.display = 'flex';
+                    } else {
+                        alert('Tour not found');
+                    }
+                } catch (error) {
+                    console.error('Failed to get tour details:', error);
+                    alert('Failed to get tour details. Please try again.');
+                }
+            }
+            
+            async function deleteResourceTour(id) {
+                try {
+                    await ApiService.tours.delete(id);
+                    loadToursData(); // Reload tours data
+                    alert('Tour deleted successfully');
+                } catch (error) {
+                    console.error('Failed to delete tour:', error);
+                    alert('Failed to delete tour. Please try again.');
+                }
+            }
         });
 
         async function populateTourSelect() {

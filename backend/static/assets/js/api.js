@@ -227,6 +227,9 @@ const ApiService = {
 window.loadTourPackages = () => ApiService.tourPackages.getAll();
 window.getTourPackageById = (id) => ApiService.tourPackages.getById(id);
 
+// Add loadToursData function to load tours directly from the tours API
+window.loadToursData = () => ApiService.tours.getAll();
+
 // Enhanced helper function to load destination data for dropdowns
 window.loadDestinationOptions = async (selectElementId) => {
     try {
