@@ -62,9 +62,8 @@ def create_rezervasyon():
         
         # Frontend'den gelen değerleri alma
         tur_paketi_id = data.get('tur_paketi_id')
-        tur_id = data.get('tur_id')
         
-        # Sadece tur_paketi_id yeterli
+        # Sadece tur_paketi_id kontrolü yap
         if not tur_paketi_id:
             return jsonify({'error': 'Tur Paketi ID alanı gerekli'}), 400
             
@@ -109,7 +108,7 @@ def create_rezervasyon():
         except ValueError:
             tarih = datetime.now().date()
         
-        # Rezervasyon oluştur - artık tur_id olmadan sadece tur_paketi_id ile
+        # Rezervasyon oluştur - artık sadece tur_paketi_id ile
         rezervasyon = Rezervasyon(
             tur_paketi_id=tur_paketi_id,
             musteri_id=musteri.id,
@@ -123,9 +122,9 @@ def create_rezervasyon():
             ozel_istekler=data.get('ozel_istekler') or data.get('notlar', '')
         )
         
-        # Eğer tur_id yoksa null olarak ayarla
-        if tur_id:
-            rezervasyon.tur_id = tur_id
+        # Eğer tur_id yoksa None olarak bırak
+        if data.get('tur_id'):
+            rezervasyon.tur_id = data.get('tur_id')
         
         print("REZERVASYON OLUŞTURULACAK:", {
             'tur_paketi_id': rezervasyon.tur_paketi_id,

@@ -84,33 +84,39 @@ def get_rezervasyonlar_by_sefer(tur_seferi_id):
     return Rezervasyon.query.filter_by(tur_seferi_id=tur_seferi_id).all()
 
 def create_rezervasyon(data):
-    # Müşteri ve tur seferinin varlığını kontrol et
+    # Müşteri ve tur paketinin varlığını kontrol et
     musteri_id = data.get('musteri_id')
-    tur_seferi_id = data.get('tur_seferi_id')
+    tur_paketi_id = data.get('tur_paketi_id')
     
+    # Müşteri kontrolü
     musteri = Musteri.query.get(musteri_id)
     if not musteri:
         return {'error': 'Müşteri bulunamadı'}
     
-    tur_seferi = TurSeferi.query.get(tur_seferi_id)
-    if not tur_seferi:
-        return {'error': 'Tur seferi bulunamadı'}
+    # Tur paketi kontrolü - artık tur seferi yerine tur paketi kullanıyoruz
+    from app.models.tur_paketi import TurPaketi
+    tur_paketi = TurPaketi.query.get(tur_paketi_id)
+    if not tur_paketi:
+        return {'error': 'Tur paketi bulunamadı'}
     
-    # Sefer kapasitesini kontrol et
+    # Kapasite kontrolü
     kisi_sayisi = data.get('kisi_sayisi', 1)
-    mevcut_rezervasyonlar = get_rezervasyonlar_by_sefer(tur_seferi_id)
+    
+    # Tur paketine bağlı mevcut rezervasyonları al
+    mevcut_rezervasyonlar = Rezervasyon.query.filter_by(tur_paketi_id=tur_paketi_id).all()
     toplam_kisi = sum(r.kisi_sayisi for r in mevcut_rezervasyonlar)
     
-    if tur_seferi.tur_paketi and (toplam_kisi + kisi_sayisi) > tur_seferi.tur_paketi.kapasite:
-        return {'error': 'Sefer kapasitesi dolu'}
+    if (toplam_kisi + kisi_sayisi) > tur_paketi.kapasite:
+        return {'error': 'Tur paketi kapasitesi dolu'}
     
     # Toplam fiyatı hesapla
-    tur_fiyati = tur_seferi.tur_paketi.fiyat if tur_seferi.tur_paketi else 0
+    tur_fiyati = tur_paketi.fiyat or 0
     toplam_fiyat = tur_fiyati * kisi_sayisi
     
+    # Yeni rezervasyon - tur_seferi_id olmadan, sadece tur_paketi_id ile
     yeni_rezervasyon = Rezervasyon(
         musteri_id=musteri_id,
-        tur_seferi_id=tur_seferi_id,
+        tur_paketi_id=tur_paketi_id,
         kisi_sayisi=kisi_sayisi,
         toplam_fiyat=toplam_fiyat,
         durum=data.get('durum', 'Onaylandı'),
@@ -128,16 +134,18 @@ def update_rezervasyon(rezervasyon_id, data):
     
     # Kişi sayısı değiştiriliyorsa, kapasite kontrolü yap
     if 'kisi_sayisi' in data and data['kisi_sayisi'] != rezervasyon.kisi_sayisi:
-        tur_seferi = rezervasyon.tur_seferi
-        if tur_seferi and tur_seferi.tur_paketi:
-            mevcut_rezervasyonlar = get_rezervasyonlar_by_sefer(rezervasyon.tur_seferi_id)
+        # Tur paketi ile kontrol - artık tur_seferi yerine tur_paketi kullanıyoruz
+        from app.models.tur_paketi import TurPaketi
+        tur_paketi = TurPaketi.query.get(rezervasyon.tur_paketi_id)
+        if tur_paketi:
+            mevcut_rezervasyonlar = Rezervasyon.query.filter_by(tur_paketi_id=rezervasyon.tur_paketi_id).all()
             toplam_kisi = sum(r.kisi_sayisi for r in mevcut_rezervasyonlar if r.id != rezervasyon_id)
             
-            if (toplam_kisi + data['kisi_sayisi']) > tur_seferi.tur_paketi.kapasite:
-                return {'error': 'Sefer kapasitesi dolu'}
+            if (toplam_kisi + data['kisi_sayisi']) > tur_paketi.kapasite:
+                return {'error': 'Tur paketi kapasitesi dolu'}
                 
             # Toplam fiyatı güncelle
-            tur_fiyati = tur_seferi.tur_paketi.fiyat
+            tur_fiyati = tur_paketi.fiyat
             rezervasyon.toplam_fiyat = tur_fiyati * data['kisi_sayisi']
             
         rezervasyon.kisi_sayisi = data['kisi_sayisi']
