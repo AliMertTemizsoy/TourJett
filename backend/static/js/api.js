@@ -89,12 +89,12 @@ const ApiService = {
         getById: (id) => apiCall(`/turlar/${id}`),
         create: (tourData) => {
             const apiData = {
-                adi: tourData.ad,
+                adi: tourData.adi, // ad değil, adi olarak düzeltildi
                 sure: tourData.sure,
                 fiyat: parseFloat(tourData.fiyat),
                 destinasyon_id: parseInt(tourData.destinasyon_id),
                 aciklama: tourData.aciklama || "",
-                aktif: tourData.durum === 'active' ? true : false
+                aktif: tourData.aktif === 'true' ? true : false // durum yerine aktif kullanıldı
             };
             return apiCall('/turlar', 'POST', apiData);
         },

@@ -89,12 +89,12 @@ const ApiService = {
         getById: (id) => apiCall(`/turlar/${id}`),
         create: (tourData) => {
             const apiData = {
-                adi: tourData.ad,
+                adi: tourData.adi, // ad değil, adi olarak düzeltildi
                 sure: tourData.sure,
                 fiyat: parseFloat(tourData.fiyat),
                 destinasyon_id: parseInt(tourData.destinasyon_id),
                 aciklama: tourData.aciklama || "",
-                aktif: tourData.durum === 'active' ? true : false
+                aktif: tourData.aktif === 'true' ? true : false // durum yerine aktif kullanıldı
             };
             return apiCall('/turlar', 'POST', apiData);
         },
@@ -463,10 +463,20 @@ window.createRezervasyon = async (formData) => {
         try {
             console.log('API isteği gönderiliyor:', formData);
             
-            // Sadece tur_paketi_id kullan
-            const turPaketiId = parseInt(formData.tur_paketi_id, 10);
+            // Sadece tur_paketi_id kullan ve doğru şekilde sayı olduğundan emin ol
+            let turPaketiId;
+            
+            // formData içinde tur_paketi_id var mı kontrol et
+            if (formData.tur_paketi_id !== undefined && formData.tur_paketi_id !== null) {
+                turPaketiId = parseInt(formData.tur_paketi_id, 10);
+                console.log(`formData içinden tur_paketi_id alındı: ${turPaketiId}, türü: ${typeof turPaketiId}`);
+            } else {
+                console.error('formData içinde tur_paketi_id değeri yok!', formData);
+                throw new Error('Geçerli bir tur paketi ID değeri bulunamadı');
+            }
             
             if (isNaN(turPaketiId)) {
+                console.error('Geçersiz tur paketi ID değeri:', formData.tur_paketi_id);
                 throw new Error('Geçerli bir tur paketi ID değeri bulunamadı');
             }
             
@@ -476,9 +486,6 @@ window.createRezervasyon = async (formData) => {
             const apiData = {
                 // Sadece tur_paketi_id'yi zorunlu kılıyoruz
                 tur_paketi_id: turPaketiId,
-                
-                // tur_id opsiyonel olsun
-                ...(formData.tur_id && !isNaN(parseInt(formData.tur_id, 10)) ? { tur_id: parseInt(formData.tur_id, 10) } : {}),
                 
                 ad: formData.ad || formData.firstName,
                 soyad: formData.soyad || formData.lastName,

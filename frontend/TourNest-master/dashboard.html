@@ -834,7 +834,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="tourName">Tour Package Name</label>
-                            <input type="text" id="tourName" name="ad" class="form-control" required>
+                            <input type="text" id="tourName" name="adi" class="form-control" required>
                         </div>
                         <div class="form-group">
                             <label for="tourItself">Tour</label>
@@ -1616,7 +1616,7 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="tourDestination">Destination</label>
+                            <label for="tourItself">Destination</label>
                             <select id="tourDestination" name="destinasyon_id" class="form-control" required>
                                 <option value="">Select Destination</option>
                                 <!-- Will be populated from API -->
@@ -3295,7 +3295,6 @@
             });
 
             // Tour Resource Form
-            // Tour Resource Form
             document.getElementById('tourResourceForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
@@ -3315,7 +3314,6 @@
                     
                     console.log('Sending tour data:', tourData);
                     
-                    // API'yi düzgün şekilde çağır - tourPackages değil tours
                     if (tourData.id) {
                         // Update existing tour
                         await ApiService.tours.update(tourData.id, tourData);
@@ -3479,19 +3477,99 @@
 
         async function populateTourSelect() {
             try {
-                const tours = await ApiService.tourPackages.getAll();  // ✅ uses your existing service
+                const tours = await ApiService.tours.getAll();  // tourPackages yerine tours kullanılmalı
                 const tourSelect = document.getElementById('tourItself');
                 tourSelect.innerHTML = '<option value="">Select Tour</option>';
-
+        
                 tours.forEach(tour => {
                     const option = document.createElement('option');
                     option.value = tour.id;
-                    option.textContent = tour.ad || tour.name;  // depending on your API
+                    option.textContent = tour.adi || tour.ad || tour.name;  // adi özelliğini de ekledik
                     tourSelect.appendChild(option);
                 });
             } catch (error) {
                 console.error('Failed to populate tour select:', error);
             }
+
+                        // tourItself select değeri değiştiğinde, seçilen turun bilgilerini getir
+            document.getElementById('tourItself').addEventListener('change', async function() {
+                const selectedTourId = this.value;
+                if (selectedTourId) {
+                    try {
+                        const tour = await ApiService.tours.getById(selectedTourId);
+                        if (tour) {
+                            // Seçilen turun destinasyon_id ve fiyat değerlerini gizli alanlara ekle
+                            document.getElementById('tourPrice').value = tour.fiyat || '';
+                            // Gizli bir input alanı ekle (eğer form içinde yoksa)
+                            if (!document.getElementById('tourDestinationId')) {
+                                const hiddenInput = document.createElement('input');
+                                hiddenInput.type = 'hidden';
+                                hiddenInput.id = 'tourDestinationId';
+                                hiddenInput.name = 'destinasyon_id';
+                                document.getElementById('tourForm').appendChild(hiddenInput);
+                            }
+                            // Gizli alana destinasyon_id'yi ekle
+                            document.getElementById('tourDestinationId').value = tour.destinasyon_id || '';
+                        }
+                    } catch (error) {
+                        console.error('Failed to get tour details:', error);
+                    }
+                }
+            });
+
+            // Form submit fonksiyonunu güncelle
+            document.getElementById('tourForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Get form data
+                const formData = new FormData(this);
+                const tourData = {};
+                
+                formData.forEach((value, key) => {
+                    tourData[key] = value;
+                });
+                
+                // Seçilen turun destinasyon_id ve fiyat değerlerini ekle
+                if (tourData.tour_id) {
+                    // Destinasyon_id ve fiyat değerleri zaten gizli alanlarda olmalı
+                    // Eğer değilse, API çağrısı öncesinde ekstra kontrol eklenebilir
+                }
+                
+                try {
+                    const loadingBtn = document.querySelector('#tourForm button[type="submit"]');
+                    const originalText = loadingBtn.textContent;
+                    loadingBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                    loadingBtn.disabled = true;
+                    
+                    if (tourData.id) {
+                        // Update existing tour package
+                        await ApiService.tourPackages.update(tourData.id, tourData);
+                    } else {
+                        // Create new tour package
+                        await ApiService.tourPackages.create(tourData);
+                    }
+                    
+                    // Hide modal
+                    document.getElementById('tourModal').style.display = 'none';
+                    
+                    // Reset button state
+                    loadingBtn.textContent = originalText;
+                    loadingBtn.disabled = false;
+                    
+                    // Reload tour list
+                    loadTourData();
+                    
+                    // Show success message
+                    alert('Tour package saved successfully!');
+                } catch (error) {
+                    console.error('Failed to save tour package:', error);
+                    alert('Failed to save tour package. Error: ' + error.message);
+                    
+                    const loadingBtn = document.querySelector('#tourForm button[type="submit"]');
+                    loadingBtn.textContent = 'Save Tour';
+                    loadingBtn.disabled = false;
+                }
+            });
         }
 
     </script>
