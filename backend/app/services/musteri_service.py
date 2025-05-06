@@ -80,8 +80,8 @@ def get_rezervasyon_by_id(rezervasyon_id):
 def get_rezervasyonlar_by_musteri(musteri_id):
     return Rezervasyon.query.filter_by(musteri_id=musteri_id).all()
 
-def get_rezervasyonlar_by_sefer(tur_seferi_id):
-    return Rezervasyon.query.filter_by(tur_seferi_id=tur_seferi_id).all()
+def get_rezervasyonlar_by_tur(tur_id):
+    return Rezervasyon.query.filter_by(tur_id=tur_id).all()
 
 def create_rezervasyon(data):
     # Müşteri ve tur paketinin varlığını kontrol et

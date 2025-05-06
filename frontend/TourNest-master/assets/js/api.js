@@ -113,20 +113,21 @@ const ApiService = {
     
     // Reservation APIs
     reservations: {
-        getAll: () => apiCall('/rezervasyon'),
-        getById: (id) => apiCall(`/rezervasyon/${id}`),
-        create: (reservationData) => apiCall('/rezervasyon', 'POST', reservationData),
-        update: (id, reservationData) => apiCall(`/rezervasyon/${id}`, 'PUT', reservationData),
-        delete: (id) => apiCall(`/rezervasyon/${id}`, 'DELETE'),
+        getAll: () => apiCall('/rezervasyonlar'),
+        getById: (id) => apiCall(`/rezervasyonlar/${id}`),
+        getByCustomerId: (customerId) => apiCall(`/rezervasyonlar?musteri_id=${customerId}`),
+        create: (reservationData) => apiCall('/rezervasyonlar', 'POST', reservationData),
+        update: (id, reservationData) => apiCall(`/rezervasyonlar/${id}`, 'PUT', reservationData),
+        delete: (id) => apiCall(`/rezervasyonlar/${id}`, 'DELETE'),
     },
     
     // Customer APIs
     customers: {
-        getAll: () => apiCall('/musteri'),
-        getById: (id) => apiCall(`/musteri/${id}`),
-        create: (customerData) => apiCall('/musteri', 'POST', customerData),
-        update: (id, customerData) => apiCall(`/musteri/${id}`, 'PUT', customerData),
-        delete: (id) => apiCall(`/musteri/${id}`, 'DELETE'),
+        getAll: () => apiCall('/musteriler'),
+        getById: (id) => apiCall(`/musteriler/${id}`),
+        create: (customerData) => apiCall('/musteriler', 'POST', customerData),
+        update: (id, customerData) => apiCall(`/musteriler/${id}`, 'PUT', customerData),
+        delete: (id) => apiCall(`/musteriler/${id}`, 'DELETE'),
     },
     
     // Destination APIs

@@ -573,16 +573,13 @@
                 let reservations = [];
                 
                 if (typeof window.ApiService !== 'undefined' && window.ApiService.reservations) {
-                    // Try to get reservations by user ID
-                    reservations = await window.ApiService.reservations.getAll();
-                    // Filter for current user if API doesn't do that already
-                    reservations = reservations.filter(res => 
-                        res.musteri_id === currentUser.id || 
-                        res.customer_id === currentUser.id
-                    );
+                    // Use the new dedicated method for getting reservations by customer ID
+                    console.log('Fetching reservations for user ID:', currentUser.id);
+                    reservations = await window.ApiService.reservations.getByCustomerId(currentUser.id);
+                    console.log('Reservations fetched:', reservations);
                 } else {
                     // Fallback to direct API call
-                    const response = await fetch('/api/rezervasyon?musteri_id=' + currentUser.id);
+                    const response = await fetch('/api/rezervasyonlar?musteri_id=' + currentUser.id);
                     if (response.ok) {
                         reservations = await response.json();
                     } else {
@@ -724,25 +721,39 @@
                 // Update profile via API
                 let updateSuccessful = false;
                 
-                if (typeof window.ApiService !== 'undefined' && window.ApiService.customers) {
-                    await window.ApiService.customers.update(currentUser.id, userData);
-                    updateSuccessful = true;
-                } else {
-                    // Fallback to direct API call
-                    const response = await fetch(`/api/musteri/${currentUser.id}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(userData)
-                    });
+                try {
+                    console.log('Updating user with ID:', currentUser.id);
+                    console.log('Update data:', userData);
                     
-                    if (response.ok) {
+                    if (typeof window.ApiService !== 'undefined' && window.ApiService.customers) {
+                        const result = await window.ApiService.customers.update(currentUser.id, userData);
+                        console.log('API update result:', result);
                         updateSuccessful = true;
                     } else {
-                        const errorData = await response.json();
-                        throw new Error(errorData.error || 'Failed to update profile');
+                        // Direct API call
+                        const url = `/api/musteriler/${currentUser.id}`;
+                        console.log('Making direct API call to:', url);
+                        
+                        const response = await fetch(url, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(userData)
+                        });
+                        
+                        if (response.ok) {
+                            const result = await response.json();
+                            console.log('Direct API update result:', result);
+                            updateSuccessful = true;
+                        } else {
+                            const errorData = await response.json();
+                            throw new Error(errorData.error || 'Failed to update profile');
+                        }
                     }
+                } catch (error) {
+                    console.error('Profile update failed:', error);
+                    throw error;
                 }
                 
                 if (updateSuccessful) {
@@ -768,7 +779,9 @@
                     
                     // Update greeting
                     const greetingElement = document.getElementById('user-greeting');
-                    greetingElement.textContent = `Welcome, ${userData.ad}`;
+                    if (greetingElement) {
+                        greetingElement.textContent = `Welcome, ${userData.ad}`;
+                    }
                     
                     // Show success message
                     showAlert('profile-success', 'Profile updated successfully!');

@@ -1,6 +1,7 @@
 /**
  * API Service for TourJett Dashboard
  * Handles all interactions with the backend API
+ * Version: 2.0.1 - Added getSalesByTour() method
  */
 
 // API ayarları
@@ -210,6 +211,7 @@ const ApiService = {
         getRecentBookings: () => apiCall('/dashboard/recent-bookings'),
         getUpcomingTours: () => apiCall('/dashboard/upcoming-tours'),
         getRevenueData: () => apiCall('/dashboard/revenue'),
+        getSalesByTour: () => apiCall('/dashboard/sales-by-tour'),
     },
 
     // Regions APIs
@@ -401,3 +403,42 @@ window.getTurById = (id) => ApiService.tourPackages.getById(id);
 // Export the API Service
 // This will make it available to other JavaScript files
 window.ApiService = ApiService;
+
+// Ensure the dashboard getSalesByTour method is explicitly defined
+if (window.ApiService && window.ApiService.dashboard) {
+    window.ApiService.dashboard.getSalesByTour = function() {
+        console.log('Calling getSalesByTour method');
+        return apiCall('/dashboard/sales-by-tour');
+    };
+}
+
+// Ensure all necessary dashboard methods exist
+window.ensureDashboardMethods = function() {
+    if (!window.ApiService) {
+        console.error('ApiService not available');
+        return;
+    }
+    
+    if (!window.ApiService.dashboard) {
+        window.ApiService.dashboard = {};
+    }
+    
+    const requiredMethods = [
+        'getStats',
+        'getRecentBookings',
+        'getUpcomingTours',
+        'getRevenueData',
+        'getSalesByTour'
+    ];
+    
+    requiredMethods.forEach(method => {
+        if (typeof window.ApiService.dashboard[method] !== 'function') {
+            console.log(`Defining missing method: ${method}`);
+            window.ApiService.dashboard[method] = function() {
+                return apiCall(`/dashboard/${method.replace(/^get/, '').replace(/([A-Z])/g, '-$1').toLowerCase()}`);
+            };
+        }
+    });
+    
+    console.log('Dashboard methods ensured:', Object.keys(window.ApiService.dashboard));
+};

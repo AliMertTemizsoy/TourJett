@@ -93,12 +93,17 @@ def get_rezervasyonlar():
         'id': r.id,
         'musteri_id': r.musteri_id,
         'musteri_adi': f"{r.musteri.ad} {r.musteri.soyad}" if r.musteri else None,
-        'tur_seferi_id': r.tur_seferi_id,
+        'tur_id': r.tur_id,
+        'tur_paketi_id': r.tur_paketi_id,
         'kisi_sayisi': r.kisi_sayisi,
-        'toplam_fiyat': r.toplam_fiyat,
-        'rezervasyon_tarihi': r.rezervasyon_tarihi.isoformat(),
+        'tarih': r.tarih.strftime('%Y-%m-%d') if r.tarih else None,
         'durum': r.durum,
-        'odeme_durumu': r.odeme_durumu
+        'ad': r.ad,
+        'soyad': r.soyad,
+        'email': r.email,
+        'telefon': r.telefon,
+        'oda_tipi': r.oda_tipi,
+        'ozel_istekler': r.ozel_istekler
     } for r in rezervasyonlar])
 
 @musteri_bp.route('/api/rezervasyonlar/<int:id>', methods=['GET'])
@@ -109,13 +114,18 @@ def get_rezervasyon(id):
             'id': rezervasyon.id,
             'musteri_id': rezervasyon.musteri_id,
             'musteri_adi': f"{rezervasyon.musteri.ad} {rezervasyon.musteri.soyad}" if rezervasyon.musteri else None,
-            'tur_seferi_id': rezervasyon.tur_seferi_id,
-            'tur_adi': rezervasyon.tur_seferi.tur_paketi.ad if rezervasyon.tur_seferi and rezervasyon.tur_seferi.tur_paketi else None,
+            'tur_id': rezervasyon.tur_id,
+            'tur_paketi_id': rezervasyon.tur_paketi_id,
+            'tur_adi': rezervasyon.tur.adi if rezervasyon.tur else None,
             'kisi_sayisi': rezervasyon.kisi_sayisi,
-            'toplam_fiyat': rezervasyon.toplam_fiyat,
-            'rezervasyon_tarihi': rezervasyon.rezervasyon_tarihi.isoformat(),
+            'tarih': rezervasyon.tarih.strftime('%Y-%m-%d') if rezervasyon.tarih else None,
             'durum': rezervasyon.durum,
-            'odeme_durumu': rezervasyon.odeme_durumu
+            'ad': rezervasyon.ad,
+            'soyad': rezervasyon.soyad,
+            'email': rezervasyon.email,
+            'telefon': rezervasyon.telefon,
+            'oda_tipi': rezervasyon.oda_tipi,
+            'ozel_istekler': rezervasyon.ozel_istekler
         })
     return jsonify({'error': 'Rezervasyon bulunamadı'}), 404
 
