@@ -659,52 +659,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Upcoming Tours -->
-            <div class="widget">
-                <div class="widget-header">
-                    <h3>Upcoming Tours</h3>
-                    <button class="btn btn-primary">View Calendar</button>
-                </div>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Tour Name</th>
-                            <th>Destination</th>
-                            <th>Date</th>
-                            <th>Bookings</th>
-                            <th>Guide</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Cappadocia Hot Air Balloon</td>
-                            <td>Nevşehir</td>
-                            <td>26 Apr 2025</td>
-                            <td>12/15</td>
-                            <td>Hakan Yılmaz</td>
-                            <td><span class="status-badge status-confirmed">Active</span></td>
-                        </tr>
-                        <tr>
-                            <td>Ephesus Ancient City</td>
-                            <td>İzmir</td>
-                            <td>27 Apr 2025</td>
-                            <td>18/20</td>
-                            <td>Elif Kara</td>
-                            <td><span class="status-badge status-confirmed">Active</span></td>
-                        </tr>
-                        <tr>
-                            <td>Blue Cruise</td>
-                            <td>Fethiye</td>
-                            <td>28 Apr 2025</td>
-                            <td>8/10</td>
-                            <td>Mustafa Demir</td>
-                            <td><span class="status-badge status-pending">Pending</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
         </div>
 
         <!-- Tour Management Section -->
@@ -914,139 +868,75 @@
                 <h2>Reports</h2>
             </div>
 
-            <div class="tab-container">
-                <div class="tab-buttons">
-                    <button class="tab-button active" data-tab="financial">Financial Overview</button>
-                    <button class="tab-button" data-tab="sales">Sales by Tour</button>
-                </div>
-
-                <div class="tab-content active" id="financial">
-                    <div class="stats-container">
-                        <div class="stat-card">
-                            <div class="stat-icon" style="background-color: var(--success);">
-                                <i class="fas fa-money-bill-wave"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h4>Total Revenue</h4>
-                                <p data-stat="revenue">₺125,980</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon" style="background-color: var(--danger);">
-                                <i class="fas fa-file-invoice-dollar"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h4>Total Expenses</h4>
-                                <p data-stat="expenses">₺75,450</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon" style="background-color: var(--success);">
-                                <i class="fas fa-ticket-alt"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h4>New Reservations</h4>
-                                <p data-stat="reservations">28</p>
-                            </div>
-                        </div>
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: var(--secondary);">
+                        <i class="fas fa-map-marker-alt"></i>
                     </div>
-
-                    <div class="widget">
-                        <div class="widget-header">
-                            <h3>Revenue Overview</h3>
-                            <select class="filter-select">
-                                <option value="monthly">Monthly</option>
-                                <option value="quarterly">Quarterly</option>
-                                <option value="yearly">Yearly</option>
-                            </select>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="revenueBreakdownChart"></canvas>
-                        </div>
+                    <div class="stat-info">
+                        <h4>Top Destination</h4>
+                        <p data-stat="topDestination"><i class="fas fa-spinner fa-spin"></i></p>
                     </div>
                 </div>
-
-                <div class="tab-content" id="sales">
-                    <!-- Analysis section -->
-                    <div class="tab-container">
-                        <div class="tab-buttons">
-                            <button class="tab-button active" data-tab="destination-analysis">Destination Analysis</button>
-                        </div>
-
-                        <div class="tab-content active" id="destination-analysis">
-                            <div class="stats-container">
-                                <div class="stat-card">
-                                    <div class="stat-icon" style="background-color: var (--secondary);">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                    </div>
-                                    <div class="stat-info">
-                                        <h4>Top Destination</h4>
-                                        <p>Cappadocia</p>
-                                    </div>
-                                </div>
-                                <div class="stat-card">
-                                    <div class="stat-icon" style="background-color: var(--success);">
-                                        <i class="fas fa-users"></i>
-                                    </div>
-                                    <div class="stat-info">
-                                        <h4>Most Visitors</h4>
-                                        <p>265</p>
-                                    </div>
-                                </div>
-                                <div class="stat-card">
-                                    <div class="stat-icon" style="background-color: var(--warning);">
-                                        <i class="fas fa-star"></i>
-                                    </div>
-                                    <div class="stat-info">
-                                        <h4>Highest Rating</h4>
-                                        <p>4.9/5.0</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="widget">
-                                <div class="widget-header">
-                                    <h3>Destination Comparison</h3>
-                                    <select class="filter-select" id="destinationMetric">
-                                        <option value="visitors">Visitors</option>
-                                        <option value="revenue">Revenue</option>
-                                        <option value="rating">Rating</option>
-                                    </select>
-                                </div>
-                                <div class="chart-container">
-                                    <canvas id="destinationsChart"></canvas>
-                                </div>
-                            </div>
-
-                            <div class="widget">
-                                <div class="widget-header">
-                                    <h3>Destination Performance</h3>
-                                    <div class="filter-container">
-                                        <select class="filter-select" id="destinationSort">
-                                            <option value="bookings">Sort by Bookings</option>
-                                            <option value="revenue">Sort by Revenue</option>
-                                            <option value="rating">Sort by Rating</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <table class="data-table" id="destinationTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Destination</th>
-                                            <th>Total Bookings</th>
-                                            <th>Revenue</th>
-                                            <th>Avg. Rating</th>
-                                            <th>Details</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <!-- Destination data will be loaded dynamically -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: var(--success);">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h4>Most Visitors</h4>
+                        <p data-stat="mostVisitors"><i class="fas fa-spinner fa-spin"></i></p>
                     </div>
                 </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: var(--warning);">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h4>Highest Rating</h4>
+                        <p data-stat="highestRating"><i class="fas fa-spinner fa-spin"></i></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget">
+                <div class="widget-header">
+                    <h3>Destination Comparison</h3>
+                    <select class="filter-select" id="destinationMetric">
+                        <option value="visitors">Visitors</option>
+                        <option value="revenue">Revenue</option>
+                        <option value="rating">Rating</option>
+                    </select>
+                </div>
+                <div class="chart-container">
+                    <canvas id="destinationsChart"></canvas>
+                </div>
+            </div>
+
+            <div class="widget">
+                <div class="widget-header">
+                    <h3>Destination Performance</h3>
+                    <div class="filter-container">
+                        <select class="filter-select" id="destinationSort">
+                            <option value="bookings">Sort by Bookings</option>
+                            <option value="revenue">Sort by Revenue</option>
+                            <option value="rating">Sort by Rating</option>
+                        </select>
+                    </div>
+                </div>
+                <table class="data-table" id="destinationTable">
+                    <thead>
+                        <tr>
+                            <th>Destination</th>
+                            <th>Total Bookings</th>
+                            <th>Revenue</th>
+                            <th>Avg. Rating</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Destination data will be loaded dynamically -->
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -1783,6 +1673,39 @@
                 window.ensureDashboardMethods();
             }
             
+            // Add a fallback implementation for getSalesByTour if it doesn't exist
+            if (typeof ApiService !== 'undefined') {
+                if (!ApiService.dashboard) {
+                    console.log('Creating ApiService.dashboard object');
+                    ApiService.dashboard = {};
+                }
+                
+                if (!ApiService.dashboard.getSalesByTour) {
+                    console.log('Adding fallback implementation for getSalesByTour');
+                    ApiService.dashboard.getSalesByTour = function() {
+                        console.log('Using fallback getSalesByTour implementation with direct API call');
+                        // Use a direct fetch to the API endpoint
+                        return fetch('/api/dashboard/sales-by-tour')
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('API call failed with status: ' + response.status);
+                                }
+                                return response.json();
+                            })
+                            .catch(error => {
+                                console.error('Fallback API call failed:', error);
+                                // Return an empty result instead of dummy data
+                                return { 
+                                    tours: [], 
+                                    bookings: [], 
+                                    revenue: [], 
+                                    ratings: [] 
+                                };
+                            });
+                    };
+                }
+            }
+            
             // Load initial data
             loadDashboardData();
             
@@ -1864,6 +1787,27 @@
                     }
                 } else {
                     console.warn('ApiService.dashboard not available for loading data');
+                }
+            }
+            
+            // Function to update destination stats with data
+            function updateDestinationStats(data) {
+                // Update Top Destination
+                const topDestElement = document.querySelector('.stat-info p[data-stat="topDestination"]');
+                if (topDestElement && data.topDestination) {
+                    topDestElement.textContent = data.topDestination;
+                }
+                
+                // Update Most Visitors
+                const mostVisitorsElement = document.querySelector('.stat-info p[data-stat="mostVisitors"]');
+                if (mostVisitorsElement && data.mostVisitors) {
+                    mostVisitorsElement.textContent = data.mostVisitors.toString();
+                }
+                
+                // Update Highest Rating
+                const highestRatingElement = document.querySelector('.stat-info p[data-stat="highestRating"]');
+                if (highestRatingElement && data.highestRating) {
+                    highestRatingElement.textContent = data.highestRating;
                 }
             }
             
@@ -1949,42 +1893,34 @@
                     
                     this.classList.add('active');
                     tabContainer.querySelector(`.tab-content#${target}`).classList.add('active');
-                    
-                    // Reinitialize charts when changing tabs
-                    if(target === 'destination-analysis') {
-                        initializeDestinationsChart();
-                    } else if(target === 'financial') {
-                        initializeRevenueBreakdownChart();
-                    }
                 });
             });
             
-            // Sales by Tour nested tabs
-            document.querySelectorAll('#sales .tab-container > .tab-buttons > .tab-button').forEach(button => {
-                button.addEventListener('click', function() {
-                    const target = this.getAttribute('data-tab');
-                    const tabContainer = this.closest('.tab-container');
-                    
-                    tabContainer.querySelectorAll('.tab-button').forEach(btn => {
-                        btn.classList.remove('active');
-                    });
-                    
-                    tabContainer.querySelectorAll('.tab-content').forEach(content => {
-                        content.classList.remove('active');
-                    });
-                    
-                    this.classList.add('active');
-                    tabContainer.querySelector(`.tab-content#${target}`).classList.add('active');
-                    
-                    // Ensure charts are properly rendered
-                    if (target === 'destination-analysis') {
-                        initializeDestinationsChart();
-                    }
-                });
-            });
+            // Remove Sales by Tour nested tabs event listeners since we removed the tabs
             
             // Initialize all charts
             initializeDashboardCharts();
+            
+            // Initialize destination chart when the reports section is visible
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const target = this.getAttribute('data-section');
+                    if (target === 'reports') {
+                        // Initialize destination chart when reports section is shown
+                        console.log('Reports section is now active, initializing charts');
+                        setTimeout(() => {
+                            try {
+                                initializeDestinationsChart();
+                            } catch (error) {
+                                console.error('Error initializing destinations chart:', error);
+                                // Use dummy data as fallback
+                                const ctx = document.getElementById('destinationsChart').getContext('2d');
+                                renderDestinationChartWithDummyData(ctx, 'visitors');
+                            }
+                        }, 100);
+                    }
+                });
+            });
             
             // Function to initialize dashboard charts
             function initializeDashboardCharts() {
@@ -2011,92 +1947,49 @@
                         }
                     });
                 }
+                
+                // Initialize destination chart if reports section is currently visible
+                const reportsSection = document.getElementById('reports');
+                if (reportsSection && (reportsSection.style.display !== 'none' || reportsSection.classList.contains('active'))) {
+                    console.log('Reports section is visible on load, initializing destinations chart');
+                    try {
+                        initializeDestinationsChart();
+                    } catch (error) {
+                        console.error('Error initializing destinations chart during dashboard load:', error);
+                        if (document.getElementById('destinationsChart')) {
+                            const ctx = document.getElementById('destinationsChart').getContext('2d');
+                            renderDestinationChartWithDummyData(ctx, 'visitors');
+                        }
+                    }
+                }
             }
             
             // Function to initialize report charts
             function initializeReportCharts() {
-                initializeRevenueBreakdownChart();
-                initializeDestinationsChart();
-            }
-            
-            // Revenue Breakdown Chart
-            function initializeRevenueBreakdownChart() {
-                console.log('Initializing revenue breakdown chart');
-                if (document.getElementById('revenueBreakdownChart')) {
-                    const ctx = document.getElementById('revenueBreakdownChart').getContext('2d');
-                    if (Chart.getChart('revenueBreakdownChart')) {
-                        Chart.getChart('revenueBreakdownChart').destroy();
-                        console.log('Destroyed existing chart');
-                    }
-
-                    // Fetch revenue data from API
-                    console.log('Fetching revenue data from API');
-                    ApiService.dashboard.getRevenueData()
+                console.log('Initializing report charts');
+                
+                // If we have API access, fetch sales by tour data
+                if (typeof ApiService !== 'undefined' && ApiService.dashboard && typeof ApiService.dashboard.getSalesByTour === 'function') {
+                    ApiService.dashboard.getSalesByTour()
                         .then(data => {
-                            console.log('Revenue data received:', data);
-                            // Use API data if available
-                            const labels = data?.labels || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-                            const revenueData = data?.revenue || [15000, 19000, 16000, 22000, 18000, 25000];
-                            const profitData = data?.profit || [4500, 5700, 4800, 6600, 5400, 7500];
-                            
-                            console.log('Creating chart with labels:', labels);
-                            console.log('Revenue data:', revenueData);
-                            console.log('Profit data:', profitData);
-                            
-                            new Chart(ctx, {
-                                type: 'bar',
-                                data: {
-                                    labels: labels,
-                                    datasets: [
-                                        {
-                                            label: 'Revenue (₺)',
-                                            data: revenueData,
-                                            backgroundColor: 'rgba(46, 204, 113, 0.6)',
-                                            borderColor: '#2ecc71',
-                                            borderWidth: 1
-                                        },
-                                        {
-                                            label: 'Profit (₺)',
-                                            data: profitData,
-                                            backgroundColor: 'rgba(52, 152, 219, 0.6)',
-                                            borderColor: '#3498db',
-                                            borderWidth: 1
-                                        }
-                                    ]
-                                },
-                                options: {
-                                    responsive: true,
-                                    maintainAspectRatio: false
-                                }
-                            });
-                            console.log('Chart created successfully');
+                            console.log('Sales by tour data received for reports:', data);
+                            // Update destination stats immediately
+                            updateDestinationStats(data);
+                            // Initialize destinations chart with the data
+                            initializeDestinationsChart();
                         })
                         .catch(error => {
-                            console.error('Failed to load revenue data:', error);
-                            // Fallback to dummy data if API fails
-                            console.log('Using fallback data for chart');
-                            new Chart(ctx, {
-                                type: 'bar',
-                                data: {
-                                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                                    datasets: [{
-                                        label: 'Revenue (₺)',
-                                        data: [15000, 19000, 16000, 22000, 18000, 25000],
-                                        backgroundColor: 'rgba(46, 204, 113, 0.6)',
-                                        borderColor: '#2ecc71',
-                                        borderWidth: 1
-                                    }]
-                                },
-                                options: {
-                                    responsive: true,
-                                    maintainAspectRatio: false
-                                }
-                            });
+                            console.error('Failed to load sales by tour data for reports:', error);
+                            // Try fallback
+                            initializeDestinationsChart();
                         });
                 } else {
-                    console.error('revenueBreakdownChart element not found in the DOM');
+                    // No API access, use direct initialize
+                    initializeDestinationsChart();
                 }
             }
+            
+            // Remove unused Revenue Breakdown Chart function
             
             // Destinations Chart
             function initializeDestinationsChart() {
@@ -2112,39 +2005,77 @@
                     
                     console.log('Fetching sales by tour data from API');
                     
-                    // Check if the getSalesByTour method exists
-                    if (typeof ApiService !== 'undefined' && ApiService.dashboard && typeof ApiService.dashboard.getSalesByTour === 'function') {
-                        ApiService.dashboard.getSalesByTour()
-                            .then(data => {
-                                console.log('Sales by tour data received:', data);
-                                renderDestinationChart(ctx, data, metric);
-                            })
-                            .catch(error => {
-                                console.error('Failed to load sales by tour data:', error);
-                                // Fallback to dummy data
-                                renderDestinationChartWithDummyData(ctx, metric);
-                            });
-                    } else {
-                        console.error('ApiService.dashboard.getSalesByTour is not available. Using direct API call.');
-                        // Try direct API call as a fallback
-                        fetch('/api/dashboard/sales-by-tour')
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error('API call failed');
-                                }
-                                return response.json();
-                            })
-                            .then(data => {
-                                console.log('Sales by tour data received via direct fetch:', data);
-                                renderDestinationChart(ctx, data, metric);
-                            })
-                            .catch(error => {
-                                console.error('Direct API call also failed:', error);
-                                // Fallback to dummy data
-                                renderDestinationChartWithDummyData(ctx, metric);
-                            });
+                    // Add a try-catch block around the entire API fetch logic
+                    try {
+                        // Check if the getSalesByTour method exists
+                        if (typeof ApiService !== 'undefined' && ApiService.dashboard && typeof ApiService.dashboard.getSalesByTour === 'function') {
+                            ApiService.dashboard.getSalesByTour()
+                                .then(data => {
+                                    console.log('Sales by tour data received:', data);
+                                    if (data && data.tours && data.tours.length > 0) {
+                                        renderDestinationChart(ctx, data, metric);
+                                    } else {
+                                        displayNoDataMessage(ctx, 'No tour data available');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Failed to load sales by tour data:', error);
+                                    displayNoDataMessage(ctx, 'Failed to load tour data');
+                                });
+                        } else {
+                            console.error('ApiService.dashboard.getSalesByTour is not available. Using direct API call.');
+                            // Try direct API call as a fallback
+                            fetch('/api/dashboard/sales-by-tour')
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('API call failed');
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    console.log('Sales by tour data received via direct fetch:', data);
+                                    if (data && data.tours && data.tours.length > 0) {
+                                        renderDestinationChart(ctx, data, metric);
+                                    } else {
+                                        displayNoDataMessage(ctx, 'No tour data available');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Direct API call also failed:', error);
+                                    displayNoDataMessage(ctx, 'Failed to load tour data');
+                                });
+                        }
+                    } catch (error) {
+                        console.error('Unexpected error in initializeDestinationsChart:', error);
+                        displayNoDataMessage(ctx, 'Error loading chart data');
                     }
+                } else {
+                    console.error('destinationsChart element not found in the DOM');
                 }
+            }
+            
+            // Function to display a no data message on the chart canvas
+            function displayNoDataMessage(ctx, message) {
+                // Clear existing content
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                
+                // Display a message
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.font = '16px Arial';
+                ctx.fillStyle = '#666';
+                ctx.fillText(message, ctx.canvas.width / 2, ctx.canvas.height / 2);
+                
+                // Clear table data
+                const tableBody = document.querySelector('#destinationTable tbody');
+                if (tableBody) {
+                    tableBody.innerHTML = `<tr><td colspan="5" class="text-center">${message}</td></tr>`;
+                }
+                
+                // Clear stats
+                document.querySelectorAll('.stat-info p[data-stat]').forEach(element => {
+                    element.innerHTML = '<span style="color: #666;">No data</span>';
+                });
             }
             
             // Helper function to render the destination chart with API data
@@ -2153,24 +2084,30 @@
                 let chartData;
                 let chartLabel;
                 let chartColor;
-                let chartLabels = data?.tours || ['Cappadocia', 'Istanbul', 'Antalya', 'Pamukkale', 'Izmir', 'Bodrum'];
+                let chartLabels = data?.tours || [];
                 
                 if (metric === 'revenue') {
-                    chartData = data?.revenue || [583000, 496000, 422400, 246600, 189000, 215600];
+                    chartData = data?.revenue || [];
                     chartLabel = 'Revenue (₺)';
                     chartColor = 'rgba(46, 204, 113, 0.6)';
                 } else if (metric === 'rating') {
-                    chartData = data?.ratings || [4.9, 4.7, 4.5, 4.8, 4.6, 4.7];
+                    chartData = data?.ratings || [];
                     chartLabel = 'Average Rating';
                     chartColor = 'rgba(243, 156, 18, 0.6)';
                 } else { // visitors
-                    chartData = data?.bookings || [265, 248, 192, 137, 105, 98];
+                    chartData = data?.bookings || [];
                     chartLabel = 'Number of Visitors';
                     chartColor = 'rgba(52, 152, 219, 0.6)';
                 }
                 
                 console.log('Creating chart with labels:', chartLabels);
                 console.log('Chart data:', chartData);
+                
+                // If no data is available, display error message
+                if (chartLabels.length === 0 || chartData.length === 0) {
+                    displayNoDataMessage(ctx, 'No data available for the selected metric');
+                    return;
+                }
                 
                 new Chart(ctx, {
                     type: 'bar',
@@ -2190,6 +2127,35 @@
                     }
                 });
                 
+                // Calculate and update destination stats if not provided
+                if (!data.topDestination || !data.mostVisitors || !data.highestRating) {
+                    // Create a copy of the data
+                    const statsData = {...data};
+                    
+                    // Find top destination by bookings
+                    if (!statsData.topDestination && statsData.bookings && statsData.tours) {
+                        const maxBookingsIndex = statsData.bookings.indexOf(Math.max(...statsData.bookings));
+                        statsData.topDestination = statsData.tours[maxBookingsIndex];
+                    }
+                    
+                    // Find most visitors (max bookings)
+                    if (!statsData.mostVisitors && statsData.bookings) {
+                        statsData.mostVisitors = Math.max(...statsData.bookings);
+                    }
+                    
+                    // Find highest rating
+                    if (!statsData.highestRating && statsData.ratings) {
+                        const maxRating = Math.max(...statsData.ratings);
+                        statsData.highestRating = maxRating + '/5.0';
+                    }
+                    
+                    // Update stats display
+                    updateDestinationStats(statsData);
+                } else {
+                    // Update stats display with existing data
+                    updateDestinationStats(data);
+                }
+                
                 // If this was successful, also update the table
                 updateDestinationTable(data);
             }
@@ -2198,21 +2164,32 @@
             function renderDestinationChartWithDummyData(ctx, metric) {
                 console.log('Using fallback data for chart');
                 
+                // Create comprehensive dummy data
+                const dummyData = {
+                    tours: ['Cappadocia', 'Istanbul', 'Antalya', 'Pamukkale', 'Izmir', 'Bodrum'],
+                    bookings: [265, 248, 192, 137, 105, 98],
+                    revenue: [583000, 496000, 422400, 246600, 189000, 215600],
+                    ratings: [4.9, 4.7, 4.5, 4.8, 4.6, 4.7],
+                    topDestination: 'Cappadocia',
+                    mostVisitors: 265,
+                    highestRating: '4.9/5.0'
+                };
+                
                 // Chart data based on metric (fallback)
                 let chartData;
                 let chartLabel;
                 let chartColor;
                 
                 if (metric === 'revenue') {
-                    chartData = [583000, 496000, 422400, 246600, 189000, 215600];
+                    chartData = dummyData.revenue;
                     chartLabel = 'Revenue (₺)';
                     chartColor = 'rgba(46, 204, 113, 0.6)';
                 } else if (metric === 'rating') {
-                    chartData = [4.9, 4.7, 4.5, 4.8, 4.6, 4.7];
+                    chartData = dummyData.ratings;
                     chartLabel = 'Average Rating';
                     chartColor = 'rgba(243, 156, 18, 0.6)';
                 } else { // visitors
-                    chartData = [265, 248, 192, 137, 105, 98];
+                    chartData = dummyData.bookings;
                     chartLabel = 'Number of Visitors';
                     chartColor = 'rgba(52, 152, 219, 0.6)';
                 }
@@ -2220,7 +2197,7 @@
                 new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: ['Cappadocia', 'Istanbul', 'Antalya', 'Pamukkale', 'Izmir', 'Bodrum'],
+                        labels: dummyData.tours,
                         datasets: [{
                             label: chartLabel,
                             data: chartData,
@@ -2235,13 +2212,11 @@
                     }
                 });
                 
+                // Update the stats display with our dummy data
+                updateDestinationStats(dummyData);
+                
                 // Also update the table with dummy data
-                updateDestinationTable({
-                    tours: ['Cappadocia', 'Istanbul', 'Antalya', 'Pamukkale', 'Izmir', 'Bodrum'],
-                    bookings: [265, 248, 192, 137, 105, 98],
-                    revenue: [583000, 496000, 422400, 246600, 189000, 215600],
-                    ratings: [4.9, 4.7, 4.5, 4.8, 4.6, 4.7]
-                });
+                updateDestinationTable(dummyData);
             }
             
             // Add change event for destination metric select
@@ -2258,11 +2233,18 @@
                     
                     // Function to handle data once received
                     const processSortedData = (data) => {
-                        if (data) {
+                        if (data && data.tours && data.tours.length > 0) {
                             // Sort data based on selection
                             sortDestinationData(data, sortBy);
                             // Update table with sorted data
                             updateDestinationTable(data);
+                        } else {
+                            console.error('No valid data available for sorting');
+                            // Find and get table context to display error
+                            const tableBody = document.querySelector('#destinationTable tbody');
+                            if (tableBody) {
+                                tableBody.innerHTML = '<tr><td colspan="5" class="text-center">No data available for sorting</td></tr>';
+                            }
                         }
                     };
                     
@@ -2284,18 +2266,20 @@
                     // Fallback function to use direct fetch
                     function useFallbackFetch() {
                         fetch('/api/dashboard/sales-by-tour')
-                            .then(response => response.json())
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('API call failed with status: ' + response.status);
+                                }
+                                return response.json();
+                            })
                             .then(data => processSortedData(data))
                             .catch(err => {
                                 console.error('Failed to load destination data via fetch for sorting:', err);
-                                // Use dummy data as last resort
-                                const dummyData = {
-                                    tours: ['Cappadocia', 'Istanbul', 'Antalya', 'Pamukkale', 'Izmir', 'Bodrum'],
-                                    bookings: [265, 248, 192, 137, 105, 98],
-                                    revenue: [583000, 496000, 422400, 246600, 189000, 215600],
-                                    ratings: [4.9, 4.7, 4.5, 4.8, 4.6, 4.7]
-                                };
-                                processSortedData(dummyData);
+                                // Display error message
+                                const tableBody = document.querySelector('#destinationTable tbody');
+                                if (tableBody) {
+                                    tableBody.innerHTML = '<tr><td colspan="5" class="text-center">Failed to load data from server</td></tr>';
+                                }
                             });
                     }
                 });
@@ -2731,9 +2715,6 @@
                     // Load recent bookings
                     await loadRecentBookings();
                     
-                    // Load upcoming tours
-                    await loadUpcomingTours();
-                    
                     // Get revenue data for chart
                     const revenueData = await ApiService.dashboard.getRevenueData();
                     if (revenueData) {
@@ -2773,45 +2754,6 @@
                     }
                 } catch (error) {
                     console.error('Failed to load recent bookings:', error);
-                }
-            }
-            
-            // Function to load upcoming tours from API
-            async function loadUpcomingTours() {
-                try {
-                    console.log("Loading upcoming tours...");
-                    const tours = await ApiService.dashboard.getUpcomingTours();
-                    console.log("Received tours:", tours);
-                    
-                    if (tours && tours.length > 0) {
-                        const tableBody = document.querySelector('#dashboard .widget:last-child table tbody');
-                        tableBody.innerHTML = ''; // Clear existing rows
-                        
-                        tours.forEach(tour => {
-                            // Use nullish coalescing operator to provide fallbacks for potentially undefined fields
-                            const name = tour.name ?? "Unnamed Tour";
-                            const destination = tour.destination ?? "Unknown Location";
-                            const date = formatDate(tour.date ?? new Date().toISOString());
-                            const bookings = tour.bookings ?? 0;
-                            const capacity = tour.capacity ?? 0;
-                            const guide = tour.guide ?? "Unassigned";
-                            const status = tour.status ?? "aktif";
-                            
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                                <td>${name}</td>
-                                <td>${destination}</td>
-                                <td>${date}</td>
-                                <td>${bookings}/${capacity}</td>
-                                <td>${guide}</td>
-                                <td><span class="status-badge status-${getStatusClass(status)}">${status}</span></td>
-                            `;
-                            tableBody.appendChild(row);
-                        });
-                    }
-                } catch (error) {
-                    console.error('Failed to load upcoming tours:', error);
-                    console.error(error.stack);
                 }
             }
             
