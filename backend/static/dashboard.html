@@ -832,11 +832,11 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="tourName">Tour Package Name</label>
-                            <input type="text" id="tourName" name="adi" class="form-control" required>
+                            <input type="text" id="tourName" name="ad" class="form-control" required>
                         </div>
                         <div class="form-group">
                             <label for="tourItself">Tour</label>
-                            <select id="tourItself" name="tour_id" class="form-control" required>
+                            <select id="tourItself" name="tur_id" class="form-control" required>
                                 <option value="">Select Tour</option>
                                 <!-- Will be populated from API -->
                             </select>
@@ -855,7 +855,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="tourMaxParticipants">Max Participants</label>
-                            <input type="number" id="tourMaxParticipants" name="max_katilimci" class="form-control" required>
+                            <input type="number" id="tourMaxParticipants" name="kapasite" class="form-control" required>
                         </div>
                         <div class="form-group">
                             <label for="tourStatus">Status</label>
@@ -868,14 +868,14 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="tourGuide">Guide</label>
-                            <select id="tourGuide" name="rehber" class="form-control" required>
+                            <select id="tourGuide" name="rehber_id" class="form-control" required>
                                 <option value="">Select Guide</option>
                                 <!-- Will be populated from API -->
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="tourDriver">Driver</label>
-                            <select id="tourDriver" name="sofor" class="form-control" required>
+                            <select id="tourDriver" name="surucu_id" class="form-control" required>
                                 <option value="">Select Driver</option>
                                 <!-- Will be populated from API -->
                             </select>
@@ -884,7 +884,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="tourVehicle">Vehicle</label>
-                            <select id="tourVehicle" name="arac_bilgisi" class="form-control" required>
+                            <select id="tourVehicle" name="vehicle_id" class="form-control" required>
                                 <option value="">Select Vehicle</option>
                                 <!-- Will be populated from API -->
                             </select>
@@ -3231,12 +3231,17 @@
                     loadingBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
                     loadingBtn.disabled = true;
                     
+                    console.log('Gönderilen veriler:', tourData);
+                    
+                    let result;
                     if (tourData.id) {
-                        // Update existing tour
-                        await ApiService.tours.update(tourData.id, tourData);
+                        // Update existing tour package
+                        result = await ApiService.tourPackages.update(tourData.id, tourData);
+                        console.log('Güncelleme sonucu:', result);
                     } else {
-                        // Create new tour
-                        await ApiService.tours.create(tourData);
+                        // Create new tour package
+                        result = await ApiService.tourPackages.create(tourData);
+                        console.log('Oluşturma sonucu:', result);
                     }
                     
                     // Hide modal
@@ -3246,14 +3251,22 @@
                     loadingBtn.textContent = originalText;
                     loadingBtn.disabled = false;
                     
-                    // Reload tour list
-                    loadTourData();
-                    
-                    // Show success message
-                    alert('Tour saved successfully!');
+                    // Check if API call was successful
+                    if (result && result.success) {
+                        // Show success message
+                        alert('Tur paketi başarıyla kaydedildi!');
+                        
+                        // Option 1: Refresh the page to see the updated tour list
+                        window.location.reload();
+                        
+                        // Option 2: Alternatively, if we have a specific section to update
+                        // document.querySelector('.menu-item[data-section="tours"]').click();
+                    } else {
+                        alert('Tur paketi kaydedildi ancak ekranda göstermek için bir hata oluştu.');
+                    }
                 } catch (error) {
-                    console.error('Failed to save tour:', error);
-                    alert('Failed to save tour. Please try again.');
+                    console.error('Failed to save tour package:', error);
+                    alert('Tur paketi kaydedilirken hata oluştu: ' + (error.message || 'Bilinmeyen hata'));
                     
                     const loadingBtn = document.querySelector('#tourForm button[type="submit"]');
                     loadingBtn.textContent = 'Save Tour';
@@ -3833,8 +3846,12 @@
                     try {
                         const tour = await ApiService.tours.getById(selectedTourId);
                         if (tour) {
+                            console.log('Seçilen tur detayları:', tour);
+                            
+                            // Tur bilgilerini form alanlarına doldur
+                            document.getElementById('tourDuration').value = tour.sure || '';
+                            
                             // Seçilen turun destinasyon_id ve fiyat değerlerini gizli alanlara ekle
-                            document.getElementById('tourPrice').value = tour.fiyat || '';
                             // Gizli bir input alanı ekle (eğer form içinde yoksa)
                             if (!document.getElementById('tourDestinationId')) {
                                 const hiddenInput = document.createElement('input');
@@ -3843,6 +3860,7 @@
                                 hiddenInput.name = 'destinasyon_id';
                                 document.getElementById('tourForm').appendChild(hiddenInput);
                             }
+                            
                             // Gizli alana destinasyon_id'yi ekle
                             document.getElementById('tourDestinationId').value = tour.destinasyon_id || '';
                         }
@@ -3865,9 +3883,11 @@
                 });
                 
                 // Seçilen turun destinasyon_id ve fiyat değerlerini ekle
-                if (tourData.tour_id) {
-                    // Destinasyon_id ve fiyat değerleri zaten gizli alanlarda olmalı
-                    // Eğer değilse, API çağrısı öncesinde ekstra kontrol eklenebilir
+                if (tourData.tur_id) {
+                    // Tur_id var ama destinasyon_id yoksa ekle
+                    if (!tourData.destinasyon_id && document.getElementById('tourDestinationId')) {
+                        tourData.destinasyon_id = document.getElementById('tourDestinationId').value;
+                    }
                 }
                 
                 try {
@@ -3875,6 +3895,8 @@
                     const originalText = loadingBtn.textContent;
                     loadingBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
                     loadingBtn.disabled = true;
+                    
+                    console.log('Gönderilen veriler:', tourData);
                     
                     if (tourData.id) {
                         // Update existing tour package
