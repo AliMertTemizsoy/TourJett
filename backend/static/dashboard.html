@@ -578,7 +578,7 @@
                 <i class="fas fa-comments"></i>
                 <span class="menu-text">Feedback</span>
             </a>
-            <a href="#" class="menu-item">
+            <a href="#" class="menu-item" id="logoutButton">
                 <i class="fas fa-sign-out-alt"></i>
                 <span class="menu-text">Logout</span>
             </a>
@@ -3080,7 +3080,7 @@
                             vehicles.forEach(vehicle => {
                                 const option = document.createElement('option');
                                 option.value = vehicle.id;
-                                option.textContent = `${vehicle.ad || vehicle.name} (${vehicle.plaka || vehicle.licensePlate})`;
+                                option.textContent = `${vehicle.model || vehicle.ad || vehicle.name || 'Undefined'} (${vehicle.license_plate || vehicle.plaka || vehicle.licensePlate || 'No plate'})`;
                                 tourVehicleSelect.appendChild(option);
                             });
                         }
@@ -3093,11 +3093,11 @@
                                 row.dataset.id = vehicle.id; // Store ID for easy access
                                 row.innerHTML = `
                                     <td>${vehicle.id}</td>
-                                    <td>${vehicle.ad || vehicle.name}</td>
-                                    <td>${vehicle.tip || vehicle.type}</td>
-                                    <td>${vehicle.kapasite || vehicle.capacity}</td>
-                                    <td>${vehicle.plaka || vehicle.licensePlate}</td>
-                                    <td><span class="status-badge status-${vehicle.durum === 'active' || vehicle.status === 'active' ? 'confirmed' : vehicle.durum === 'maintenance' || vehicle.status === 'maintenance' ? 'pending' : 'cancelled'}">${vehicle.durum || vehicle.status}</span></td>
+                                    <td>${vehicle.model || vehicle.ad || vehicle.name || 'undefined'}</td>
+                                    <td>${vehicle.type || vehicle.tip || 'undefined'}</td>
+                                    <td>${vehicle.capacity || vehicle.kapasite || 'undefined'}</td>
+                                    <td>${vehicle.license_plate || vehicle.plaka || vehicle.licensePlate || 'undefined'}</td>
+                                    <td><span class="status-badge status-${vehicle.status === 'active' || vehicle.durum === 'active' ? 'confirmed' : vehicle.status === 'maintenance' || vehicle.durum === 'maintenance' ? 'pending' : 'cancelled'}">${vehicle.status || vehicle.durum || 'undefined'}</span></td>
                                     <td>
                                         <div class="action-buttons">
                                             <button class="action-btn edit"><i class="fas fa-edit"></i></button>
@@ -3499,11 +3499,11 @@
                 // Convert form field names to match API requirements
                 const apiVehicleData = {
                     id: vehicleData.id,
-                    model: vehicleData.ad,
-                    type: vehicleData.tip,
-                    capacity: parseInt(vehicleData.kapasite),
-                    license_plate: vehicleData.plaka,
-                    status: vehicleData.durum
+                    model: vehicleData.ad,  // Formdan alınan "ad" alanını model olarak gönder
+                    type: vehicleData.tip,   // Formdan alınan "tip" alanını type olarak gönder 
+                    capacity: parseInt(vehicleData.kapasite),  // Formdan alınan "kapasite" alanını capacity olarak gönder
+                    license_plate: vehicleData.plaka,  // Formdan alınan "plaka" alanını license_plate olarak gönder
+                    status: vehicleData.durum  // Formdan alınan "durum" alanını status olarak gönder
                 };
                 
                 try {
@@ -3861,6 +3861,34 @@
             return `${day}/${month}/${year}`;
         }
 
+        // Logout button functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoutButton = document.getElementById('logoutButton');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('Logout button clicked');
+                    
+                    // Try API logout if available
+                    if (typeof ApiService !== 'undefined' && ApiService.auth && typeof ApiService.auth.logout === 'function') {
+                        ApiService.auth.logout()
+                            .then(() => {
+                                console.log('Logout successful');
+                                window.location.href = '/login.html';
+                            })
+                            .catch(error => {
+                                console.error('Logout API error:', error);
+                                // Even if API logout fails, redirect to login
+                                window.location.href = '/login.html';
+                            });
+                    } else {
+                        // No API available, just redirect
+                        console.log('No logout API available, redirecting directly');
+                        window.location.href = '/login.html';
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>
