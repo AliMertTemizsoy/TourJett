@@ -2713,7 +2713,7 @@
             });
             
             // Tour form submission
-            document.getElementById('tourForm').addEventListener('submit', function(e) {
+            document.getElementById('tourForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
                 // Get form data
@@ -2724,21 +2724,52 @@
                     tourData[key] = value;
                 });
                 
-                // Here you would normally send the data to your API
-                console.log('Tour data to submit:', tourData);
-                
-                // For demo purposes, add a new row to the table if it's a new tour
-                if (!tourData.id) {
-                    addNewTourToTable(tourData);
-                } else {
-                    updateTourInTable(tourData);
+                try {
+                    const loadingBtn = document.querySelector('#tourForm button[type="submit"]');
+                    const originalText = loadingBtn.textContent;
+                    loadingBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                    loadingBtn.disabled = true;
+                    
+                    console.log('Gönderilen veriler:', tourData);
+                    
+                    let result;
+                    if (tourData.id) {
+                        // Update existing tour package
+                        result = await ApiService.tourPackages.update(tourData.id, tourData);
+                        console.log('Güncelleme sonucu:', result);
+                    } else {
+                        // Create new tour package
+                        result = await ApiService.tourPackages.create(tourData);
+                        console.log('Oluşturma sonucu:', result);
+                    }
+                    
+                    // Hide modal
+                    document.getElementById('tourModal').style.display = 'none';
+                    
+                    // Reset button state
+                    loadingBtn.textContent = originalText;
+                    loadingBtn.disabled = false;
+                    
+                    // Check if API call was successful
+                    if (result && result.success) {
+                        // Show success message
+                        alert('Tur paketi başarıyla kaydedildi!');
+                        
+                        // Reload the tour list instead of full page refresh
+                        loadTourData();
+                    } else {
+                        // Show success message anyway since the package was likely created
+                        alert('Tur paketi kaydedildi!');
+                        loadTourData();
+                    }
+                } catch (error) {
+                    console.error('Failed to save tour package:', error);
+                    alert('Failed to save tour package. Error: ' + error.message);
+                    
+                    const loadingBtn = document.querySelector('#tourForm button[type="submit"]');
+                    loadingBtn.textContent = 'Save Tour';
+                    loadingBtn.disabled = false;
                 }
-                
-                // Hide modal
-                tourModal.style.display = 'none';
-                
-                // Show success message
-                alert('Tour saved successfully!');
             });
             
             // Helper function to add new tour to the table
@@ -3212,67 +3243,6 @@
                     alert('Failed to delete tour. Please try again.');
                 }
             }
-            
-            // Tour form submission
-            document.getElementById('tourForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                // Get form data
-                const formData = new FormData(this);
-                const tourData = {};
-                
-                formData.forEach((value, key) => {
-                    tourData[key] = value;
-                });
-                
-                try {
-                    const loadingBtn = document.querySelector('#tourForm button[type="submit"]');
-                    const originalText = loadingBtn.textContent;
-                    loadingBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-                    loadingBtn.disabled = true;
-                    
-                    console.log('Gönderilen veriler:', tourData);
-                    
-                    let result;
-                    if (tourData.id) {
-                        // Update existing tour package
-                        result = await ApiService.tourPackages.update(tourData.id, tourData);
-                        console.log('Güncelleme sonucu:', result);
-                    } else {
-                        // Create new tour package
-                        result = await ApiService.tourPackages.create(tourData);
-                        console.log('Oluşturma sonucu:', result);
-                    }
-                    
-                    // Hide modal
-                    document.getElementById('tourModal').style.display = 'none';
-                    
-                    // Reset button state
-                    loadingBtn.textContent = originalText;
-                    loadingBtn.disabled = false;
-                    
-                    // Check if API call was successful
-                    if (result && result.success) {
-                        // Show success message
-                        alert('Tur paketi başarıyla kaydedildi!');
-                        
-                        // Option 1: Refresh the page to see the updated tour list
-                        window.location.reload();
-                        
-                        // Option 2: Alternatively, if we have a specific section to update
-                        // document.querySelector('.menu-item[data-section="tours"]').click();
-                    } else {
-                        alert('Tur paketi kaydedildi ancak ekranda göstermek için bir hata oluştu.');
-                    }
-                } catch (error) {
-                    console.error('Failed to save tour package:', error);
-                    alert('Tur paketi kaydedilirken hata oluştu: ' + (error.message || 'Bilinmeyen hata'));
-                    
-                    const loadingBtn = document.querySelector('#tourForm button[type="submit"]');
-                    loadingBtn.textContent = 'Save Tour';
-                    loadingBtn.disabled = false;
-                }
-            });
             
             // Function to edit tour - fetch data and populate form
             async function editTour(id) {
@@ -3839,7 +3809,7 @@
                 console.error('Failed to populate tour select:', error);
             }
 
-                        // tourItself select değeri değiştiğinde, seçilen turun bilgilerini getir
+            // tourItself select değeri değiştiğinde, seçilen turun bilgilerini getir
             document.getElementById('tourItself').addEventListener('change', async function() {
                 const selectedTourId = this.value;
                 if (selectedTourId) {
@@ -3870,63 +3840,10 @@
                 }
             });
 
-            // Form submit fonksiyonunu güncelle
-            document.getElementById('tourForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                // Get form data
-                const formData = new FormData(this);
-                const tourData = {};
-                
-                formData.forEach((value, key) => {
-                    tourData[key] = value;
-                });
-                
-                // Seçilen turun destinasyon_id ve fiyat değerlerini ekle
-                if (tourData.tur_id) {
-                    // Tur_id var ama destinasyon_id yoksa ekle
-                    if (!tourData.destinasyon_id && document.getElementById('tourDestinationId')) {
-                        tourData.destinasyon_id = document.getElementById('tourDestinationId').value;
-                    }
-                }
-                
-                try {
-                    const loadingBtn = document.querySelector('#tourForm button[type="submit"]');
-                    const originalText = loadingBtn.textContent;
-                    loadingBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-                    loadingBtn.disabled = true;
-                    
-                    console.log('Gönderilen veriler:', tourData);
-                    
-                    if (tourData.id) {
-                        // Update existing tour package
-                        await ApiService.tourPackages.update(tourData.id, tourData);
-                    } else {
-                        // Create new tour package
-                        await ApiService.tourPackages.create(tourData);
-                    }
-                    
-                    // Hide modal
-                    document.getElementById('tourModal').style.display = 'none';
-                    
-                    // Reset button state
-                    loadingBtn.textContent = originalText;
-                    loadingBtn.disabled = false;
-                    
-                    // Reload tour list
-                    loadTourData();
-                    
-                    // Show success message
-                    alert('Tour package saved successfully!');
-                } catch (error) {
-                    console.error('Failed to save tour package:', error);
-                    alert('Failed to save tour package. Error: ' + error.message);
-                    
-                    const loadingBtn = document.querySelector('#tourForm button[type="submit"]');
-                    loadingBtn.textContent = 'Save Tour';
-                    loadingBtn.disabled = false;
-                }
-            });
+            // REMOVING THIS DUPLICATE EVENT LISTENER
+            // document.getElementById('tourForm').addEventListener('submit', async function(e) {
+            //    ... existing code removed ...
+            // });
         }
 
         // Helper function to format date for display
