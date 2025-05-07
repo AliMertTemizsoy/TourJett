@@ -125,6 +125,12 @@
             margin-bottom: 30px;
         }
 
+        /* More compact grid for reports section */
+        #reports .stats-container {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
         .stat-card {
             background-color: white;
             border-radius: 8px;
@@ -133,6 +139,44 @@
             display: flex;
             align-items: center;
             gap: 15px;
+        }
+
+        /* Updated styles for single-line stats */
+        #reports .stat-card {
+            padding: 12px;
+        }
+
+        #reports .stat-icon {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            font-size: 1.2rem;
+        }
+
+        #reports .stat-info {
+            display: flex;
+            flex-direction: column;
+            min-width: 0; /* Essential for text-overflow to work */
+            width: 100%;
+        }
+
+        #reports .stat-info h4 {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 2px !important;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        #reports .stat-info p {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--dark);
+            margin: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .stat-icon {
@@ -510,7 +554,7 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
-            <h3>Tour Management</h3>
+            <h2>Tour Jett</h2>
             <p>Admin Panel</p>
         </div>
         <div class="sidebar-menu">
@@ -874,7 +918,7 @@
                         <i class="fas fa-map-marker-alt"></i>
                     </div>
                     <div class="stat-info">
-                        <h4>Top Destination</h4>
+                        <h4>Top Tour</h4>
                         <p data-stat="topDestination"><i class="fas fa-spinner fa-spin"></i></p>
                     </div>
                 </div>
@@ -894,6 +938,24 @@
                     <div class="stat-info">
                         <h4>Highest Rating</h4>
                         <p data-stat="highestRating"><i class="fas fa-spinner fa-spin"></i></p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: var(--success);">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h4>Total Profit</h4>
+                        <p data-stat="totalProfit"><i class="fas fa-spinner fa-spin"></i></p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: var(--danger);">
+                        <i class="fas fa-receipt"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h4>Total Expenses</h4>
+                        <p data-stat="totalExpenses"><i class="fas fa-spinner fa-spin"></i></p>
                     </div>
                 </div>
             </div>
@@ -1772,14 +1834,6 @@
                                 })
                                 .catch(err => {
                                     console.error('Failed to load destination data via direct fetch:', err);
-                                    // Use dummy data
-                                    const dummyData = {
-                                        tours: ['Cappadocia', 'Istanbul', 'Antalya', 'Pamukkale', 'Izmir', 'Bodrum'],
-                                        bookings: [265, 248, 192, 137, 105, 98],
-                                        revenue: [583000, 496000, 422400, 246600, 189000, 215600],
-                                        ratings: [4.9, 4.7, 4.5, 4.8, 4.6, 4.7]
-                                    };
-                                    updateDestinationTable(dummyData);
                                 });
                         }
                     } catch (error) {
@@ -1808,6 +1862,37 @@
                 const highestRatingElement = document.querySelector('.stat-info p[data-stat="highestRating"]');
                 if (highestRatingElement && data.highestRating) {
                     highestRatingElement.textContent = data.highestRating;
+                }
+                
+                // Calculate and update Total Profit
+                const totalProfitElement = document.querySelector('.stat-info p[data-stat="totalProfit"]');
+                if (totalProfitElement && data.bookings && data.revenue) {
+                    // Calculate total profit (30% of revenue)
+                    let totalRevenue = 0;
+                    if (Array.isArray(data.revenue)) {
+                        totalRevenue = data.revenue.reduce((sum, val) => sum + val, 0);
+                    } else {
+                        totalRevenue = data.revenue || 0;
+                    }
+                    
+                    const totalProfit = totalRevenue * 0.3;
+                    totalProfitElement.textContent = `₺${totalProfit.toLocaleString()}`;
+                }
+                
+                // Calculate and update Total Expenses
+                const totalExpensesElement = document.querySelector('.stat-info p[data-stat="totalExpenses"]');
+                if (totalExpensesElement && data.bookings && data.revenue) {
+                    // Calculate total expenses (revenue - profit)
+                    let totalRevenue = 0;
+                    if (Array.isArray(data.revenue)) {
+                        totalRevenue = data.revenue.reduce((sum, val) => sum + val, 0);
+                    } else {
+                        totalRevenue = data.revenue || 0;
+                    }
+                    
+                    const totalProfit = totalRevenue * 0.3;
+                    const totalExpenses = totalRevenue - totalProfit;
+                    totalExpensesElement.textContent = `₺${totalExpenses.toLocaleString()}`;
                 }
             }
             
@@ -2149,9 +2234,37 @@
                         statsData.highestRating = maxRating + '/5.0';
                     }
                     
+                    // Calculate total profit and expenses
+                    if (statsData.revenue) {
+                        // Calculate total revenue
+                        const totalRevenue = Array.isArray(statsData.revenue) 
+                            ? statsData.revenue.reduce((sum, val) => sum + val, 0) 
+                            : statsData.revenue || 0;
+                        
+                        // Calculate profit (30% of revenue)
+                        statsData.totalProfit = totalRevenue * 0.3;
+                        
+                        // Calculate expenses (revenue - profit)
+                        statsData.totalExpenses = totalRevenue - statsData.totalProfit;
+                    }
+                    
                     // Update stats display
                     updateDestinationStats(statsData);
                 } else {
+                    // Calculate total profit and expenses if not already provided
+                    if (data.revenue && !data.totalProfit) {
+                        // Calculate total revenue
+                        const totalRevenue = Array.isArray(data.revenue) 
+                            ? data.revenue.reduce((sum, val) => sum + val, 0) 
+                            : data.revenue || 0;
+                        
+                        // Calculate profit (30% of revenue)
+                        data.totalProfit = totalRevenue * 0.3;
+                        
+                        // Calculate expenses (revenue - profit)
+                        data.totalExpenses = totalRevenue - data.totalProfit;
+                    }
+                    
                     // Update stats display with existing data
                     updateDestinationStats(data);
                 }
@@ -2174,6 +2287,11 @@
                     mostVisitors: 265,
                     highestRating: '4.9/5.0'
                 };
+                
+                // Calculate total revenue for profit and expenses
+                const totalRevenue = dummyData.revenue.reduce((sum, val) => sum + val, 0);
+                dummyData.totalProfit = totalRevenue * 0.3;
+                dummyData.totalExpenses = totalRevenue - dummyData.totalProfit;
                 
                 // Chart data based on metric (fallback)
                 let chartData;
@@ -2755,25 +2873,6 @@
                 } catch (error) {
                     console.error('Failed to load recent bookings:', error);
                 }
-            }
-            
-            // Helper function for formatting dates
-            function formatDate(dateString) {
-                const date = new Date(dateString);
-                return date.toLocaleDateString('en-GB', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric'
-                });
-            }
-            
-            // Helper function to get status class
-            function getStatusClass(status) {
-                status = status.toLowerCase();
-                if (status === 'confirmed' || status === 'active') return 'confirmed';
-                if (status === 'pending') return 'pending';
-                if (status === 'cancelled' || status === 'inactive') return 'cancelled';
-                return 'pending';
             }
             
             // Function to load tour management data
