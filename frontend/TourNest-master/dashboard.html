@@ -1993,7 +1993,7 @@
                     if (target === 'reports') {
                         // Initialize destination chart when reports section is shown
                         console.log('Reports section is now active, initializing charts');
-                        setTimeout(() => {
+                setTimeout(() => {
                             try {
                                 initializeDestinationsChart();
                             } catch (error) {
@@ -2521,33 +2521,37 @@
             });
             
             // Edit destination function
-            function editDestination(id) {
-                // Fetch destination data from API (mocked here)
-                const destination = {
-                    id: id,
-                    name: document.querySelector(`#destinations tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(2)`).textContent,
-                    description: document.querySelector(`#destinations tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(3)`).textContent,
-                    status: document.querySelector(`#destinations tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(4) .status-badge`).textContent.toLowerCase()
-                };
-                
-                // Set form values
-                document.getElementById('destinationId').value = destination.id;
-                document.getElementById('destinationName').value = destination.name;
-                document.getElementById('destinationDescription').value = destination.description;
-                document.getElementById('destinationStatus').value = destination.status === 'active' ? 'active' : 'inactive';
-                
-                // Update modal title
-                document.getElementById('resourceModalTitle').textContent = 'Edit Destination';
-                
-                // Hide resource type selection and show destination form
-                document.getElementById('resourceTypeSelection').style.display = 'none';
-                document.getElementById('destinationForm').style.display = 'block';
-                document.getElementById('guideForm').style.display = 'none';
-                document.getElementById('driverForm').style.display = 'none';
-                document.getElementById('vehicleForm').style.display = 'none';
-                
-                // Show modal
-                resourceModal.style.display = 'flex';
+            async function editDestination(id) {
+                try {
+                    // Fetch destination data from API
+                    const destination = await ApiService.destinations.getById(id);
+                    
+                    if (destination) {
+                        // Set form values
+                        document.getElementById('destinationId').value = destination.id;
+                        document.getElementById('destinationName').value = destination.ad || '';
+                        document.getElementById('destinationDescription').value = destination.aciklama || '';
+                        document.getElementById('destinationStatus').value = destination.durum === 'active' ? 'active' : 'inactive';
+                        
+                        // Update modal title
+                        document.getElementById('resourceModalTitle').textContent = 'Edit Destination';
+                        
+                        // Hide resource type selection and show destination form
+                        document.getElementById('resourceTypeSelection').style.display = 'none';
+                        document.getElementById('destinationForm').style.display = 'block';
+                        document.getElementById('guideForm').style.display = 'none';
+                        document.getElementById('driverForm').style.display = 'none';
+                        document.getElementById('vehicleForm').style.display = 'none';
+                        
+                        // Show modal
+                        resourceModal.style.display = 'flex';
+                    } else {
+                        alert('Destination not found.');
+                    }
+                } catch (error) {
+                    console.error('Failed to get destination details:', error);
+                    alert('Failed to get destination details. Please try again.');
+                }
             }
             
             // Edit guide function
@@ -2669,30 +2673,38 @@
             });
             
             // Edit tour function
-            function editTour(id) {
-                // Fetch tour data (mocked here)
-                const tour = {
-                    id: id,
-                    name: document.querySelector(`#tourTableBody tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(2)`).textContent,
-                    destination: document.querySelector(`#tourTableBody tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(3)`).textContent,
-                    duration: document.querySelector(`#tourTableBody tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(4)`).textContent,
-                    price: document.querySelector(`#tourTableBody tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(5)`).textContent.replace('₺', '').replace(',', ''),
-                    status: document.querySelector(`#tourTableBody tr:nth-child(${parseInt(id.substring(1))}) td:nth-child(6) .status-badge`).textContent.toLowerCase()
-                };
-                
-                // Set form values
-                document.getElementById('tourId').value = tour.id;
-                document.getElementById('tourName').value = tour.name;
-                document.getElementById('tourLocation').value = tour.destination;
-                document.getElementById('tourDuration').value = tour.duration;
-                document.getElementById('tourPrice').value = tour.price;
-                document.getElementById('tourStatus').value = tour.status === 'active' ? 'active' : 'inactive';
-                
-                // Update modal title
-                document.getElementById('modalTitle').textContent = 'Edit Tour';
-                
-                // Show modal
-                document.getElementById('tourModal').style.display = 'flex';
+            async function editTour(id) {
+                try {
+                    const tour = await ApiService.tourPackages.getById(id);
+                    if (tour) {
+                        document.getElementById('tourId').value = tour.id;
+                        document.getElementById('tourName').value = tour.ad || '';
+                        document.getElementById('tourItself').value = tour.tur_id || '';
+                        document.getElementById('tourDuration').value = tour.sure || '';
+                        document.getElementById('tourMaxParticipants').value = tour.kapasite || '';
+                        document.getElementById('tourStatus').value = tour.durum === 'Aktif' ? 'active' : 'inactive';
+                        document.getElementById('tourGuide').value = tour.rehber_id || '';
+                        document.getElementById('tourDriver').value = tour.surucu_id || '';
+                        document.getElementById('tourVehicle').value = tour.vehicle_id || '';
+                        document.getElementById('tourDescription').value = tour.aciklama || '';
+                        
+                        // Handle date formatting
+                        if (tour.tur_tarihi) {
+                            document.getElementById('tourDate').value = formatDateForInput(tour.tur_tarihi);
+                        }
+                        
+                        // Update modal title
+                        document.getElementById('modalTitle').textContent = 'Edit Tour Package';
+                        
+                        // Show modal
+                        document.getElementById('tourModal').style.display = 'flex';
+                    } else {
+                        alert('Tour package not found.');
+                    }
+                } catch (error) {
+                    console.error('Failed to get tour package details:', error);
+                    alert('Failed to get tour package details. Please try again.');
+                }
             }
 
             // Add New Tour button event listener
@@ -2756,7 +2768,7 @@
                         alert('Tur paketi başarıyla kaydedildi!');
                         
                         // Reload the tour list instead of full page refresh
-                        loadTourData();
+                    loadTourData();
                     } else {
                         // Show success message anyway since the package was likely created
                         alert('Tur paketi kaydedildi!');
@@ -2922,25 +2934,34 @@
                             row.innerHTML = `
                                 <td>${pkg.id}</td>
                                 <td>${pkg.ad}</td>
-                                <td>${pkg.destinasyon_detay || 'Not specified'}</td>
+                                <td>${pkg.tur?.adi || 'Not specified'}</td>
                                 <td>${pkg.sure || 'Not specified'}</td>
                                 <td>${pkg.kapasite || 0} seats</td>
                                 <td><span class="status-badge status-${pkg.durum === 'Aktif' ? 'confirmed' : 'pending'}">${pkg.durum || 'Pending'}</span></td>
                                 <td class="action-buttons">
-                                    <button class="action-btn edit" title="Edit"><i class="fas fa-edit"></i></button>
-                                    <button class="action-btn delete" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                                    <button class="action-btn edit" title="Edit" data-id="${pkg.id}"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn delete" title="Delete" data-id="${pkg.id}"><i class="fas fa-trash-alt"></i></button>
                                 </td>
                             `;
                             
-                            // Add event listeners to the buttons
-                            row.querySelector('.action-btn.edit').addEventListener('click', () => editTour(pkg.id));
-                            row.querySelector('.action-btn.delete').addEventListener('click', () => {
+                            document.getElementById('tourTableBody').appendChild(row);
+                        });
+                        
+                        // Add event listeners to all edit/delete buttons
+                        document.querySelectorAll('#tourTableBody .action-btn.edit').forEach(btn => {
+                            btn.addEventListener('click', function() {
+                                const tourId = this.getAttribute('data-id');
+                                editTour(tourId);
+                            });
+                        });
+                        
+                        document.querySelectorAll('#tourTableBody .action-btn.delete').forEach(btn => {
+                            btn.addEventListener('click', function() {
+                                const tourId = this.getAttribute('data-id');
                                 if (confirm('Are you sure you want to delete this tour package?')) {
-                                    deleteTour(pkg.id);
+                                    deleteTour(tourId);
                                 }
                             });
-                            
-                            document.getElementById('tourTableBody').appendChild(row);
                         });
                     } else {
                         document.getElementById('tourTableBody').innerHTML = `
@@ -3129,25 +3150,26 @@
                                     <td>${destination.id}</td>
                                     <td>${destination.ad || destination.name}</td>
                                     <td>${destination.aciklama || destination.description}</td>
-                                    <td><span class="status-badge status-${destination.durum === 'active' || destination.status === 'active' ? 'confirmed' : 'pending'}">${destination.durum || destination.status}</span></td>
+                                    <td><span class="status-badge status-${destination.durum === 'active' || destination.status === 'active' ? 'confirmed' : 'pending'}">${destination.durum || destination.status || 'Active'}</span></td>
                                     <td>
                                         <div class="action-buttons">
-                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn delete"><i class="fas fa-trash-alt"></i></button>
+                                            <button class="action-btn edit" data-id="${destination.id}"><i class="fas fa-edit"></i></button>
+                                            <button class="action-btn delete" data-id="${destination.id}"><i class="fas fa-trash-alt"></i></button>
                                         </div>
                                     </td>
                                 `;
                                 
                                 // Add event listeners for edit and delete buttons
                                 row.querySelector('.action-btn.edit').addEventListener('click', function() {
-                                    editDestination(destination.id);
+                                    const destId = this.getAttribute('data-id');
+                                    editDestination(destId);
                                 });
                                 
                                 row.querySelector('.action-btn.delete').addEventListener('click', function() {
+                                    const destId = this.getAttribute('data-id');
                                     if (confirm(`Are you sure you want to delete destination ${destination.ad || destination.name}?`)) {
-                                        // Delete destination functionality would go here
-                                        row.remove();
-                                        alert('Destination deleted successfully!');
+                                        // Use API to delete destination
+                                        deleteDestination(destId);
                                     }
                                 });
                                 
@@ -3234,45 +3256,48 @@
             // Function to delete a tour
             async function deleteTour(id) {
                 try {
-                    await ApiService.tours.delete(id);
+                    await ApiService.tourPackages.delete(id);
                     // Reload tour list
                     loadTourData();
-                    alert('Tour deleted successfully!');
+                    alert('Tour package deleted successfully!');
                 } catch (error) {
-                    console.error('Failed to delete tour:', error);
-                    alert('Failed to delete tour. Please try again.');
+                    console.error('Failed to delete tour package:', error);
+                    alert('Failed to delete tour package. Please try again.');
                 }
             }
             
             // Function to edit tour - fetch data and populate form
             async function editTour(id) {
                 try {
-                    const tour = await ApiService.tours.getById(id);
+                    const tour = await ApiService.tourPackages.getById(id);
                     if (tour) {
                         document.getElementById('tourId').value = tour.id;
-                        document.getElementById('tourName').value = tour.ad || tour.name;
-                        document.getElementById('tourLocation').value = tour.konum || tour.location;
-                        document.getElementById('tourPrice').value = tour.fiyat || tour.price;
-                        document.getElementById('tourDuration').value = tour.sure || tour.duration;
-                        document.getElementById('tourDate').value = formatDateForInput(tour.tur_tarihi || tour.tourDate);
-                        document.getElementById('tourMaxParticipants').value = tour.max_katilimci || tour.maxParticipants;
-                        document.getElementById('tourStatus').value = (tour.durum || tour.status) === 'active' ? 'active' : 'inactive';
-                        document.getElementById('tourGuide').value = tour.rehber_id || tour.guideId;
-                        document.getElementById('tourDriver').value = tour.sofor_id || tour.driverId;
-                        document.getElementById('tourVehicle').value = tour.arac_id || tour.vehicleId;
-                        document.getElementById('tourDescription').value = tour.aciklama || tour.description;
+                        document.getElementById('tourName').value = tour.ad || '';
+                        document.getElementById('tourItself').value = tour.tur_id || '';
+                        document.getElementById('tourDuration').value = tour.sure || '';
+                        document.getElementById('tourMaxParticipants').value = tour.kapasite || '';
+                        document.getElementById('tourStatus').value = tour.durum === 'Aktif' ? 'active' : 'inactive';
+                        document.getElementById('tourGuide').value = tour.rehber_id || '';
+                        document.getElementById('tourDriver').value = tour.surucu_id || '';
+                        document.getElementById('tourVehicle').value = tour.vehicle_id || '';
+                        document.getElementById('tourDescription').value = tour.aciklama || '';
+                        
+                        // Handle date formatting
+                        if (tour.tur_tarihi) {
+                            document.getElementById('tourDate').value = formatDateForInput(tour.tur_tarihi);
+                        }
                         
                         // Update modal title
-                        document.getElementById('modalTitle').textContent = 'Edit Tour';
+                        document.getElementById('modalTitle').textContent = 'Edit Tour Package';
                         
                         // Show modal
                         document.getElementById('tourModal').style.display = 'flex';
                     } else {
-                        alert('Tour not found.');
+                        alert('Tour package not found.');
                     }
                 } catch (error) {
-                    console.error('Failed to get tour details:', error);
-                    alert('Failed to get tour details. Please try again.');
+                    console.error('Failed to get tour package details:', error);
+                    alert('Failed to get tour package details. Please try again.');
                 }
             }
             
@@ -3889,6 +3914,111 @@
                 });
             }
         });
+
+        // ... existing code ...
+        // Tour edit functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load tour data when page loads
+            setTimeout(() => {
+                if (document.getElementById('tours').classList.contains('active')) {
+                    loadTourData(); // Load tour data immediately if tours tab is active
+                }
+            }, 100);
+            
+            // Add click handler to menu item to load tour data when clicking on tours tab
+            document.querySelector('.menu-item[data-section="tours"]').addEventListener('click', function() {
+                loadTourData();
+                populateTourSelect();
+                    loadAllTourFormDropdowns();
+            });
+        });
+        // ... existing code ...
+
+        // ... existing code ...
+        // Function to load all dropdowns for the tour form
+        async function loadAllTourFormDropdowns() {
+            console.log('Loading all dropdown data for tour form');
+            try {
+                // Load tour options (tur)
+                const tourSelect = document.getElementById('tourItself');
+                if (tourSelect) {
+                    const tours = await ApiService.tours.getAll();
+                    tourSelect.innerHTML = '<option value="">Select Tour</option>';
+                    if (tours && tours.length > 0) {
+                        tours.forEach(tour => {
+                            const option = document.createElement('option');
+                            option.value = tour.id;
+                            option.textContent = tour.adi || tour.ad || tour.name;
+                            tourSelect.appendChild(option);
+                        });
+                    }
+                }
+                
+                // Load guide options
+                const guideSelect = document.getElementById('tourGuide');
+                if (guideSelect) {
+                    const guides = await ApiService.resources.guides.getAll();
+                    guideSelect.innerHTML = '<option value="">Select Guide</option>';
+                    if (guides && guides.length > 0) {
+                        guides.forEach(guide => {
+                            const option = document.createElement('option');
+                            option.value = guide.id;
+                            option.textContent = guide.ad || guide.name;
+                            guideSelect.appendChild(option);
+                        });
+                    }
+                }
+                
+                // Load driver options
+                const driverSelect = document.getElementById('tourDriver');
+                if (driverSelect) {
+                    const drivers = await ApiService.resources.drivers.getAll();
+                    driverSelect.innerHTML = '<option value="">Select Driver</option>';
+                    if (drivers && drivers.length > 0) {
+                        drivers.forEach(driver => {
+                            const option = document.createElement('option');
+                            option.value = driver.id;
+                            option.textContent = driver.ad || driver.name;
+                            driverSelect.appendChild(option);
+                        });
+                    }
+                }
+                
+                // Load vehicle options
+                const vehicleSelect = document.getElementById('tourVehicle');
+                if (vehicleSelect) {
+                    const vehicles = await ApiService.resources.vehicles.getAll();
+                    vehicleSelect.innerHTML = '<option value="">Select Vehicle</option>';
+                    if (vehicles && vehicles.length > 0) {
+                        vehicles.forEach(vehicle => {
+                            const option = document.createElement('option');
+                            option.value = vehicle.id;
+                            option.textContent = vehicle.ad || vehicle.name || `${vehicle.tip || vehicle.type} - ${vehicle.plaka || vehicle.licensePlate}`;
+                            vehicleSelect.appendChild(option);
+                        });
+                    }
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('Error loading dropdown data:', error);
+                return false;
+            }
+        }
+        // ... existing code ...
+
+        // Function to delete a destination
+        async function deleteDestination(id) {
+            try {
+                await ApiService.destinations.delete(id);
+                // Reload destinations list
+                loadDestinationsData();
+                alert('Destination deleted successfully!');
+            } catch (error) {
+                console.error('Failed to delete destination:', error);
+                alert('Failed to delete destination. Please try again.');
+            }
+        }
     </script>
 </body>
 </html>

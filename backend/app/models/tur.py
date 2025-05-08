@@ -27,6 +27,7 @@ class Tur(db.Model):
             'aciklama': self.aciklama,
             'resim': self.resim,
             'kategori': self.kategori,
+            'destinasyon_id': self.destinasyon_id,
             'destinasyon': self.destinasyon.ad if self.destinasyon else None,
             'aktif': self.aktif
         }
