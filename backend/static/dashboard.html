@@ -643,7 +643,6 @@
                 <div class="widget">
                     <div class="widget-header">
                         <h3>Recent Bookings</h3>
-                        <button class="btn btn-primary">View All</button>
                     </div>
                     <table class="data-table">
                         <thead>
@@ -710,25 +709,6 @@
             <div class="page-header">
                 <h2>Tour Management</h2>
                 <button class="btn btn-primary" id="openAddTourModal">Add New Tour</button>
-            </div>
-
-            <div class="filter-container">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search tours...">
-                </div>
-                <select class="filter-select">
-                    <option value="">All Destinations</option>
-                    <option value="istanbul">Istanbul</option>
-                    <option value="cappadocia">Cappadocia</option>
-                    <option value="antalya">Antalya</option>
-                    <option value="pamukkale">Pamukkale</option>
-                </select>
-                <select class="filter-select">
-                    <option value="">All Status</option>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                </select>
             </div>
 
             <div class="widget">
@@ -963,11 +943,6 @@
             <div class="widget">
                 <div class="widget-header">
                     <h3>Destination Comparison</h3>
-                    <select class="filter-select" id="destinationMetric">
-                        <option value="visitors">Visitors</option>
-                        <option value="revenue">Revenue</option>
-                        <option value="rating">Rating</option>
-                    </select>
                 </div>
                 <div class="chart-container">
                     <canvas id="destinationsChart"></canvas>
@@ -977,13 +952,6 @@
             <div class="widget">
                 <div class="widget-header">
                     <h3>Destination Performance</h3>
-                    <div class="filter-container">
-                        <select class="filter-select" id="destinationSort">
-                            <option value="bookings">Sort by Bookings</option>
-                            <option value="revenue">Sort by Revenue</option>
-                            <option value="rating">Sort by Rating</option>
-                        </select>
-                    </div>
                 </div>
                 <table class="data-table" id="destinationTable">
                     <thead>
@@ -992,7 +960,6 @@
                             <th>Total Bookings</th>
                             <th>Revenue</th>
                             <th>Avg. Rating</th>
-                            <th>Details</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1022,13 +989,6 @@
 
                 <!-- Destinations Tab -->
                 <div class="tab-content active" id="destinations">
-                    <div class="filter-container">
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search destinations...">
-                        </div>
-                    </div>
-
                     <div class="widget">
                         <table class="data-table">
                             <thead>
@@ -1084,13 +1044,6 @@
 
                 <!-- Tours Tab -->
                 <div class="tab-content" id="turs">
-                    <div class="filter-container">
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search tours...">
-                        </div>
-                    </div>
-
                     <div class="widget">
                         <table class="data-table">
                             <thead>
@@ -1113,20 +1066,6 @@
 
                 <!-- Guides Tab -->
                 <div class="tab-content" id="guides">
-                    <div class="filter-container">
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search guides...">
-                        </div>
-                        <select class="filter-select">
-                            <option value="">All Languages</option>
-                            <option value="turkish">Turkish</option>
-                            <option value="english">English</option>
-                            <option value="german">German</option>
-                            <option value="russian">Russian</option>
-                        </select>
-                    </div>
-
                     <div class="widget">
                         <table class="data-table">
                             <thead>
@@ -1190,18 +1129,6 @@
 
                 <!-- Drivers Tab -->
                 <div class="tab-content" id="drivers">
-                    <div class="filter-container">
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search drivers...">
-                        </div>
-                        <select class="filter-select">
-                            <option value="">All License Types</option>
-                            <option value="d">D (Bus)</option>
-                            <option value="b">B (Car)</option>
-                        </select>
-                    </div>
-
                     <div class="widget">
                         <table class="data-table">
                             <thead>
@@ -1265,19 +1192,6 @@
 
                 <!-- Vehicles Tab -->
                 <div class="tab-content" id="vehicles">
-                    <div class="filter-container">
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search vehicles...">
-                        </div>
-                        <select class="filter-select">
-                            <option value="">All Types</option>
-                            <option value="bus">Bus</option>
-                            <option value="minibus">Minibus</option>
-                            <option value="car">Car</option>
-                        </select>
-                    </div>
-
                     <div class="widget">
                         <table class="data-table">
                             <thead>
@@ -1345,26 +1259,6 @@
         <div class="content-section" id="feedback">
             <div class="page-header">
                 <h2>User Feedback</h2>
-                <div class="filter-container">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Search feedback...">
-                    </div>
-                    <select class="filter-select">
-                        <option value="">All Tours</option>
-                        <option value="istanbul">Istanbul Historical Tour</option>
-                        <option value="cappadocia">Cappadocia Hot Air Balloon</option>
-                        <option value="antalya">Antalya Beach Tour</option>
-                    </select>
-                    <select class="filter-select">
-                        <option value="">All Ratings</option>
-                        <option value="5">5 Stars</option>
-                        <option value="4">4 Stars</option>
-                        <option value="3">3 Stars</option>
-                        <option value="2">2 Stars</option>
-                        <option value="1">1 Star</option>
-                    </select>
-                </div>
             </div>
 
             <div class="widget">
@@ -1922,7 +1816,6 @@
                         <td>${data.bookings[i]}</td>
                         <td>₺${data.revenue[i].toLocaleString()}</td>
                         <td>${data.ratings[i]}</td>
-                        <td><button class="btn btn-primary btn-sm view-details" data-destination="${data.tours[i]}">View</button></td>
                     `;
                     
                     tableBody.appendChild(row);
