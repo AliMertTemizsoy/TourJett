@@ -282,7 +282,7 @@
             
             <div class="tour-info">
                 <div class="tour-image">
-                    <img src="/api/placeholder/400/320" alt="Tour destination">
+                    <img src="assets/images/packages/p1.jpg" alt="Tour destination" heighr="120px" width="120px">
                 </div>
                 <div class="tour-details">
                     <h2>Magical Santorini Island Tour</h2>
@@ -400,30 +400,32 @@
                     <h3>Price Summary</h3>
                     <div class="price-item">
                         <span>Tour Price (per person)</span>
-                        <span>₺1.950</span>
+                        <span id="basePrice"></span>
                     </div>
                     <div class="price-item">
                         <span>Number of Participants</span>
-                        <span id="participantsCount">1</span>
+                        <span id="participantsCount"></span>
                     </div>
                     <div class="price-item">
                         <span>Accommodation Upgrade</span>
-                        <span id="accommodationFee">₺0</span>
+                        <span id="accommodationFee"></span>
                     </div>
                     <div class="price-item">
                         <span>Booking Fee</span>
-                        <span>₺75</span>
+                        <span>$75</span>
                     </div>
                     <div class="price-item">
                         <span>Total</span>
-                        <span id="totalPrice">₺2.025</span>
+                        <span id="totalPrice"></span>
                     </div>
                 </div>
                 
-                <div class="form-group" style="margin-top: 20px;">
-                    <label style="display: flex; align-items: flex-start; gap: 10px;">
-                        <input type="checkbox" id="termsCheck" name="termsCheck" required style="margin-top: 3px;">
-                        <span>I agree to the Terms and Conditions and Privacy Policy *</span>
+                <div class="form-group" >
+                    <label style="display: flex; align-items: flex-start;">
+                        <input type="checkbox" id="termsCheck" name="termsCheck" required >
+                       
+                        <div>
+                            I agree to the Terms and Conditions and Privacy Policy*</div>
                     </label>
                     <div class="error-message" id="termsCheckError">You must agree to the terms and conditions</div>
                 </div>
@@ -438,6 +440,7 @@
                 <div class="booking-id" id="bookingId">BK-12345678</div>
                 <p>A confirmation email has been sent to your email address with all the details.</p>
                 <p>If you have any questions, please contact our customer support.</p>
+                <a class="btn btn-block" href="index_loggedinuser.html">Back To Main Page</a>
             </div>
         </div>
     </div>

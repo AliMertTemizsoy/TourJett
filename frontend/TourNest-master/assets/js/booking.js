@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     const tourDetails = document.querySelector('.tour-details');
     const cardNumberInput = document.getElementById('cardNumber');
     const expiryInput = document.getElementById('expiry');
+    const basePriceElement = document.getElementById('basePrice');
 
     // Kart numarası formatlamayı ekle - her 4 rakamdan sonra boşluk
     cardNumberInput.addEventListener('input', function(e) {
@@ -76,7 +77,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     let turSeferiId = null;
     
     // Base price default value (will be updated from API if available)
-    window.basePrice = 1950;
+    window.basePrice = 0;
 
     // Giriş yapmış kullanıcı bilgilerini kontrol et - localStorage ve sessionStorage'dan kontrol et
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || sessionStorage.getItem('currentUser') || '{}');
@@ -115,8 +116,13 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Tur bilgilerini dinamik olarak yükle
     if (turPaketiId) {
         try {
-            const tur = await getTurById(turPaketiId);
-            if (tur) {
+            const response = await fetch(`http://localhost:5000/api/turpaketleri/${turPaketiId}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const tur = await response.json();
+            if (tur && !tur.error) {
                 console.log("Yüklenen tur bilgisi:", tur);
                 
                 // Tur seferi ID varsa onu al (API dönüşümü farklı olabilir)
@@ -136,26 +142,31 @@ document.addEventListener('DOMContentLoaded', async function() {
                 
                 tourDetails.innerHTML = `
                     <h2>${tur.ad || tur.adi}</h2>
-                    <p><strong>Duration:</strong> ${tur.sure}</p>
-                    <p><strong>Starting Point:</strong> ${tur.baslangic_bolge || 'Belirlenmedi'}</p>
-                    <p><strong>Price:</strong> ${tur.fiyat}₺ per person</p>
+                    <p><strong>Duration:</strong> ${tur.sure || 'Not specified'}</p>
+                    <p><strong>Starting Point:</strong> ${tur.baslangic_bolge || 'Not specified'}</p>
+                    <p><strong>Price:</strong> ₺${tur.fiyat ? tur.fiyat.toLocaleString('tr-TR') : '0'} per person</p>
                 `;
                 // Fiyatı güncellemek için basePrice'ı backend'den gelen fiyatla değiştir
-                window.basePrice = parseFloat(tur.fiyat) || 1950;
+                window.basePrice = parseFloat(tur.fiyat) || 0;
+                basePriceElement.textContent = `₺${window.basePrice.toLocaleString('tr-TR')}`;
                 calculateTotal();
             } else {
-                tourDetails.innerHTML = '<p>Tur bilgileri yüklenirken bir hata oluştu.</p>';
+                console.error("Failed to get tour price from API");
+                tourDetails.innerHTML = '<p>Error loading tour information</p>';
             }
         } catch (error) {
-            console.error("Tur bilgilerini getirirken hata:", error);
-            tourDetails.innerHTML = `<p>Tur bilgileri yüklenirken bir hata oluştu: ${error.message}</p>`;
+            console.error("Error fetching tour details:", error);
+            tourDetails.innerHTML = `<p>Error loading tour information: ${error.message}</p>`;
         }
+    } else {
+        console.error("No tour ID found in URL!");
+        tourDetails.innerHTML = '<p>No tour ID found!</p>';
     }
 
     // Price calculation function
     function calculateTotal() {
         // Get base price (either from API or default)
-        const basePrice = window.basePrice || 1950;
+        const basePrice = window.basePrice || 0;
         
         // Get number of participants
         const participants = parseInt(participantsSelect.value) || 1;
@@ -175,16 +186,14 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
         
         // Display accommodation fee with Turkish Lira symbol and thousand separator
-        accommodationFee.textContent = '₺' + roomFee.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2}).replace('.', ',');
+        accommodationFee.textContent = `₺${roomFee.toLocaleString('tr-TR')}`;
         
         // Calculate total (base price * participants + accommodation fee + booking fee)
-        const bookingFee = 100;
+        const bookingFee = 75;
         const total = (basePrice * participants) + roomFee + bookingFee;
         
-        // Format the total with Turkish Lira symbol and thousand separator with comma for decimals
-        // For this example, we'll add .99 to match your screenshot
-        const totalWithDecimals = total + 0.99;
-        totalPrice.textContent = '₺' + totalWithDecimals.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2}).replace('.', ',');
+        // Format the total with Turkish Lira symbol and thousand separator
+        totalPrice.textContent = `₺${total.toLocaleString('tr-TR')}`;
     }
 
     // Set up event listeners for price calculation

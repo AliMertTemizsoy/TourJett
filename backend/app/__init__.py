@@ -184,4 +184,5 @@ def create_app(config=None):
         except Exception as e:
             return f"Error serving {path}: {str(e)}", 404
     
+    from app import models
     return app
