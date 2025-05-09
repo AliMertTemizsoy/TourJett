@@ -130,3 +130,48 @@ def create_tur_seferi():
         print(f"Error creating tour departure: {str(e)}")
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500
+
+@tur_bp.route('/turlar/<int:id>', methods=['PUT'])
+def update_tur(id):
+    """Update an existing tour"""
+    try:
+        tur = Tur.query.get(id)
+        if not tur:
+            return jsonify({'error': 'Tour not found'}), 404
+            
+        data = request.get_json()
+        
+        # Update fields if they are provided
+        if 'adi' in data:
+            tur.adi = data['adi']
+        if 'sure' in data:
+            tur.sure = data['sure']
+        if 'fiyat' in data:
+            try:
+                tur.fiyat = float(data['fiyat'])
+            except (ValueError, TypeError):
+                return jsonify({'error': 'Invalid price format'}), 400
+        if 'aciklama' in data:
+            tur.aciklama = data['aciklama']
+        if 'resim' in data:
+            tur.resim = data['resim']
+        if 'kategori' in data:
+            tur.kategori = data['kategori']
+        if 'destinasyon_id' in data:
+            tur.destinasyon_id = data['destinasyon_id']
+        if 'aktif' in data:
+            tur.aktif = data['aktif']
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Tour updated successfully',
+            'data': tur.to_dict()
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error updating tour with ID {id}: {str(e)}")
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
