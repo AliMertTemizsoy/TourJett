@@ -109,9 +109,9 @@
 										<li class="smooth-menu"><a href="#spo">Special Offers</a></li>
 										<li class="smooth-menu"><a href="#blog">blog</a></li>
 										<li class="smooth-menu"><a href="#subs">subscription</a></li>
-										<li class="smooth-menu user-greeting">
-                                            <a href="profile.html" onclick="window.location.href='profile.html'; return false;">
-                                                <span class="greetings-btn">Welcome, <span id="user-name">Guest</span></span>
+										<li class="smooth-menu user-greeting" style="display: flex; align-items: center; height: 100%;">
+                                            <a href="profile.html" onclick="window.location.href='profile.html'; return false;" style="padding: 0; margin: 0 5px; display: flex; align-items: center;">
+                                                <span class="greetings-btn" style="display: inline-block; padding: 5px 15px; background-color: #00d8ff; color: #fff; border-radius: 15px; font-size: 16px; text-align: center;"><i class="fa fa-user-circle"></i> <span id="user-name" style="font-weight: 500;">Guest</span></span>
                                             </a>
                                         </li>
                                         <!-- Add Logout Button -->
@@ -164,456 +164,101 @@
 		</section><!--/.about-us-->
 		<!--about-us end -->
 
-		<!--travel-box start-->
-		<section  class="travel-box">
-        	<div class="container">
-        		<div class="row">
-        			<div class="col-md-12">
-        				<div class="single-travel-boxes">
-        					<div id="desc-tabs" class="desc-tabs">
-
-								<ul class="nav nav-tabs" role="tablist">
-
-									<!--<li role="presentation" class="active">
-									 	<a href="#tours" aria-controls="tours" role="tab" data-toggle="tab">
-									 		<i class="fa fa-tree"></i>
-									 		tours
-									 	</a>
-									</li>
-
-									<li role="presentation">
-										<a href="#hotels" aria-controls="hotels" role="tab" data-toggle="tab">
-											<i class="fa fa-building"></i>
-											hotels
-										</a>
-									</li>
-
-									<li role="presentation">
-									 	<a href="#flights" aria-controls="flights" role="tab" data-toggle="tab">
-									 		<i class="fa fa-plane"></i>
-									 		flights
-									 	</a>
-									</li>
-								-->
-								</ul>
-
-								<!-- Tab panes -->
-								<div class="tab-content">
-
-									<div role="tabpanel" class="tab-pane active fade in" id="tours">
-										<div class="tab-para">
-
-											<div class="row">
-												<div class="col-lg-4 col-md-4 col-sm-12">
-													<div class="single-tab-select-box">
-
-														<h2>destination</h2>
-
-														<div class="travel-select-icon">
-															<select class="form-control ">
-
-															  	<option value="default">enter your destination country</option><!-- /.option-->
-
-															  	<option value="turkey">turkey</option><!-- /.option-->
-
-															  	<option value="russia">russia</option><!-- /.option-->
-															  	<option value="egept">egypt</option><!-- /.option-->
-
-															</select><!-- /.select-->
-														</div><!-- /.travel-select-icon -->
-
-														<div class="travel-select-icon">
-															<select class="form-control ">
-
-															  	<option value="default">enter your destination location</option><!-- /.option-->
-
-															  	<option value="istanbul">istanbul</option><!-- /.option-->
-
-															  	<option value="mosko">mosko</option><!-- /.option-->
-															  	<option value="cairo">cairo</option><!-- /.option-->
-
-															</select><!-- /.select-->
-														</div><!-- /.travel-select-icon -->
-
-													</div><!--/.single-tab-select-box-->
-												</div><!--/.col-->
-
-												<div class="col-lg-2 col-md-3 col-sm-4">
-													<div class="single-tab-select-box">
-														<h2>check in</h2>
-														<div class="travel-check-icon">
-															<form action="#">
-																<input type="text" name="check_in" class="form-control" data-toggle="datepicker" placeholder="12 -01 - 2017 ">
-															</form>
-														</div><!-- /.travel-check-icon -->
-													</div><!--/.single-tab-select-box-->
-												</div><!--/.col-->
-
-												<div class="col-lg-2 col-md-3 col-sm-4">
-													<div class="single-tab-select-box">
-														<h2>check out</h2>
-														<div class="travel-check-icon">
-															<form action="#">
-																<input type="text" name="check_out" class="form-control"  data-toggle="datepicker" placeholder="22 -01 - 2017 ">
-															</form>
-														</div><!-- /.travel-check-icon -->
-													</div><!--/.single-tab-select-box-->
-												</div><!--/.col-->
-
-												<div class="col-lg-2 col-md-1 col-sm-4">
-													<div class="single-tab-select-box">
-														<h2>duration</h2>
-														<div class="travel-select-icon">
-															<select class="form-control ">
-
-															  	<option value="default">5</option><!-- /.option-->
-
-															  	<option value="10">10</option><!-- /.option-->
-
-															  	<option value="15">15</option><!-- /.option-->
-															  	<option value="20">20</option><!-- /.option-->
-
-															</select><!-- /.select-->
-														</div><!-- /.travel-select-icon -->
-													</div><!--/.single-tab-select-box-->
-												</div><!--/.col-->
-
-												<div class="col-lg-2 col-md-1 col-sm-4">
-													<div class="single-tab-select-box">
-														<h2>members</h2>
-														<div class="travel-select-icon">
-															<select class="form-control ">
-
-															  	<option value="default">1</option><!-- /.option-->
-
-															  	<option value="2">2</option><!-- /.option-->
-
-															  	<option value="4">4</option><!-- /.option-->
-															  	<option value="8">8</option><!-- /.option-->
-
-															</select><!-- /.select-->
-														</div><!-- /.travel-select-icon -->
-													</div><!--/.single-tab-select-box-->
-												</div><!--/.col-->
-
-											</div><!--/.row-->
-
-											<div class="row">
-												<div class="col-sm-5">
-													<div class="travel-budget">
-														<div class="row">
-															<div class="col-md-3 col-sm-4">
-																<h3>budget : </h3>
-															</div><!--/.col-->
-															<div class="co-md-9 col-sm-8">
-																<div class="travel-filter">
-																	<div class="info_widget">
-																		<div class="price_filter">
-																			
-																			<div id="slider-range"></div><!--/.slider-range-->
-
-																			<div class="price_slider_amount">
-																				<input type="text" id="amount" name="price"  placeholder="Add Your Price" />
-																			</div><!--/.price_slider_amount-->
-																		</div><!--/.price-filter-->
-																	</div><!--/.info_widget-->
-																</div><!--/.travel-filter-->
-															</div><!--/.col-->
-														</div><!--/.row-->
-													</div><!--/.travel-budget-->
-												</div><!--/.col-->
-												<div class="clo-sm-7">
-													<div class="about-btn travel-mrt-0 pull-right">
-														<button  class="about-view travel-btn">
-															search	
-														</button><!--/.travel-btn-->
-													</div><!--/.about-btn-->
-												</div><!--/.col-->
-
-											</div><!--/.row-->
-
-										</div><!--/.tab-para-->
-
-									</div><!--/.tabpannel-->
-
-									<div role="tabpanel" class="tab-pane fade in" id="hotels">
-										<div class="tab-para">
-
-											<div class="row">
-												<div class="col-lg-4 col-md-4 col-sm-12">
-													<div class="single-tab-select-box">
-
-														<h2>destination</h2>
-
-														<div class="travel-select-icon">
-															<select class="form-control ">
-
-															  	<option value="default">enter your destination country</option><!-- /.option-->
-
-															  	<option value="turkey">turkey</option><!-- /.option-->
-
-															  	<option value="russia">russia</option><!-- /.option-->
-															  	<option value="egept">egypt</option><!-- /.option-->
-
-															</select><!-- /.select-->
-														</div><!-- /.travel-select-icon -->
-
-														<div class="travel-select-icon">
-															<select class="form-control ">
-
-															  	<option value="default">enter your destination location</option><!-- /.option-->
-
-															  	<option value="istambul">istambul</option><!-- /.option-->
-
-															  	<option value="mosko">mosko</option><!-- /.option-->
-															  	<option value="cairo">cairo</option><!-- /.option-->
-
-															</select><!-- /.select-->
-														</div><!-- /.travel-select-icon -->
-
-													</div><!--/.single-tab-select-box-->
-												</div><!--/.col-->
-
-												<div class="col-lg-2 col-md-3 col-sm-4">
-													<div class="single-tab-select-box">
-														<h2>check in</h2>
-														<div class="travel-check-icon">
-															<form action="#">
-																<input type="text" name="check_in" class="form-control" data-toggle="datepicker" placeholder="12 -01 - 2017 ">
-															</form>
-														</div><!-- /.travel-check-icon -->
-													</div><!--/.single-tab-select-box-->
-												</div><!--/.col-->
-
-												<div class="col-lg-2 col-md-3 col-sm-4">
-													<div class="single-tab-select-box">
-														<h2>check out</h2>
-														<div class="travel-check-icon">
-															<form action="#">
-																<input type="text" name="check_out" class="form-control"  data-toggle="datepicker" placeholder="22 -01 - 2017 ">
-															</form>
-														</div><!-- /.travel-check-icon -->
-													</div><!--/.single-tab-select-box-->
-												</div><!--/.col-->
-
-												<div class="col-lg-2 col-md-1 col-sm-4">
-													<div class="single-tab-select-box">
-														<h2>duration</h2>
-														<div class="travel-select-icon">
-															<select class="form-control ">
-
-															  	<option value="default">5</option><!-- /.option-->
-
-															  	<option value="10">10</option><!-- /.option-->
-
-															  	<option value="15">15</option><!-- /.option-->
-															  	<option value="20">20</option><!-- /.option-->
-
-															</select><!-- /.select-->
-														</div><!-- /.travel-select-icon -->
-													</div><!--/.single-tab-select-box-->
-												</div><!--/.col-->
-
-												<div class="col-lg-2 col-md-1 col-sm-4">
-													<div class="single-tab-select-box">
-														<h2>members</h2>
-														<div class="travel-select-icon">
-															<select class="form-control ">
-
-															  	<option value="default">1</option><!-- /.option-->
-
-															  	<option value="2">2</option><!-- /.option-->
-
-															  	<option value="4">4</option><!-- /.option-->
-															  	<option value="8">8</option><!-- /.option-->
-
-															</select><!-- /.select-->
-														</div><!-- /.travel-select-icon -->
-													</div><!--/.single-tab-select-box-->
-												</div><!--/.col-->
-
-											</div><!--/.row-->
-
-											<div class="row">
-												<div class="col-sm-5"></div><!--/.col-->
-												<div class="clo-sm-7">
-													<div class="about-btn travel-mrt-0 pull-right">
-														<button  class="about-view travel-btn">
-															search	
-														</button><!--/.travel-btn-->
-													</div><!--/.about-btn-->
-												</div><!--/.col-->
-
-											</div><!--/.row-->
-
-										</div><!--/.tab-para-->
-
-									</div><!--/.tabpannel-->
-
-									<div role="tabpanel" class="tab-pane fade in" id="flights">
-										<div class="tab-para">
-											<div class="trip-circle">
-												<div class="single-trip-circle">
-													<input type="radio" id="radio01" name="radio" />
-  													<label for="radio01">
-  														<span class="round-boarder">
-  															<span class="round-boarder1"></span>
-  														</span>round trip
-  													</label>
-												</div><!--/.single-trip-circle-->
-												<div class="single-trip-circle">
-													<input type="radio" id="radio02" name="radio" />
-  													<label for="radio02">
-  														<span class="round-boarder">
-  															<span class="round-boarder1"></span>
-  														</span>on way
-  													</label>
-												</div><!--/.single-trip-circle-->
-											</div><!--/.trip-circle-->
-											<div class="row">
-												<div class="col-lg-4 col-md-4 col-sm-12">
-													<div class="single-tab-select-box">
-
-														<h2>from</h2>
-
-														<div class="travel-select-icon">
-															<select class="form-control ">
-
-															  	<option value="default">enter your location</option><!-- /.option-->
-
-															  	<option value="turkey">turkey</option><!-- /.option-->
-
-															  	<option value="russia">russia</option><!-- /.option-->
-															  	<option value="egept">egypt</option><!-- /.option-->
-
-															</select><!-- /.select-->
-														</div><!-- /.travel-select-icon -->
-													</div><!--/.single-tab-select-box-->
-												</div><!--/.col-->
-
-												<div class="col-lg-2 col-md-3 col-sm-4">
-													<div class="single-tab-select-box">
-														<h2>departure</h2>
-														<div class="travel-check-icon">
-															<form action="#">
-																<input type="text" name="departure" class="form-control" data-toggle="datepicker"
-																placeholder="12 -01 - 2017 ">
-															</form>
-														</div><!-- /.travel-check-icon -->
-													</div><!--/.single-tab-select-box-->
-												</div><!--/.col-->
-
-												<div class="col-lg-2 col-md-3 col-sm-4">
-													<div class="single-tab-select-box">
-														<h2>return</h2>
-														<div class="travel-check-icon">
-															<form action="#">
-																<input type="text" name="return" class="form-control" data-toggle="datepicker" placeholder="22 -01 - 2017 ">
-															</form>
-														</div><!-- /.travel-check-icon -->
-													</div><!--/.single-tab-select-box-->
-												</div><!--/.col-->
-
-												<div class="col-lg-2 col-md-1 col-sm-4">
-													<div class="single-tab-select-box">
-														<h2>adults</h2>
-														<div class="travel-select-icon">
-															<select class="form-control ">
-
-															  	<option value="default">5</option><!-- /.option-->
-
-															  	<option value="10">10</option><!-- /.option-->
-
-															  	<option value="15">15</option><!-- /.option-->
-															  	<option value="20">20</option><!-- /.option-->
-
-															</select><!-- /.select-->
-														</div><!-- /.travel-select-icon -->
-													</div><!--/.single-tab-select-box-->
-												</div><!--/.col-->
-
-												<div class="col-lg-2 col-md-1 col-sm-4">
-													<div class="single-tab-select-box">
-														<h2>childs</h2>
-														<div class="travel-select-icon">
-															<select class="form-control ">
-
-															  	<option value="default">1</option><!-- /.option-->
-
-															  	<option value="2">2</option><!-- /.option-->
-
-															  	<option value="4">4</option><!-- /.option-->
-															  	<option value="8">8</option><!-- /.option-->
-
-															</select><!-- /.select-->
-														</div><!-- /.travel-select-icon -->
-													</div><!--/.single-tab-select-box-->
-												</div><!--/.col-->
-
-											</div><!--/.row-->
-
-											<div class="row">
-												<div class="col-lg-4 col-md-4 col-sm-12">
-													<div class="single-tab-select-box">
-
-														<h2>to</h2>
-
-														<div class="travel-select-icon">
-															<select class="form-control ">
-
-															  	<option value="default">enter your destination location</option><!-- /.option-->
-
-															  	<option value="istambul">istambul</option><!-- /.option-->
-
-															  	<option value="mosko">mosko</option><!-- /.option-->
-															  	<option value="cairo">cairo</option><!-- /.option-->
-
-															</select><!-- /.select-->
-														</div><!-- /.travel-select-icon -->
-
-													</div><!--/.single-tab-select-box-->
-												</div><!--/.col-->
-												<div class="col-lg-3 col-md-3 col-sm-4">
-													<div class="single-tab-select-box">
-
-														<h2>class</h2>
-														<div class="travel-select-icon">
-															<select class="form-control ">
-
-															  	<option value="default">enter class</option><!-- /.option-->
-
-															  	<option value="A">A</option><!-- /.option-->
-
-															  	<option value="B">B</option><!-- /.option-->
-															  	<option value="C">C</option><!-- /.option-->
-
-															</select><!-- /.select-->
-														</div><!-- /.travel-select-icon -->
-													</div><!--/.single-tab-select-box-->
-												</div><!--/.col-->
-												<div class="clo-sm-5">
-													<div class="about-btn pull-right">
-														<button  class="about-view travel-btn">
-															search	
-														</button><!--/.travel-btn-->
-													</div><!--/.about-btn-->
-												</div><!--/.col-->
+		<!--galley start-->
+		<section id="gallery" class="gallery">
+			<div class="container">
+				<div class="gallery-details">
+					<div class="gallary-header text-center">
+						<h2>
+							destinations
+						</h2>
+					</div><!--/.gallery-header-->
+					<div class="gallery-box">
+						<div class="gallery-content">
+						  	<div class="filtr-container">
+						  		<div class="row">
+
+						  			<div class="col-md-6">
+						  				<div class="filtr-item">
+											<img src="assets/images/gallary/g1.png" alt="portfolio image"/>
+											<div class="item-title">
+												<a href="#">
+													china
+												</a>
 												
-											</div><!--/.row-->
+											</div><!-- /.item-title -->
+										</div><!-- /.filtr-item -->
+						  			</div><!-- /.col -->
 
-										</div>
+						  			<div class="col-md-6">
+						  				<div class="filtr-item">
+											<img src="assets/images/gallary/g2.png" alt="portfolio image"/>
+											<div class="item-title">
+												<a href="#">
+													venezuela
+												</a>
+												
+											</div> <!-- /.item-title-->
+										</div><!-- /.filtr-item -->
+						  			</div><!-- /.col -->
 
-									</div><!--/.tabpannel-->
+						  			<div class="col-md-4">
+						  				<div class="filtr-item">
+											<img src="assets/images/gallary/g3.png" alt="portfolio image"/>
+											<div class="item-title">
+												<a href="#">
+													brazil
+												</a>
+												
+											</div><!-- /.item-title -->
+										</div><!-- /.filtr-item -->
+						  			</div><!-- /.col -->
 
-								</div><!--/.tab content-->
-							</div><!--/.desc-tabs-->
-        				</div><!--/.single-travel-box-->
-        			</div><!--/.col-->
-        		</div><!--/.row-->
-        	</div><!--/.container-->
+						  			<div class="col-md-4">
+						  				<div class="filtr-item">
+											<img src="assets/images/gallary/g4.png" alt="portfolio image"/>
+											<div class="item-title">
+												<a href="#">
+													australia 
+												</a>
+												
+											</div> <!-- /.item-title-->
+										</div><!-- /.filtr-item -->
+						  			</div><!-- /.col -->
 
-        </section><!--/.travel-box-->
-		<!--travel-box end-->
+						  			<div class="col-md-4">
+						  				<div class="filtr-item">
+											<img src="assets/images/gallary/g5.png" alt="portfolio image"/>
+											<div class="item-title">
+												<a href="#">
+													netherland
+												</a>
+											</div> <!-- /.item-title-->
+										</div><!-- /.filtr-item -->
+						  			</div><!-- /.col -->
+
+						  			<div class="col-md-8">
+						  				<div class="filtr-item">
+											<img src="assets/images/gallary/g6.png" alt="portfolio image"/>
+											<div class="item-title">
+												<a href="#">
+													turkey
+												</a>
+												
+											</div> <!-- /.item-title-->
+										</div><!-- /.filtr-item -->
+						  			</div><!-- /.col -->
+
+						  		</div><!-- /.row -->
+
+						  	</div><!-- /.filtr-container-->
+						</div><!-- /.gallery-content -->
+					</div><!--/.galley-box-->
+				</div><!--/.gallery-details-->
+			</div><!--/.container-->
+
+		</section><!--/.gallery-->
+		<!--gallery end-->
 
         <!--service start-->
 		<section id="service" class="service">
@@ -676,115 +321,13 @@
 		</section><!--/.service-->
 		<!--service end-->
 
-		<!--galley start-->
-		<section id="gallery" class="gallery">
-			<div class="container">
-				<div class="gallery-details">
-					<div class="gallary-header text-center">
-						<h2>
-							top destination
-						</h2>
-						<p>
-							Duis aute irure dolor in  velit esse cillum dolore eu fugiat nulla.  
-						</p>
-					</div><!--/.gallery-header-->
-					<div class="gallery-box">
-						<div class="gallery-content">
-						  	<div class="filtr-container">
-						  		<div class="row">
-
-						  			<div class="col-md-6">
-						  				<div class="filtr-item">
-											<img src="assets/images/gallary/g1.png" alt="portfolio image"/>
-											<div class="item-title">
-												<a href="#">
-													china
-												</a>
-												<p><span>20 tours</span><span>15 places</span></p>
-											</div><!-- /.item-title -->
-										</div><!-- /.filtr-item -->
-						  			</div><!-- /.col -->
-
-						  			<div class="col-md-6">
-						  				<div class="filtr-item">
-											<img src="assets/images/gallary/g2.png" alt="portfolio image"/>
-											<div class="item-title">
-												<a href="#">
-													venuzuala
-												</a>
-												<p><span>12 tours</span><span>9 places</span></p>
-											</div> <!-- /.item-title-->
-										</div><!-- /.filtr-item -->
-						  			</div><!-- /.col -->
-
-						  			<div class="col-md-4">
-						  				<div class="filtr-item">
-											<img src="assets/images/gallary/g3.png" alt="portfolio image"/>
-											<div class="item-title">
-												<a href="#">
-													brazil
-												</a>
-												<p><span>25 tours</span><span>10 places</span></p>
-											</div><!-- /.item-title -->
-										</div><!-- /.filtr-item -->
-						  			</div><!-- /.col -->
-
-						  			<div class="col-md-4">
-						  				<div class="filtr-item">
-											<img src="assets/images/gallary/g4.png" alt="portfolio image"/>
-											<div class="item-title">
-												<a href="#">
-													australia 
-												</a>
-												<p><span>18 tours</span><span>9 places</span></p>
-											</div> <!-- /.item-title-->
-										</div><!-- /.filtr-item -->
-						  			</div><!-- /.col -->
-
-						  			<div class="col-md-4">
-						  				<div class="filtr-item">
-											<img src="assets/images/gallary/g5.png" alt="portfolio image"/>
-											<div class="item-title">
-												<a href="#">
-													netharland
-												</a>
-												<p><span>14 tours</span><span>12 places</span></p>
-											</div> <!-- /.item-title-->
-										</div><!-- /.filtr-item -->
-						  			</div><!-- /.col -->
-
-						  			<div class="col-md-8">
-						  				<div class="filtr-item">
-											<img src="assets/images/gallary/g6.png" alt="portfolio image"/>
-											<div class="item-title">gallary-header text-center
-												<a href="#">
-													turkey
-												</a>
-												<p><span>14 tours</span><span>6 places</span></p>
-											</div> <!-- /.item-title-->
-										</div><!-- /.filtr-item -->
-						  			</div><!-- /.col -->
-
-						  		</div><!-- /.row -->
-
-						  	</div><!-- /.filtr-container-->
-						</div><!-- /.gallery-content -->
-					</div><!--/.galley-box-->
-				</div><!--/.gallery-details-->
-			</div><!--/.container-->
-
-		</section><!--/.gallery-->
-		<!--gallery end-->
-
-
-
 		<!--packages start-->
 		
 		<section id="pack" class="packages">
 			<div class="container">
 				<div class="gallary-header text-center">
 					<h2>
-						special packages
+						tour packages
 					</h2>
 					<p>
 						Özel tur paketlerimizle harika bir tatil deneyimi yaşayın
@@ -1509,7 +1052,7 @@
             
             if (sessionUser && sessionUser.id) {
                 // User is in sessionStorage, use that data directly
-                userNameElement.textContent = `${sessionUser.name || 'User'} ${sessionUser.surname || ''}`.trim();
+                userNameElement.textContent = `${sessionUser.name || 'User'}`.trim();
                 console.log('User session found in sessionStorage:', sessionUser);
                 
                 // Setup logout button
@@ -1547,7 +1090,7 @@
                             nationalId: userProfile.tc_kimlik
                         }));
                         
-                        userNameElement.textContent = `${userProfile.ad || 'User'} ${userProfile.soyad || ''}`.trim();
+                        userNameElement.textContent = `${userProfile.ad || 'User'}`.trim();
                         console.log('User profile loaded from API and stored:', userProfile);
                         
                         // Setup logout button
