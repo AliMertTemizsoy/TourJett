@@ -211,6 +211,7 @@ const ApiService = {
         getRecentBookings: () => apiCall('/dashboard/recent-bookings'),
         getUpcomingTours: () => apiCall('/dashboard/upcoming-tours'),
         getRevenueData: () => apiCall('/dashboard/revenue'),
+        getDailyRevenueData: () => apiCall('/dashboard/revenue?interval=daily'),
     },
 
     // Regions APIs
