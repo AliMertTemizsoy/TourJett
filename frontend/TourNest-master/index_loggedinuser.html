@@ -145,7 +145,7 @@
 
 									</h2>
 									<div class="about-btn", href="tourpacks.html">
-										<button  class="about-view">
+										<button  class="about-view" id="exploreNowBtn">
 											explore now
 										</button>
 									</div><!--/.about-btn-->
@@ -1123,6 +1123,20 @@
             }
         });
     </script>
+
+	<script>
+	document.addEventListener('DOMContentLoaded', function() {
+	  var exploreBtn = document.getElementById('exploreNowBtn');
+	  if (exploreBtn) {
+	    exploreBtn.addEventListener('click', function() {
+	      var packSection = document.getElementById('pack');
+	      if (packSection) {
+	        packSection.scrollIntoView({ behavior: 'smooth' });
+	      }
+	    });
+	  }
+	});
+	</script>
 
 	</body>
 
