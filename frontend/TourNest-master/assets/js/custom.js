@@ -234,6 +234,22 @@ function getTurlar() {
         });
 }
 
+// Helper function to ensure image paths are correct
+function processImagePath(imagePath) {
+    // If the image path is already a full path, use it
+    if (imagePath && imagePath.startsWith('assets/')) {
+        return imagePath;
+    }
+    
+    // If the path is just a filename (like "1.jpg"), add the correct prefix
+    if (imagePath && !imagePath.includes('/')) {
+        return `assets/images/packages/${imagePath}`;
+    }
+    
+    // If nothing is provided, calculate an image based on the package ID
+    return 'assets/images/packages/default.jpg';
+}
+
 // Tur paketlerini yükle
 document.addEventListener('DOMContentLoaded', function() {
     console.log("DOM loaded, checking for packages container");
@@ -252,39 +268,69 @@ document.addEventListener('DOMContentLoaded', function() {
                 // HTML içeriği oluştur
                 if (data && data.length > 0) {
                     let packagesHTML = '';
-                    data.forEach(tur => {
+                    
+                    data.forEach((tur, index) => {
+                        // Process the image path to make sure it loads correctly
+                        // First try to use the resim_url from the database
+                        let imagePath = processImagePath(tur.resim_url);
+                        
+                        // If we couldn't get a valid path, use a fallback based on the index
+                        if (!imagePath || imagePath === 'assets/images/packages/default.jpg') {
+                            // Calculate image number based on mod 30 to stay within our range of images
+                            const imageNum = (index % 30) + 1;
+                            imagePath = `assets/images/packages/${imageNum}.jpg`;
+                        }
+                        
                         packagesHTML += `
                             <div class="col-md-4 col-sm-6">
                                 <div class="single-package-item">
-                                    <img src="${tur.resim_url || 'assets/images/packages/default.jpg'}" alt="${tur.ad}">
+                                    <img src="${imagePath}" alt="${tur.ad}" onerror="this.src='assets/images/packages/default.jpg'">
                                     <div class="single-package-item-txt">
                                         <h3>${tur.ad} <span class="pull-right">${tur.fiyat}₺</span></h3>
                                         <div class="packages-para">
-                                            <p>${tur.aciklama}</p>
-                                            <p><span><i class="fa fa-clock-o"></i> ${tur.sure}</span></p>
-                                        </div>
+                                            <p>
+                                                <span>
+                                                    <i class="fa fa-angle-right"></i> ${tur.sure}
+                                                </span>
+                                                <i class="fa fa-angle-right"></i> 5 star accomodation
+                                            </p>
+                                            <p>
+                                                <span>
+                                                    <i class="fa fa-angle-right"></i> transportation
+                                                </span>
+                                                <i class="fa fa-angle-right"></i> food facilities
+                                            </p>
+                                        </div><!--/.packages-para-->
                                         <div class="packages-review">
-                                            <p><i class="fa fa-map-marker"></i> ${tur.konum}</p>
-                                        </div>
+                                            <p>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <span>${Math.floor(Math.random() * 1000) + 100} review</span>
+                                            </p>
+                                        </div><!--/.packages-review-->
                                         <div class="about-btn">
-                                            <a href="package-details.html?id=${tur.id}" class="about-view packages-btn">
-                                                Book Now
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                            <button class="about-view packages-btn" onclick="window.location.href='package-details.html?id=${tur.id}'">
+                                                book now
+                                            </button>
+                                        </div><!--/.about-btn-->
+                                    </div><!--/.single-package-item-txt-->
+                                </div><!--/.single-package-item-->
+                            </div><!--/.col-->
                         `;
                     });
-                    
                     packagesContainer.innerHTML = packagesHTML;
                 } else {
-                    packagesContainer.innerHTML = '<div class="text-center"><p>Henüz tur paketi bulunmamaktadır.</p></div>';
+                    packagesContainer.innerHTML = '<div class="text-center"><p>Görüntülenecek tur bulunamadı.</p></div>';
                 }
+                
+                // No need for the separate image error handling since we added it inline
             })
             .catch(error => {
-                console.error('Tur yükleme hatası:', error);
-                packagesContainer.innerHTML = `<div class="text-center"><p>Turlar yüklenirken bir hata oluştu: ${error.message}</p></div>`;
+                console.error("Error fetching tours:", error);
+                packagesContainer.innerHTML = '<div class="text-center"><p>Turlar yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.</p></div>';
             });
     } else {
         console.log("Packages container not found");
