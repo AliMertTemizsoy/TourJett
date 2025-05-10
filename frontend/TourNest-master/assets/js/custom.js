@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         </div>
                                         <div class="about-btn">
                                             <a href="package-details.html?id=${tur.id}" class="about-view packages-btn">
-                                                Şimdi Rezervasyon Yap
+                                                Book Now
                                             </a>
                                         </div>
                                     </div>

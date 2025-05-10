@@ -375,17 +375,23 @@ html,body{
     text-transform: uppercase;
     border-radius: 5px;
     box-shadow: 0 5px 20px rgba(14,15,18,.2);
-    -webkit-transition: 0.5s ease-in-out;
-    -moz-transition: 0.5s ease-in-out;
-    -ms-transition: 0.5s ease-in-out;
-    -o-transition: 0.5s ease-in-out;
-    transition: 0.5s ease-in-out;
+
 }
 .about-btn:hover .about-view{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #00d8ff;
+    border: 1px solid #00d8ff;
+    width: 200px;
+    height: 60px;
+    white-space: nowrap;
     color: #fff;
-    background: #00d8d5;
-    box-shadow: 0 5px 20px rgba(14,15,18,.7);
-	border: 1px solid #00d8d5;
+    font-size:16px;
+    font-family: 'Poppins', sans-serif;
+    border-radius: 5px;
+    box-shadow: 0 5px 20px rgba(14,15,18,.2);
+
 }
 .travel-mrt-0{
     margin-top: 0px;
