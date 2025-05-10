@@ -955,7 +955,6 @@
                                     <th>ID</th>
                                     <th>Destination</th>
                                     <th>Description</th>
-                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody id="destinationTableBody">
@@ -963,19 +962,16 @@
                                     <td>D001</td>
                                     <td>Istanbul</td>
                                     <td>Historical city with rich culture</td>
-                                    <td><span class="status-badge status-confirmed">Active</span></td>
                                 </tr>
                                 <tr>
                                     <td>D002</td>
                                     <td>Cappadocia</td>
                                     <td>Famous for hot air balloons and unique landscapes</td>
-                                    <td><span class="status-badge status-confirmed">Active</span></td>
                                 </tr>
                                 <tr>
                                     <td>D003</td>
                                     <td>Antalya</td>
                                     <td>Beautiful beaches and resorts</td>
-                                    <td><span class="status-badge status-confirmed">Active</span></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -3521,7 +3517,6 @@
                                     <td>${destination.id}</td>
                                     <td>${destination.ad || destination.name}</td>
                                     <td>${destination.aciklama || destination.description}</td>
-                                    <td><span class="status-badge status-${destination.durum === 'active' || destination.status === 'active' ? 'confirmed' : 'pending'}">${destination.durum || destination.status || 'Active'}</span></td>
                                 `;
                                 destinationTableBody.appendChild(row);
                             });
