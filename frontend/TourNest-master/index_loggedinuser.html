@@ -87,7 +87,7 @@
 					<div class="row">
 						<div class="col-sm-2">
 							<div class="logo">
-								<a href="index.html">
+								<a href="index_loggedinuser.html">
 									<img src="assets/logo/logo.png" alt="Think Photo" style="height:40px" href="'index.html'"/>
 								</a>
 							</div><!-- /.logo-->
@@ -969,10 +969,10 @@
 		<!--modernizr.min.js-->
 		<script  src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
 
-
+		
 		<!--bootstrap.min.js-->
 		<script  src="assets/js/bootstrap.min.js"></script>
-
+		<script src="assets/js/jquery.appear.js"></script>
 		<!-- bootsnav js -->
 		<script src="assets/js/bootsnav.js"></script>
 
@@ -1136,6 +1136,28 @@
 	    });
 	  }
 	});
+
+	document.addEventListener('DOMContentLoaded', function() {
+    const menuItems = document.querySelectorAll('.smooth-menu a[href^="#"]');
+    
+    menuItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Menu item clicked:', this.getAttribute('href'));
+            
+            const targetId = this.getAttribute('href').substring(1);
+            const targetElement = document.getElementById(targetId);
+            
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            } else {
+                console.error('Target element not found:', targetId);
+            }
+        });
+    });
+});
 	</script>
 
 	</body>
