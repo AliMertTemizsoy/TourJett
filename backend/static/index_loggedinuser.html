@@ -685,7 +685,7 @@
 						<div class="col-sm-8">
 							<div class="single-special-offer">
 								<div class="single-special-offer-txt">
-									<h2>thiland</h2>
+									<h2 id="special-offer-title" style="color: #003366; text-shadow: 1px 1px 8px #fff;">Special Offer</h2>
 									<div class="packages-review special-offer-review">
 										<p>
 											<i class="fa fa-star"></i>
@@ -693,65 +693,87 @@
 											<i class="fa fa-star"></i>
 											<i class="fa fa-star"></i>
 											<i class="fa fa-star"></i>
-											<span>2544 review</span>
+											<span id="special-offer-review">Loading...</span>
 										</p>
-									</div><!--/.packages-review-->
+									</div>
 									<div class="packages-para special-offer-para">
 										<p>
-											<span>
-												<i class="fa fa-angle-right"></i> 5 daays 6 nights
-											</span>
-											<span>
-												<i class="fa fa-angle-right"></i> 2 person
-											</span>
-											<span>
-												<i class="fa fa-angle-right"></i>  5 star accomodation
-											</span>
+											<span id="special-offer-duration"></span>
+											<span id="special-offer-capacity"></span>
+											<span id="special-offer-accommodation"></span>
 										</p>
 										<p>
-											<span>
-												<i class="fa fa-angle-right"></i>  transportation
-											</span>
-											<span>
-												<i class="fa fa-angle-right"></i>  food facilities
-											</span>  
+											<span id="special-offer-transport"></span>
+											<span id="special-offer-food"></span>
 										</p>
-										<p class="offer-para">
-											Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tem ut labore et dolore magna  aliqua. Ut enim ad minim veniam, quis nostrud exercitation una <br> ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-										</p>
-									</div><!--/.packages-para-->
+										<p class="offer-para" id="special-offer-desc">Her tur paketimizde konfor, güvenlik ve unutulmaz bir deneyim sizi bekliyor. Şimdi rezervasyon yaparak avantajlı fiyatlardan yararlanın!</p>
+									</div>
 									<div class="offer-btn-group">
-										<div class="about-btn">
-											<button  class="about-view packages-btn offfer-btn">
+										<!-- <div class="about-btn">
+											<button class="about-view packages-btn offfer-btn" id="special-offer-make-tour">
 												make tour
 											</button>
-										</div><!--/.about-btn-->
+										</div> -->
 										<div class="about-btn">
-											<button  class="about-view packages-btn">
+											<button class="about-view packages-btn" id="special-offer-book-now">
 												book now
 											</button>
-										</div><!--/.about-btn-->
-									</div><!--/.offer-btn-group-->
-								</div><!--/.single-special-offer-txt-->
-							</div><!--/.single-special-offer-->
-						</div><!--/.col-->
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
 						<div class="col-sm-4">
 							<div class="single-special-offer">
 								<div class="single-special-offer-bg">
 									<img src="assets/images/offer/offer-shape.png" alt="offer-shape">
-								</div><!--/.single-special-offer-bg-->
+								</div>
 								<div class="single-special-shape-txt">
 									<h3>special offer</h3>
-									<h4><span>40%</span><br>off</h4>
-									<p><span>$999</span><br>reguler $ 1450</p>
-								</div><!--/.single-special-shape-txt-->
-							</div><!--/.single-special-offer-->
-						</div><!--/.col-->
-					</div><!--/.row-->
-				</div><!--/.special-offer-content-->
-			</div><!--/.container-->
-
-		</section><!--/.special-offer end-->
+									<div style="margin-bottom: 10px;">
+										<span style="font-size: 22px; color: #fff; opacity: 0.7; text-decoration: line-through;" id="special-offer-old-price">$1450</span>
+									</div>
+									<div>
+										<span style="font-size: 60px; font-weight: 700; color: #fff;" id="special-offer-price">$999</span>
+									</div>
+									<div style="font-size: 18px; color: #fff; margin-top: 10px;">
+										<span id="special-offer-saving-text">Now only $999!</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				fetch('http://localhost:5000/api/turpaketleri/1')
+					.then(response => response.json())
+					.then(data => {
+						document.getElementById('special-offer-title').textContent = data.ad || 'Special Offer';
+						document.getElementById('special-offer-review').textContent = (data.review_count || 2544) + ' review';
+						document.getElementById('special-offer-duration').textContent = data.sure ? `› ${data.sure}` : '';
+						document.getElementById('special-offer-capacity').textContent = data.kapasite ? `› ${data.kapasite} person` : '';
+						document.getElementById('special-offer-accommodation').textContent = '› 5 star accomodation';
+						document.getElementById('special-offer-transport').textContent = '› transportation';
+						document.getElementById('special-offer-food').textContent = '› food facilities';
+						// Açıklama kısmı sabit olacak, API'den gelen açıklama yerine sabit metin gösterilecek
+						document.getElementById('special-offer-desc').textContent = 'Her tur paketimizde konfor, güvenlik ve unutulmaz bir deneyim sizi bekliyor. Şimdi rezervasyon yaparak avantajlı fiyatlardan yararlanın!';
+						document.getElementById('special-offer-old-price').textContent = data.fiyat ? `$${Math.round(data.fiyat * 1.45)}` : '$1450';
+						document.getElementById('special-offer-price').textContent = data.fiyat ? `$${data.fiyat}` : '$999';
+						document.getElementById('special-offer-saving-text').textContent = data.fiyat ? `Now only $${data.fiyat}!` : 'Now only $999!';
+						// İsteğe bağlı: butonlara tıklama ile yönlendirme
+						document.getElementById('special-offer-book-now').onclick = function() {
+							window.location.href = `booking.html?tur_paketi_id=${data.id}`;
+						};
+					})
+					.catch(err => {
+						document.getElementById('special-offer-title').textContent = 'Special Offer';
+						document.getElementById('special-offer-desc').textContent = 'Tur paketi yüklenemedi.';
+					});
+			});
+			</script>
+		</section>
 		<!--special-offer end-->
 
 		<!--blog start-->
