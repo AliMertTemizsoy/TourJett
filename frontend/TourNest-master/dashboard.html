@@ -3406,26 +3406,22 @@
                         if (tourGuideSelect) {
                             tourGuideSelect.innerHTML = '<option value="">Select Guide</option>';
                             guides.forEach(guide => {
-                                const option = document.createElement('option');
-                                option.value = guide.id;
-                                option.textContent = guide.ad || guide.name;
-                                tourGuideSelect.appendChild(option);
-                            });
-                        }
-                        
-                        const guideTableBody = document.getElementById('guideTableBody');
-                        if (guideTableBody) {
-                            guideTableBody.innerHTML = ''; // Clear existing rows
-                            guides.forEach(guide => {
+                                // Check and provide default values for missing data
+                                const languages = guide.diller || guide.languages || guide.dil_bilgisi || '';
+                                const experience = guide.deneyim || guide.experience || guide.deneyim_yili || '';
+                                const name = guide.ad || guide.name || '';
+                                const phone = guide.telefon || guide.phone || '';
+                                const status = guide.durum || guide.status || '';
+                                
                                 const row = document.createElement('tr');
                                 row.dataset.id = guide.id; // Store ID for easy access
                                 row.innerHTML = `
                                     <td>${guide.id}</td>
-                                    <td>${guide.ad || guide.name}</td>
-                                    <td>${guide.diller || guide.languages}</td>
-                                    <td>${guide.telefon || guide.phone}</td>
-                                    <td>${guide.deneyim || guide.experience} years</td>
-                                    <td><span class="status-badge status-${guide.durum === 'active' || guide.status === 'active' ? 'confirmed' : 'pending'}">${guide.durum || guide.status}</span></td>
+                                    <td>${name}</td>
+                                    <td>${languages}</td>
+                                    <td>${phone}</td>
+                                    <td>${experience}${experience ? ' years' : ''}</td>
+                                    <td><span class="status-badge status-${status === 'active' ? 'confirmed' : 'pending'}">${status}</span></td>
                                 `;
                                 guideTableBody.appendChild(row);
                             });
@@ -3661,10 +3657,12 @@
                         loadTourData();
                         loadRegionData();
                         loadResourceData();
+                        loadGuideData(); // Load guide data properly
                     } else if (section === 'resources') {
                         loadRegionData();
                         loadResourceData();
                         loadDestinationsData();
+                        loadGuideData(); // Load guide data properly
                     } else if (section === 'feedback') {
                         loadFeedbackData();
                     }
@@ -3680,7 +3678,9 @@
                         loadDestinationsData();
                     } else if (tab === 'turs') {
                         loadToursData(); // ✅ Tur sekmesine tıklandığında turları yükle
-                    } else if (tab === 'guides' || tab === 'drivers' || tab === 'vehicles') {
+                    } else if (tab === 'guides') {
+                        loadGuideData(); // Use our new function for guides
+                    } else if (tab === 'drivers' || tab === 'vehicles') {
                         loadResourceData();
                     }
                 });
@@ -4354,6 +4354,54 @@
             if (status === 'pending') return 'pending';
             if (status === 'cancelled') return 'cancelled';
             return 'pending'; // Default
+        }
+
+        // Function to handle loading and displaying guide data correctly
+        async function loadGuideData() {
+            try {
+                const guides = await ApiService.resources.guides.getAll();
+                if (guides && guides.length > 0) {
+                    // Populate the guide select dropdown for tour forms
+                    const tourGuideSelect = document.getElementById('tourGuide');
+                    if (tourGuideSelect) {
+                        tourGuideSelect.innerHTML = '<option value="">Select Guide</option>';
+                        guides.forEach(guide => {
+                            const option = document.createElement('option');
+                            option.value = guide.id;
+                            option.textContent = guide.ad || guide.name || '';
+                            tourGuideSelect.appendChild(option);
+                        });
+                    }
+                    
+                    // Populate the guide table
+                    const guideTableBody = document.getElementById('guideTableBody');
+                    if (guideTableBody) {
+                        guideTableBody.innerHTML = ''; // Clear existing rows
+                        guides.forEach(guide => {
+                            // Check and provide default values for missing data
+                            const languages = guide.diller || guide.languages || guide.dil_bilgisi || '';
+                            const experience = guide.deneyim || guide.experience || guide.deneyim_yili || '';
+                            const name = guide.ad || guide.name || '';
+                            const phone = guide.telefon || guide.phone || '';
+                            const status = guide.durum || guide.status || '';
+                            
+                            const row = document.createElement('tr');
+                            row.dataset.id = guide.id; // Store ID for easy access
+                            row.innerHTML = `
+                                <td>${guide.id}</td>
+                                <td>${name}</td>
+                                <td>${languages}</td>
+                                <td>${phone}</td>
+                                <td>${experience}${experience ? ' years' : ''}</td>
+                                <td><span class="status-badge status-${status === 'active' ? 'confirmed' : 'pending'}">${status}</span></td>
+                            `;
+                            guideTableBody.appendChild(row);
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load guide data:', error);
+            }
         }
     </script>
 </body>
