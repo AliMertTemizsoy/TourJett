@@ -881,15 +881,6 @@
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon" style="background-color: var(--warning);">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h4>Highest Rating</h4>
-                        <p data-stat="highestRating"><i class="fas fa-spinner fa-spin"></i></p>
-                    </div>
-                </div>
-                <div class="stat-card">
                     <div class="stat-icon" style="background-color: var(--success);">
                         <i class="fas fa-money-bill-wave"></i>
                     </div>
@@ -928,7 +919,6 @@
                             <th>Tour</th>
                             <th>Total Bookings</th>
                             <th>Revenue</th>
-                            <th>Avg. Rating</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1942,7 +1932,6 @@
                         <td>${data.tours[i]}</td>
                         <td>${data.bookings[i]}</td>
                         <td>₺${data.revenue[i].toLocaleString()}</td>
-                        <td>${data.ratings[i]}</td>
                     `;
                     
                     tableBody.appendChild(row);
