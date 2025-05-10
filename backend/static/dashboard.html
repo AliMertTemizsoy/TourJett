@@ -1411,7 +1411,7 @@
                         </div>
                         <div class="form-group">
                             <label for="driverLicense">License Type</label>
-                            <select id="driverLicense" name="ehliyet_tipi" class="form-control" required>
+                            <select id="driverLicense" name="ehliyet_sinifi" class="form-control" required>
                                 <option value="">Select License Type</option>
                                 <option value="B">B (Car)</option>
                                 <option value="D">D (Bus)</option>
@@ -1426,7 +1426,7 @@
                         </div>
                         <div class="form-group">
                             <label for="driverExperience">Experience (years)</label>
-                            <input type="number" id="driverExperience" name="deneyim" class="form-control" required>
+                            <input type="number" id="driverExperience" name="deneyim_yil" class="form-control" required>
                         </div>
                     </div>
                     <div class="form-row">
@@ -3448,13 +3448,39 @@
                             drivers.forEach(driver => {
                                 const row = document.createElement('tr');
                                 row.dataset.id = driver.id; // Store ID for easy access
+                                
+                                // Handle experience/years field correctly
+                                const experience = driver.deneyim_yil || driver.deneyim || driver.experience || 0;
+                                
+                                // Build full name from first and last name
+                                let fullName = driver.ad || driver.name || '';
+                                if (driver.soyad) {
+                                    fullName += ' ' + driver.soyad;
+                                }
+                                
+                                // Handle status field correctly
+                                let statusText = 'Active';
+                                let statusClass = 'confirmed';
+                                
+                                // Check for aktif field which is a boolean
+                                if (driver.aktif === false) {
+                                    statusText = 'Inactive';
+                                    statusClass = 'pending';
+                                } else if (driver.durum === 'on_leave' || driver.status === 'on_leave') {
+                                    statusText = 'On Leave';
+                                    statusClass = 'pending';
+                                } else if (driver.durum === 'inactive' || driver.status === 'inactive') {
+                                    statusText = 'Inactive';
+                                    statusClass = 'pending';
+                                }
+                                
                                 row.innerHTML = `
                                     <td>${driver.id}</td>
-                                    <td>${driver.ad || driver.name}</td>
-                                    <td>${driver.ehliyet_tipi || driver.licenseType}</td>
+                                    <td>${fullName}</td>
+                                    <td>${driver.ehliyet_sinifi || driver.licenseType}</td>
                                     <td>${driver.telefon || driver.phone}</td>
-                                    <td>${driver.deneyim || driver.experience} years</td>
-                                    <td><span class="status-badge status-${driver.durum === 'active' || driver.status === 'active' ? 'confirmed' : 'pending'}">${driver.durum || driver.status}</span></td>
+                                    <td>${experience} years</td>
+                                    <td><span class="status-badge status-${statusClass}">${statusText}</span></td>
                                 `;
                                 driverTableBody.appendChild(row);
                             });
@@ -3816,9 +3842,9 @@
                     ad: driverData.ad,
                     soyad: driverData.soyad,
                     telefon: driverData.telefon,
-                    ehliyet_tipi: driverData.ehliyet_tipi,
+                    ehliyet_sinifi: driverData.ehliyet_sinifi,
                     ehliyet_no: driverData.ehliyet_no,
-                    deneyim_yili: parseInt(driverData.deneyim),
+                    deneyim_yil: parseInt(driverData.deneyim_yil),
                     aktif: driverData.durum === 'active'
                 };
                 
@@ -3841,6 +3867,12 @@
                     // Hide modal
                     document.getElementById('resourceModal').style.display = 'none';
                     
+                    // Reset button state
+                    loadingBtn.textContent = originalText;
+                    loadingBtn.disabled = false;
+                    
+                    // Reload driver list
+                    loadResourceData();
                     
                     // Show success message
                     alert('Driver saved successfully!');
@@ -4383,7 +4415,17 @@
                             const experience = guide.deneyim || guide.experience || guide.deneyim_yili || '';
                             const name = guide.ad || guide.name || '';
                             const phone = guide.telefon || guide.phone || '';
-                            const status = guide.durum || guide.status || '';
+                            
+                            // Fix the status handling
+                            let statusText = 'Active';
+                            let statusClass = 'confirmed';
+                            
+                            // Check different possible status fields
+                            const rawStatus = guide.durum || guide.status || guide.aktif;
+                            if (rawStatus === false || rawStatus === 'false' || rawStatus === 'inactive' || rawStatus === 'on_leave' || rawStatus === 'On Leave') {
+                                statusText = rawStatus === 'on_leave' || rawStatus === 'On Leave' ? 'On Leave' : 'Inactive';
+                                statusClass = 'pending';
+                            }
                             
                             const row = document.createElement('tr');
                             row.dataset.id = guide.id; // Store ID for easy access
@@ -4393,7 +4435,7 @@
                                 <td>${languages}</td>
                                 <td>${phone}</td>
                                 <td>${experience}${experience ? ' years' : ''}</td>
-                                <td><span class="status-badge status-${status === 'active' ? 'confirmed' : 'pending'}">${status}</span></td>
+                                <td><span class="status-badge status-${statusClass}">${statusText}</span></td>
                             `;
                             guideTableBody.appendChild(row);
                         });
