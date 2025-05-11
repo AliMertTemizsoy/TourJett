@@ -454,7 +454,7 @@
 						<div class="home1-testm item">
 							<div class="home1-testm-single text-center">
 								<div class="home1-testm-img">
-									<img src="assets/images/client/client1.jpg" alt="Emma Johnson"/>
+									<img src="assets/images/client/client1.png" alt="Emma Johnson"/>
 								</div><!--/.home1-testm-img-->
 								<div class="home1-testm-txt">
 									<span class="icon section-icon">
@@ -476,7 +476,7 @@
 						<div class="home1-testm item">
 							<div class="home1-testm-single text-center">
 								<div class="home1-testm-img">
-									<img src="assets/images/client/client2.jpg" alt="Michael Chen"/>
+									<img src="assets/images/client/client2.png" alt="Michael Chen"/>
 								</div><!--/.home1-testm-img-->
 								<div class="home1-testm-txt">
 									<span class="icon section-icon">
@@ -498,7 +498,7 @@
 						<div class="home1-testm item">
 							<div class="home1-testm-single text-center">
 								<div class="home1-testm-img">
-									<img src="assets/images/client/client3.jpg" alt="Sophia Rodriguez"/>
+									<img src="assets/images/client/client3.png" alt="Sophia Rodriguez"/>
 								</div><!--/.home1-testm-img-->
 								<div class="home1-testm-txt">
 									<span class="icon section-icon">
@@ -520,7 +520,7 @@
 						<div class="home1-testm item">
 							<div class="home1-testm-single text-center">
 								<div class="home1-testm-img">
-									<img src="assets/images/client/client4.jpg" alt="Thomas Wilson"/>
+									<img src="assets/images/client/client4.png" alt="Thomas Wilson"/>
 								</div><!--/.home1-testm-img-->
 								<div class="home1-testm-txt">
 									<span class="icon section-icon">
@@ -542,7 +542,7 @@
 						<div class="home1-testm item">
 							<div class="home1-testm-single text-center">
 								<div class="home1-testm-img">
-									<img src="assets/images/client/client5.jpg" alt="Olivia Nakamura"/>
+									<img src="assets/images/client/client5.png" alt="Olivia Nakamura"/>
 								</div><!--/.home1-testm-img-->
 								<div class="home1-testm-txt">
 									<span class="icon section-icon">
@@ -564,7 +564,7 @@
 						<div class="home1-testm item">
 							<div class="home1-testm-single text-center">
 								<div class="home1-testm-img">
-									<img src="assets/images/client/client6.jpg" alt="Alexander Petrov"/>
+									<img src="assets/images/client/client6.png" alt="Alexander Petrov"/>
 								</div><!--/.home1-testm-img-->
 								<div class="home1-testm-txt">
 									<span class="icon section-icon">
@@ -586,7 +586,7 @@
 						<div class="home1-testm item">
 							<div class="home1-testm-single text-center">
 								<div class="home1-testm-img">
-									<img src="assets/images/client/client7.jpg" alt="Aisha Mohammed"/>
+									<img src="assets/images/client/client7.png" alt="Aisha Mohammed"/>
 								</div><!--/.home1-testm-img-->
 								<div class="home1-testm-txt">
 									<span class="icon section-icon">
@@ -608,7 +608,7 @@
 						<div class="home1-testm item">
 							<div class="home1-testm-single text-center">
 								<div class="home1-testm-img">
-									<img src="assets/images/client/client8.jpg" alt="Daniel Kovács"/>
+									<img src="assets/images/client/client8.png" alt="Daniel Kovács"/>
 								</div><!--/.home1-testm-img-->
 								<div class="home1-testm-txt">
 									<span class="icon section-icon">
@@ -630,7 +630,7 @@
 						<div class="home1-testm item">
 							<div class="home1-testm-single text-center">
 								<div class="home1-testm-img">
-									<img src="assets/images/client/client9.jpg" alt="Clara Svensson"/>
+									<img src="assets/images/client/client9.png" alt="Clara Svensson"/>
 								</div><!--/.home1-testm-img-->
 								<div class="home1-testm-txt">
 									<span class="icon section-icon">
@@ -652,7 +652,7 @@
 						<div class="home1-testm item">
 							<div class="home1-testm-single text-center">
 								<div class="home1-testm-img">
-									<img src="assets/images/client/client10.jpg" alt="Marco Bianchi"/>
+									<img src="assets/images/client/client10.png" alt="Marco Bianchi"/>
 								</div><!--/.home1-testm-img-->
 								<div class="home1-testm-txt">
 									<span class="icon section-icon">
@@ -759,9 +759,9 @@
 						document.getElementById('special-offer-food').textContent = '› food facilities';
 						// Açıklama kısmı sabit olacak, API'den gelen açıklama yerine sabit metin gösterilecek
 						document.getElementById('special-offer-desc').textContent = 'Her tur paketimizde konfor, güvenlik ve unutulmaz bir deneyim sizi bekliyor. Şimdi rezervasyon yaparak avantajlı fiyatlardan yararlanın!';
-						document.getElementById('special-offer-old-price').textContent = data.fiyat ? `$${Math.round(data.fiyat * 1.45)}` : '$1450';
-						document.getElementById('special-offer-price').textContent = data.fiyat ? `$${data.fiyat}` : '$999';
-						document.getElementById('special-offer-saving-text').textContent = data.fiyat ? `Now only $${data.fiyat}!` : 'Now only $999!';
+						document.getElementById('special-offer-old-price').textContent = data.fiyat ? `₺${Math.round(data.fiyat * 1.45)}` : '$1450';
+						document.getElementById('special-offer-price').textContent = data.fiyat ? `₺${data.fiyat}` : '$999';
+						document.getElementById('special-offer-saving-text').textContent = data.fiyat ? `Now only ₺${data.fiyat}!` : 'Now only $999!';
 						// İsteğe bağlı: butonlara tıklama ile yönlendirme
 						document.getElementById('special-offer-book-now').onclick = function() {
 							window.location.href = `booking.html?tur_paketi_id=${data.id}`;
@@ -845,8 +845,8 @@
 								<div class="col-sm-4 col-md-4">
 									<div class="thumbnail">
 										<h2>trending news <span>18 April 2025</span></h2>
-										<div class="thumbnail-img">
-											<img src="assets/images/blog/b3.jpg" alt="blog-img">
+										<div class="thumbnail-img" height="173px" width="292px">
+											<img src="assets/images/blog/b3.jpg" alt="blog-img" >
 											<div class="thumbnail-img-overlay"></div><!--/.thumbnail-img-overlay-->
 										
 										</div><!--/.thumbnail-img-->
