@@ -113,3 +113,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Contact
 
 For support or inquiries, please contact info@tourjett.com
+
+---
+*For details about [Ali Mert Temizsoy's](https://github.com/AliMertTemizsoy) contributions to this project, please see [CONTRIBUTIONS.md](CONTRIBUTIONS.md).*
